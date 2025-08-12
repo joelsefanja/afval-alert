@@ -5,38 +5,39 @@ import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import { ListNotification } from '../listnotification.interface';
+import { RouterModule, Router, ActivatedRoute } from '@angular/router';
+
 
 const Test_Notification_Data: ListNotification[] = [
-  {location: 1, type: 'Grofvuil', status: 'Opgehaald', date: '03/07/2025'},
-  {location: 2, type: 'Aluminium', status: 'Gepland', date: '06/07/2025'},
-  {location: 3, type: 'Hout', status: 'In Behandeling', date: '20/07/2025'},
-  {location: 1, type: 'Grofvuil', status: 'Opgehaald', date: '03/07/2025'},
-  {location: 2, type: 'Aluminium', status: 'Gepland', date: '06/07/2025'},
-  {location: 3, type: 'Hout', status: 'In Behandeling', date: '20/07/2025'},
-  {location: 1, type: 'Grofvuil', status: 'Opgehaald', date: '03/07/2025'},
-  {location: 2, type: 'Aluminium', status: 'Gepland', date: '06/07/2025'},
-  {location: 3, type: 'Hout', status: 'In Behandeling', date: '20/07/2025'},
-  {location: 1, type: 'Grofvuil', status: 'Opgehaald', date: '03/07/2025'},
-  {location: 2, type: 'Aluminium', status: 'Gepland', date: '06/07/2025'},
-  {location: 3, type: 'Hout', status: 'In Behandeling', date: '20/07/2025'},
-  {location: 1, type: 'Grofvuil', status: 'Opgehaald', date: '03/07/2025'},
-  {location: 2, type: 'Aluminium', status: 'Gepland', date: '06/07/2025'},
-  {location: 3, type: 'Hout', status: 'In Behandeling', date: '20/07/2025'},
+  {id: 1, location: 1, type: 'Grofvuil', status: 'Opgehaald', date: '03/07/2025'},
+  {id: 2,location: 2, type: 'Aluminium', status: 'Gepland', date: '06/07/2025'},
+  {id: 3,location: 3, type: 'Hout', status: 'In Behandeling', date: '20/07/2025'},
+  {id: 4,location: 1, type: 'Grofvuil', status: 'Opgehaald', date: '03/07/2025'},
+  {id: 5,location: 2, type: 'Aluminium', status: 'Gepland', date: '06/07/2025'},
+  {id: 6,location: 3, type: 'Hout', status: 'In Behandeling', date: '20/07/2025'},
+  {id: 7,location: 1, type: 'Grofvuil', status: 'Opgehaald', date: '03/07/2025'},
+  {id: 8,location: 2, type: 'Aluminium', status: 'Gepland', date: '06/07/2025'},
+  {id: 9,location: 3, type: 'Hout', status: 'In Behandeling', date: '20/07/2025'},
 ];
 
 @Component({
   selector: 'app-list',
-  imports: [MatFormFieldModule, MatInputModule, MatTableModule, MatSortModule, MatPaginatorModule],
+  imports: [MatFormFieldModule, MatInputModule, MatTableModule, MatSortModule, MatPaginatorModule, RouterModule],
   templateUrl: './list.html',
   styleUrl: './list.scss'
 })
-export class List implements AfterViewInit {
+export class ListComponent implements AfterViewInit {
   displayedColumns: string[] = ['location', 'type', 'status', 'date'];
   dataSource = new MatTableDataSource(Test_Notification_Data);
 
 
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+
+  constructor(
+  private router: Router,
+  private route: ActivatedRoute
+  ) {}
 
   ngAfterViewInit() {
       this.dataSource.sort = this.sort;
@@ -51,5 +52,9 @@ export class List implements AfterViewInit {
       this.dataSource.paginator.firstPage();
     }
   }
+
+  goToDetails(item: ListNotification) {
+  this.router.navigate(['details', item.id], { relativeTo: this.route });
+}
 
 }

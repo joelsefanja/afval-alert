@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
-import { List } from './list/list';
+import { RouterOutlet } from '@angular/router';
+import { ListComponent } from './list/list';
 
 @Component({
   selector: 'app-admin',
-  imports: [List],
+  standalone: true,
+  imports: [RouterOutlet, ListComponent],
   templateUrl: './admin.html',
-  styleUrl: './admin.scss'
+  styleUrls: ['./admin.scss']
 })
-export class AdminComponent {
-
-}
+export class AdminComponent {}
