@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, Output, EventEmitter } from '@angular/core';
+import { Component, AfterViewInit, output } from '@angular/core';
 import * as L from 'leaflet';
 
 const iconRetinaUrl = 'assets/leaflet/marker-icon-2x.png';
@@ -23,7 +23,7 @@ L.Marker.prototype.options.icon = iconDefault;
   styleUrl: './kaart.scss'
 })
 export class Kaart implements AfterViewInit {
-  @Output() addressSelected = new EventEmitter<string>();
+  addressSelected = output<string>();
 
   private map!: L.Map;
   private currentMarker?: L.Marker;
