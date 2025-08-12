@@ -45,10 +45,10 @@ export class Kaart implements AfterViewInit {
   }
 
   private centerMap() {
-    // Create a boundary based on the markers
+    // Begrens de kaart op basis van de markers
     const bounds = L.latLngBounds(this.markers.map(marker => marker.getLatLng()));
 
-    // Fit the map into the boundary
+    // Maak de markers zichtbaar op de kaart
     this.map.fitBounds(bounds);
   }
 
