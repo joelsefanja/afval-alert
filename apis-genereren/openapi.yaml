@@ -1,0 +1,196 @@
+openapi: 3.1.0
+info:
+  title: Afval Alert API
+  version: 1.1.1
+  description: API voor het Afval Alert systeem van gemeente Groningen, inclusief ondersteuning voor meerdere cirkels en Blob-upload voor AI-classificatie.
+servers:
+  - url: https://api.gemeente-groningen.nl
+    description: Productieomgeving
+  - url: http://localhost:8080
+    description: Lokale ontwikkelomgeving
+
+paths:
+  /api/meldingen:
+    post:
+      summary: Nieuwe melding aanmaken
+      operationId: createMelding
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                foto:
+                  type: string
+                  format: binary
+                  description: Geoptimaliseerde JPEG/PNG Blob
+                locatie:
+                  type: object
+                  required: [latitude, longitude]
+                  properties:
+                    latitude:
+                      type: number
+                      format: double
+                    longitude:
+                      type: number
+                      format: double
+                afvaltype:
+                  $ref: '#/components/schemas/AfvalType'
+                circles:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/CircleData'
+                opmerkingen:
+                  type: string
+              required: [foto, locatie]
+      responses:
+        '201':
+          description: Melding succesvol aangemaakt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Melding'
+
+  /api/meldingen/{id}/status:
+    put:
+      summary: Update de status van een melding
+      operationId: updateMeldingStatus
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  $ref: '#/components/schemas/MeldingStatus'
+                opmerkingen:
+                  type: string
+              required: [status]
+      responses:
+        '200':
+          description: Status bijgewerkt
+
+  /api/ai/classify:
+    post:
+      summary: Classificeer afval via AI (Blob-upload)
+      operationId: classifyWaste
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                foto:
+                  type: string
+                  format: binary
+                  description: Afbeelding (JPEG/PNG) als Blob
+                confidence_threshold:
+                  type: number
+                  format: float
+                  default: 0.8
+              required: [foto]
+      responses:
+        '200':
+          description: Classificatieresultaat
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIClassificationResponse'
+
+components:
+  schemas:
+    AfvalType:
+      type: string
+      enum: [PLASTIC, GLAS, PAPIER, ORGANISCH, ELECTRONICA, TEXTIEL, GEVAARLIJK, ONBEKEND]
+
+    MeldingStatus:
+      type: string
+      enum: [NIEUW, IN_BEHANDELING, GEPLAND, OPGEHAALD, AFGESLOTEN]
+
+    CircleData:
+      type: object
+      properties:
+        centerX:
+          type: number
+        centerY:
+          type: number
+        radius:
+          type: number
+      required: [centerX, centerY, radius]
+
+    Melding:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        locatie:
+          type: object
+          properties:
+            latitude:
+              type: number
+              format: double
+            longitude:
+              type: number
+              format: double
+        foto:
+          type: string
+          format: uri
+        afvaltype:
+          $ref: '#/components/schemas/AfvalType'
+        circles:
+          type: array
+          items:
+            $ref: '#/components/schemas/CircleData'
+        status:
+          $ref: '#/components/schemas/MeldingStatus'
+        opmerkingen:
+          type: string
+        statusgeschiedenis:
+          type: array
+          items:
+            $ref: '#/components/schemas/StatusUpdate'
+
+    StatusUpdate:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        oudeStatus:
+          $ref: '#/components/schemas/MeldingStatus'
+        nieuweStatus:
+          $ref: '#/components/schemas/MeldingStatus'
+        opmerkingen:
+          type: string
+
+    AIClassificationResponse:
+      type: object
+      properties:
+        predicted_type:
+          $ref: '#/components/schemas/AfvalType'
+        confidence:
+          type: number
+          format: float
+        alternatives:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                $ref: '#/components/schemas/AfvalType'
+              confidence:
+                type: number
+                format: float
+        processing_time_ms:
+          type: integer
