@@ -18,32 +18,17 @@ Deze gids geeft UI/UX tips voor de Afval Alert app, gebaseerd op de requirements
 *   Kaart: Handmatige locatie selectie of ingesteld locatie zien.
 *   Pin: Verslepen voor correcte positie.
 *   Waarschuwing: Buiten Groningen?
-*   Adres: Ter bevestiging tonen.
-
-**R3: Afval Markeren op Foto**
-
-*   Cirkel Tekenen: Makkelijk afvalgebied aangeven.
-*   Cirkel Aanpassen: Verplaatsen en grootte wijzigen.
-*   Meerdere Cirkels: Voor meerdere afvalgebieden.
-
-**R4: Contactgegevens Opgeven**
-
-*   Naam & Email: Verplicht voor updates.
-*   Email Validatie: Direct fouten tonen.
-*   Bevestigingsmail: Met meldingsnummer.
-*   Optioneel: Melden zonder updates.
 
 **R5: Melding Valideren**
 
 *   Overzicht: Alle gegevens voor verzending.
 *   Terug Navigeren: Aanpassingen maken.
-*   Bevestiging: Met meldingsnummer (na succes).
+*   Bevestiging: met kort bericht.
 *   Foutmelding: Bij mislukte verzending.
 
 ## Afval Alert App - Voor gemeente medewerker
 
 **R6: Meldingen Overzien**
-
 *   Lijst: Gesorteerd op datum (binnen 2s).
 *   Kaart: Meldingen als pins.
 *   Filters: Real-time bijwerken.
@@ -61,13 +46,10 @@ Deze gids geeft UI/UX tips voor de Afval Alert app, gebaseerd op de requirements
 *   Detailpagina: Foto, beschrijving, locatie.
 *   Tijdlijn: Statusupdates.
 *   Foto Zoom: Volledige grootte bekijken.
-*   Cirkels: Duidelijk zichtbaar.
-*   Contactgegevens: Direct contacteren.
 
 **R9: Meldingstatus Updaten**
 
 *   Direct Opslaan: Binnen 1 seconde.
-*   Email Notificatie: Melder informeren.
 *   Opmerkingen: Toevoegen bij statuswijziging.
 
 ## Usability (R14)
