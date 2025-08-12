@@ -187,9 +187,6 @@ Body:
 
 * `foto` → Blob (JPEG/PNG, geoptimaliseerd).
 * `locatie` → JSON: `{ "latitude": 53.2194, "longitude": 6.5665 }`
-* `afvaltype` *(optioneel)* → string uit `AfvalType`.
-* `circleData` *(optioneel)* → `Array<{ "centerX": 120, "centerY": 200, "radius": 45 }>`
-* `opmerkingen` *(optioneel)* → string.
 
 ---
 
