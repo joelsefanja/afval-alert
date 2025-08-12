@@ -1,0 +1,7 @@
+<ul>
+  @for (element of tijdlijnElementen(); track element.date) {
+    <li>
+      {{element.status}} - {{element.note}} - {{element.date}}
+    </li>
+  }
+</ul>

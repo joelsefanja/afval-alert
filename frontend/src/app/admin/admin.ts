@@ -7,6 +7,7 @@ import { List } from './list/list';
   templateUrl: './admin.html',
   styleUrl: './admin.scss'
 })
-export class AdminComponent {
 
+
+export class AdminComponent {
 }
