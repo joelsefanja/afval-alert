@@ -1,0 +1,116 @@
+.afval-detectie-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 16px;
+  
+  .header-sectie {
+    text-align: center;
+    margin-bottom: 32px;
+    
+    h1 {
+      color: #2196F3;
+      margin-bottom: 16px;
+      font-weight: 500;
+      font-size: 28px;
+    }
+    
+    .uitleg {
+      color: #666;
+      line-height: 1.5;
+      font-size: 16px;
+      margin: 0;
+    }
+  }
+  
+  .foto-sectie {
+    margin-bottom: 24px;
+  }
+  
+  .overzicht-card {
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+    
+    mat-card-header {
+      mat-card-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #4CAF50;
+        
+        mat-icon {
+          color: #4CAF50;
+        }
+      }
+      
+      mat-card-subtitle {
+        color: #666;
+        margin-top: 4px;
+      }
+    }
+    
+    mat-card-content {
+      padding-top: 16px;
+      
+      mat-chip-listbox {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+    }
+    
+    mat-card-actions {
+      padding: 16px 24px;
+      
+      button {
+        margin-left: 8px;
+        
+        &:first-child {
+          margin-left: 0;
+        }
+        
+        mat-icon {
+          margin-right: 4px;
+        }
+      }
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 600px) {
+  .afval-detectie-container {
+    padding: 8px;
+    
+    .header-sectie {
+      margin-bottom: 24px;
+      
+      h1 {
+        font-size: 24px;
+      }
+      
+      .uitleg {
+        font-size: 14px;
+      }
+    }
+    
+    .overzicht-card {
+      mat-card-actions {
+        flex-direction: column;
+        align-items: stretch;
+        
+        button {
+          margin: 4px 0;
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+// Material Design aanpassingen
+mat-chip-option {
+  &.mat-mdc-chip-selected {
+    background-color: #4CAF50 !important;
+    color: white !important;
+  }
+}
