@@ -34,7 +34,28 @@ export class LocatiePicker {
     );
   }
 
-  onGetCurrentLocation() {
+  onInputChange(event: any) {
+    // Update de waarde wanneer de gebruiker typt
+    this.searchQuery = event.target.value;
+  }
+
+  searchQuery = '';
+  selectedAddress = '';
+
+  onAddressSearch() {
+    if (this.searchQuery.trim()) {
+      this.kaartComponent.searchAddress(this.searchQuery)
+    }
+  }
+
+  onAddressSelected(address: string) {
+    this.selectedAddress = address;
+    this.searchQuery = address;
+  }
+
+  onCurrentLocationSelected() {
+    this.selectedAddress = '';
+    this.searchQuery = '';
     this.kaartComponent.getCurrentLocation();
   }
 }

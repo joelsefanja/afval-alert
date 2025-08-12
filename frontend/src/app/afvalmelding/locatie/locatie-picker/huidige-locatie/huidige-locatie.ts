@@ -20,6 +20,7 @@ export class HuidigeLocatie {
   private sanitizer = inject(DomSanitizer);
 
   getCurrentLocationClicked = output<void>();
+  openModalClicked = output<void>();
 
   constructor() {
     this.iconRegistry.addSvgIconLiteral(
@@ -30,5 +31,6 @@ export class HuidigeLocatie {
 
   onGetCurrentLocation() {
     this.getCurrentLocationClicked.emit();
+    this.openModalClicked.emit();
   }
 }

@@ -1,4 +1,4 @@
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, AfterViewInit, Output, EventEmitter } from '@angular/core';
 import * as L from 'leaflet';
 
 const iconRetinaUrl = 'assets/leaflet/marker-icon-2x.png';
@@ -23,6 +23,8 @@ L.Marker.prototype.options.icon = iconDefault;
   styleUrl: './kaart.scss'
 })
 export class Kaart implements AfterViewInit {
+  @Output() addressSelected = new EventEmitter<string>();
+
   private map!: L.Map;
   private currentMarker?: L.Marker;
 
@@ -56,16 +58,6 @@ export class Kaart implements AfterViewInit {
     });
   }
 
-  private addMarkerAtLocation(latlng: L.LatLng) {
-    // Remove existing marker if it exists
-    if (this.currentMarker) {
-      this.map.removeLayer(this.currentMarker);
-    }
-
-    // Create new marker at clicked location
-    this.currentMarker = L.marker(latlng).addTo(this.map);
-  }
-
   getCurrentLocation() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -89,6 +81,60 @@ export class Kaart implements AfterViewInit {
       );
     } else {
       alert('Geolocatie wordt niet ondersteund door deze browser.');
+    }
+  }
+
+  async searchAddress(address: string): Promise<void> {
+    if (!address.trim()) return;
+
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1&countrycodes=nl`
+      );
+      const data = await response.json();
+
+      if (data.length > 0) {
+        const result = data[0];
+        const lat = parseFloat(result.lat);
+        const lon = parseFloat(result.lon);
+        const latlng = L.latLng(lat, lon);
+
+        this.addMarkerAtLocation(latlng);
+        this.map.setView(latlng, 20);
+        this.addressSelected.emit(result.display_name);
+      } else {
+        // Niet gevonden
+      }
+    } catch (error) {
+      console.error('Fout bij het zoeken naar adres:', error);
+    }
+  }
+
+  private async addMarkerAtLocation(latlng: L.LatLng) {
+    // Verwijder bestaande marker als deze bestaat
+    if (this.currentMarker) {
+      this.map.removeLayer(this.currentMarker);
+    }
+
+    // Maak een nieuwe marker aan
+    this.currentMarker = L.marker(latlng).addTo(this.map);
+
+    // Reverse the latlng om het adres te vinden
+    await this.reverseGeocode(latlng);
+  }
+
+  private async reverseGeocode(latlng: L.LatLng) {
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latlng.lat}&lon=${latlng.lng}&zoom=18&addressdetails=1`
+      );
+      const data = await response.json();
+
+      if (data && data.display_name) {
+        this.addressSelected.emit(data.display_name);
+      }
+    } catch (error) {
+      console.error('Error reverse geocoding:', error);
     }
   }
 }
