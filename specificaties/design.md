@@ -236,7 +236,7 @@ Authenticatie via JWT, met CORS restricties op `https://*.gemeente-groningen.nl`
 ### Lijsten
 
 * **AfvalType:** PLASTIC, GLAS, PAPIER, ORGANISCH, ELECTRONICA, TEXTIEL, GEVAARLIJK, ONBEKEND
-* **MeldingStatus:** NIEUW, IN\_BEHANDELING, GEPLAND, OPGEHAALD, AFGESLOTEN
+* **MeldingStatus:** NIEUW, IN\_BEHANDELING, GEPLAND, OPGEHAALD
 * **UserRole:** ADMIN, OPERATOR, READONLY
 
 ---
