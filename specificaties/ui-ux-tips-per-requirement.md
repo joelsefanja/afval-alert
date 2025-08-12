@@ -10,8 +10,7 @@ Deze gids geeft UI/UX tips voor de Afval Alert app, gebaseerd op de requirements
 *   AI Afvaldetectie: Toon resultaat snel (binnen 5s).
     *   Willen we deze feedback / categorieën ook aan gebruiker tonen? 
 *   Foto Compressie: Automatisch voor grote foto's.
-*   `mat-select`: Makkelijk afvaltype kiezen bij twijfel AI.
-*   Bestandsselectie: Alternatief als camera niet werkt.
+*   Optioneel voor later -> Bestandsselectie: Alternatief als camera niet werkt.
 
 **R2: Locatie Nauwkeurig Bepalen**
 
