@@ -21,11 +21,8 @@
   3. Als ik buiten de gemeente ben, krijg ik een waarschuwing.
   4. Ik zie het adres van de locatie.
 
-- **R3** – Ik wil op de foto laten zien waar het afval ligt.
-  1. Ik kan een cirkel tekenen rond het afval.
-  2. De cirkel wordt automatisch groot genoeg gemaakt.
-  3. Ik kan meerdere cirkels tekenen als er meer afval is.
-  4. Ik kan de cirkels verplaatsen of groter maken.
+
+- **R3** – DEPRICATED - Ik wil op de foto laten zien waar het afval ligt.
 
 - **R4** – Ik wil mijn contactgegevens invullen.
   1. Ik moet mijn naam en email invullen voor updates.
@@ -40,6 +37,7 @@
   3. Als alles klopt, wordt mijn melding verstuurd.
   4. Als het versturen lukt, krijg ik een bevestiging.
   5. Als het versturen niet lukt, krijg ik een foutmelding.
+     - Mogelijk afbeelding bufferen en later uploaden naar backend.   
 
 ## Wat gemeente medewerkers willen
 
@@ -58,8 +56,6 @@
   1. Als ik op een melding klik, zie ik alle details.
   2. Ik zie een tijdlijn met alle updates van de melding.
   3. Ik kan foto's vergroten en inzoomen.
-  4. Ik zie cirkels op foto's die het afval markeren.
-  5. Als er contactgegevens zijn, kan ik de melder contacteren.
 
 - **R9** – Ik wil de status van meldingen kunnen updaten.
   1. Als ik de status update, wordt dit opgeslagen.
@@ -68,12 +64,9 @@
   4. Als een melding als "opgehaald" wordt gemarkeerd, is hij klaar.
   5. Als er een fout optreedt, blijft de oude status behouden.
 
+# Voor de backend
 - **R10** – Ik wil dat de app automatisch herkent wat voor afval het is.
-  1. Als een foto wordt geüpload, wordt hij naar de AI-service gestuurd.
-  2. De app toont het herkende afvaltype.
-  3. Als de app het niet zeker weet, kan de gebruiker het zelf kiezen.
-  4. Als de AI-service niet werkt, kan de gebruiker het zelf kiezen.
-  5. De gebruiker kan het herkende type altijd aanpassen.
+  1. De app toont het herkende afvaltype.
 
 ## Niet-functionele eisen
 
@@ -106,14 +99,12 @@
 - **R14** – Ik wil de app op elk apparaat kunnen gebruiken.
   1. De app past zich automatisch aan op mobiel.
   2. De app reageert natuurlijk op aanraking.
-  3. De app maakt goed gebruik van grotere schermen.
-  4. De app werkt goed met een toetsenbord.
-  5. De app past zich automatisch aan als ik het scherm draai.
-
+  3. Optioneel - De app maakt goed gebruik van grotere schermen.
+  4. De app werkt goed met een toetsenbord. Dat toetsten bord niet in de weg van de UI zit.
+  
 ### Betrouwbaarheid
 
 - **R15** – Ik wil dat de app altijd werkt.
   1. Als een onderdeel niet werkt, blijft de rest van de app werken.
   2. Als de database niet werkt, krijg ik een duidelijke melding.
   3. Als het uploaden van een foto niet lukt, probeert de app het opnieuw.
-  4. Als een externe service niet werkt, gebruikt de app een alternatief.
