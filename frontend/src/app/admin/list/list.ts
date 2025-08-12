@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ViewChild, output } from '@angular/core';
 import {MatSort, MatSortModule} from '@angular/material/sort';
 import {MatTableModule, MatTableDataSource} from '@angular/material/table';
 import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
@@ -6,6 +6,7 @@ import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import { ListNotification } from '../listnotification.interface';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
+import { empty } from 'rxjs';
 
 
 const Test_Notification_Data: ListNotification[] = [
@@ -30,6 +31,7 @@ export class ListComponent implements AfterViewInit {
   displayedColumns: string[] = ['location', 'type', 'status', 'date'];
   dataSource = new MatTableDataSource(Test_Notification_Data);
 
+  clicked = output<Number>();
 
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -54,7 +56,8 @@ export class ListComponent implements AfterViewInit {
   }
 
   goToDetails(item: ListNotification) {
-  this.router.navigate(['details', item.id], { relativeTo: this.route });
+    this.clicked.emit(item.id);
+    this.router.navigate(['details', item.id], { relativeTo: this.route });
 }
 
 }
