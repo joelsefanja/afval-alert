@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import {MatIconRegistry, MatIconModule} from '@angular/material/icon';
+import { Kaart } from "./kaart/kaart";
 
 const CURRENT_LOCATION_ICON =
   `
@@ -23,7 +24,7 @@ const SEARCH_ICON =
 
 @Component({
   selector: 'app-locatie-picker',
-  imports: [ FormsModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule ],
+  imports: [FormsModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, Kaart],
   templateUrl: './locatie-picker.html',
   styleUrl: './locatie-picker.scss'
 })
