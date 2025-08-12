@@ -1,7 +1,12 @@
 <ul>
   @for (element of tijdlijnElementen(); track element.date) {
-    <mat-card>
-      {{element.status}} - {{element.note}} - {{element.date}}
+    <mat-card appearance="outlined">
+      <mat-card-header>
+        <mat-card-title>{{element.status}}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>{{element.note}}</mat-card-content>
+      <mat-card-footer>{{element.date}}</mat-card-footer>
     </mat-card>
+    <br/>
   }
 </ul>

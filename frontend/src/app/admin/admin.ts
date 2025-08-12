@@ -10,6 +10,7 @@ import { DetailComponent } from './detail/detail';
   templateUrl: './admin.html',
   styleUrls: ['./admin.scss']
 })
+
 export class AdminComponent {
   selected = signal<any>(null);
 
