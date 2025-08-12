@@ -36,7 +36,6 @@ export class Kaart implements AfterViewInit {
     this.setupMapClickHandler();
   }
 
-
   private initMap() {
     const baseMapURl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
     this.map = L.map('map');
@@ -65,5 +64,31 @@ export class Kaart implements AfterViewInit {
 
     // Create new marker at clicked location
     this.currentMarker = L.marker(latlng).addTo(this.map);
+  }
+
+  getCurrentLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          const latlng = L.latLng(lat, lng);
+
+          this.addMarkerAtLocation(latlng);
+          this.map.setView(latlng, 20);
+        },
+        (error) => {
+          console.error('Error getting current location:', error);
+          alert('Kon huidige locatie niet ophalen. Zorg ervoor dat locatievoorzieningen zijn ingeschakeld.');
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 5000,
+          maximumAge: 6000
+        }
+      );
+    } else {
+      alert('Geolocatie wordt niet ondersteund door deze browser.');
+    }
   }
 }
