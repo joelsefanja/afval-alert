@@ -1,8 +1,11 @@
+@if (selected() != null) {
 <div class="split-container">
   <div class="split-left">
     <app-list></app-list>
   </div>
   <div class="split-right">
-    <router-outlet></router-outlet>
+    <app-detail (clicked)="onCloseDetail()"></app-detail>
   </div>
-</div>
+</div>} @else {
+  <app-list (clicked)="onSelected($event)"></app-list>
+}
