@@ -1,0 +1,88 @@
+<ui-card class="w-full max-w-lg mx-auto">
+  <ui-card-header>
+    <h2 class="text-xl font-semibold">Controleer uw melding</h2>
+    <p class="text-gray-500">Controleer de gegevens voordat u de melding verstuurt</p>
+  </ui-card-header>
+  
+  <ui-card-content class="p-4 sm:p-6">
+    <div class="space-y-6">
+      <!-- Foto preview -->
+      <div>
+        <h3 class="text-md font-medium mb-2">Foto</h3>
+        <div class="w-full aspect-w-16 aspect-h-9 bg-gray-100 rounded-md overflow-hidden">
+          @if (fotoUrl()) {
+            <img [src]="fotoUrl()" alt="Afval foto" class="w-full h-full object-cover" />
+          } @else {
+            <div class="flex items-center justify-center h-full text-gray-400">
+              <span class="material-icons mr-2">no_photography</span>
+              Geen foto
+            </div>
+          }
+        </div>
+      </div>
+      
+      <!-- Locatie preview -->
+      <div>
+        <h3 class="text-md font-medium mb-2">Locatie</h3>
+        <div class="p-3 bg-gray-50 rounded-md">
+          <div class="flex items-start">
+            <span class="material-icons mr-2 text-gray-500">location_on</span>
+            <p>{{ locatieAdres() }}</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Contact preview -->
+      <div>
+        <h3 class="text-md font-medium mb-2">Contactgegevens</h3>
+        <div class="p-3 bg-gray-50 rounded-md">
+          @if (contactInfo().naam || contactInfo().email) {
+            <dl class="space-y-1">
+              @if (contactInfo().naam) {
+                <div class="flex">
+                  <dt class="w-24 text-gray-500">Naam:</dt>
+                  <dd>{{ contactInfo().naam }}</dd>
+                </div>
+              }
+              @if (contactInfo().email) {
+                <div class="flex">
+                  <dt class="w-24 text-gray-500">E-mail:</dt>
+                  <dd>{{ contactInfo().email }}</dd>
+                </div>
+              }
+            </dl>
+          } @else {
+            <p class="text-gray-500">Geen contactgegevens opgegeven</p>
+          }
+        </div>
+      </div>
+    </div>
+  </ui-card-content>
+  
+  <ui-card-footer class="p-4 sm:p-6">
+    <div class="flex justify-between items-center mb-4">
+      @if (heeftVorigeStap()) {
+        <button (click)="onTerug()" class="text-gray-500 underline hover:text-gray-700">
+          Terug
+        </button>
+      }
+    </div>
+    <div class="flex flex-col sm:flex-row justify-between gap-4">
+      <ui-button 
+        (onClick)="onAanpassen()" 
+        variant="outline"
+        class="w-full sm:w-auto"
+      >
+        Aanpassen
+      </ui-button>
+      
+      <ui-button 
+        (onClick)="onVersturen()" 
+        [disabled]="isVersturenDisabled()"
+        class="w-full sm:w-auto"
+      >
+        Versturen
+      </ui-button>
+    </div>
+  </ui-card-footer>
+</ui-card>

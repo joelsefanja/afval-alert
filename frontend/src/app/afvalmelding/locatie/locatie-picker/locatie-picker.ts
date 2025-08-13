@@ -1,4 +1,4 @@
-import { Component, inject, ViewChild } from '@angular/core';
+import { Component, inject, ViewChild, output } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -27,6 +27,8 @@ export class LocatiePicker {
   private sanitizer = inject(DomSanitizer);
   @ViewChild(Kaart) kaartComponent!: Kaart;
 
+  locatieGeselecteerd = output<{latitude: number, longitude: number}>();
+
   constructor() {
     this.iconRegistry.addSvgIconLiteral(
       'search',
@@ -36,5 +38,9 @@ export class LocatiePicker {
 
   onGetCurrentLocation() {
     this.kaartComponent.getCurrentLocation();
+  }
+
+  onLocatieGeselecteerd(locatie: {latitude: number, longitude: number}) {
+    this.locatieGeselecteerd.emit(locatie);
   }
 }

@@ -1,3 +1,3 @@
 export const environment = {
-  GEMINI_API_KEY: 'YOUR_GEMINI_API_KEY_HERE' // Vervang dit met je eigen Gemini API key
+  GEMINI_API_KEY: 'AIzaSyCqI9AsDznUdE5OKRhdhrHKbxdUD8YlJfc'
 };

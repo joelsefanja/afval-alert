@@ -1,11 +1,16 @@
 import { Routes } from '@angular/router';
-import { AppUsersComponent } from './app-users/app-users';
 import { AdminComponent } from './admin/admin';
-import { AfvalDetectieComponent } from './app-users/afval-detectie/components/afval-detectie/afval-detectie';
+
+// Nieuwe AfvalMeldenProcedureComponent met Shadcn UI en signals
+import { AfvalMeldenProcedureComponent } from './app-users/features/afval-melden';
 
 export const routes: Routes = [
-  { path: '', component: AppUsersComponent },
   { path: 'admin', component: AdminComponent },
-  { path: 'afval-detectie', component: AfvalDetectieComponent },
-  { path: '**', redirectTo: '' }
+  
+  // Backwards compatibility
+  { path: 'afval-detectie', component: AfvalMeldenProcedureComponent },
+  
+  // Direct naar AfvalMeldenProcedureComponent als root
+  { path: '', component: AfvalMeldenProcedureComponent, pathMatch: 'full' },
+  { path: '**', component: AfvalMeldenProcedureComponent }
 ];

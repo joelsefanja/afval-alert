@@ -9,7 +9,10 @@
     "paths": {
       "@environments/*": ["environments/*"],
       "@app/*": ["src/app/*"],
-      "@shared/*": ["src/app/shared/*"]
+      "@shared/*": ["src/app/shared/*"],
+      "@models/*": ["src/app/models/*"],
+      "@models": ["src/app/models"],
+      "@autoimports": ["src/app/shared/auto-imports"]
     }
   },
   "include": [

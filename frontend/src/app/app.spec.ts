@@ -1,11 +1,25 @@
 import { TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
+import { Location } from '@angular/common';
+import { Component } from '@angular/core';
 import { App } from './app';
 
+@Component({
+  template: '<div>Test Component</div>'
+})
+class TestComponent { }
+
 describe('App', () => {
+  let router: Router;
+  let location: Location;
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],
     }).compileComponents();
+
+    router = TestBed.inject(Router);
+    location = TestBed.inject(Location);
   });
 
   it('should create the app', () => {
@@ -14,10 +28,26 @@ describe('App', () => {
     expect(app).toBeTruthy();
   });
 
-  it('should render title', () => {
+  it('should render main container', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, afval-alert');
+    expect(compiled.querySelector('.min-h-screen')).toBeTruthy();
+  });
+
+  it('should have router outlet', () => {
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('router-outlet')).toBeTruthy();
+  });
+
+  it('should have responsive container classes', () => {
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    const container = compiled.querySelector('.container');
+    expect(container).toBeTruthy();
+    expect(container?.className).toContain('mx-auto');
   });
 });

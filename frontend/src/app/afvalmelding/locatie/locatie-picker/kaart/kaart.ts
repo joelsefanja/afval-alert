@@ -1,4 +1,4 @@
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, AfterViewInit, output } from '@angular/core';
 import * as L from 'leaflet';
 
 const iconRetinaUrl = 'assets/leaflet/marker-icon-2x.png';
@@ -29,6 +29,8 @@ export class Kaart implements AfterViewInit {
   markers: L.Marker[] = [
     L.marker([53.2193835, 6.5665017]), // Groningen
   ];
+
+  locatieGeselecteerd = output<{latitude: number, longitude: number}>();
 
   ngAfterViewInit() {
     this.initMap();
@@ -64,6 +66,12 @@ export class Kaart implements AfterViewInit {
 
     // Create new marker at clicked location
     this.currentMarker = L.marker(latlng).addTo(this.map);
+    
+    // Emit the selected location
+    this.locatieGeselecteerd.emit({
+      latitude: latlng.lat,
+      longitude: latlng.lng
+    });
   }
 
   getCurrentLocation() {

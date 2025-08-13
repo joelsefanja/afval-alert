@@ -1,0 +1,58 @@
+<ui-card class="w-full max-w-lg mx-auto">
+  <ui-card-header>
+    <h2 class="text-xl font-semibold">Foto van het afval</h2>
+    <p class="text-gray-500">Upload een foto van het afval dat u wilt melden</p>
+  </ui-card-header>
+  
+  <ui-card-content class="p-4 sm:p-6">
+    @if (fotoUrl()) {
+      <div class="relative w-full aspect-w-16 aspect-h-9 bg-gray-100 rounded-md overflow-hidden motion-preset-fade">
+        <img [src]="fotoUrl()" alt="Afval foto" class="w-full h-full object-cover" />
+        
+        <button 
+          (click)="onVerwijderFoto()"
+          class="absolute top-2 right-2 bg-white rounded-full p-1 shadow-md"
+          aria-label="Verwijder foto"
+        >
+          <span class="material-icons text-red-500">delete</span>
+        </button>
+      </div>
+    } @else {
+      <div class="flex flex-col items-center justify-center p-6 border-2 border-dashed border-gray-300 rounded-md bg-gray-50">
+        <span class="material-icons text-4xl text-gray-400 mb-2">photo_camera</span>
+        <p class="text-gray-500 text-center mb-4">Nog geen foto geselecteerd</p>
+        
+        @if (errorMessage()) {
+          <div class="w-full p-3 mb-4 bg-red-50 text-red-600 rounded-md motion-preset-shake">
+            {{ errorMessage() }}
+          </div>
+        }
+        
+        <div class="flex flex-col sm:flex-row gap-4 w-full">
+          <ui-button (onClick)="onMaakFoto()" variant="outline" class="w-full">
+            <span class="material-icons mr-2">photo_camera</span>
+            Maak foto
+          </ui-button>
+          
+          <ui-button (onClick)="onKiesFoto()" variant="outline" class="w-full">
+            <span class="material-icons mr-2">photo_library</span>
+            Kies uit galerij
+          </ui-button>
+        </div>
+      </div>
+    }
+  </ui-card-content>
+  
+  @if (fotoUrl()) {
+    <ui-card-footer class="p-4 sm:p-6 flex justify-between items-center">
+      @if (heeftVorigeStap()) {
+        <button (click)="onTerug()" class="text-gray-500 underline hover:text-gray-700">
+          Terug
+        </button>
+      }
+      <ui-button (onClick)="onVolgende()" [disabled]="!fotoUrl()" [class]="heeftVorigeStap() ? 'ml-auto' : 'w-full'">
+        Volgende
+      </ui-button>
+    </ui-card-footer>
+  }
+</ui-card>

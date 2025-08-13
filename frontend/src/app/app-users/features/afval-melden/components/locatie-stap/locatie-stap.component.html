@@ -1,0 +1,57 @@
+<ui-card class="w-full max-w-lg mx-auto">
+  <ui-card-header>
+    <h2 class="text-xl font-semibold">Locatie van het afval</h2>
+    <p class="text-gray-500">Selecteer de locatie waar het afval zich bevindt</p>
+  </ui-card-header>
+  
+  <ui-card-content class="p-4 sm:p-6">
+    <div class="w-full bg-gray-100 rounded-md overflow-hidden mb-4">
+      <app-locatie-picker (locatieGeselecteerd)="onLocatieGeselecteerd($event)"></app-locatie-picker>
+    </div>
+    
+    @if (locatieAdres()) {
+      <div class="p-3 bg-green-50 text-green-700 rounded-md mb-4 motion-preset-fade">
+        <div class="flex items-start">
+          <span class="material-icons mr-2 text-green-500">location_on</span>
+          <div>
+            <p class="font-medium">Geselecteerde locatie:</p>
+            <p>{{ locatieAdres() }}</p>
+          </div>
+        </div>
+      </div>
+    }
+    
+    @if (locatieBuitenGroningen()) {
+      <div class="p-3 bg-amber-50 text-amber-700 rounded-md mb-4 motion-preset-shake">
+        <div class="flex items-start">
+          <span class="material-icons mr-2 text-amber-500">warning</span>
+          <div>
+            <p class="font-medium">Let op:</p>
+            <p>De geselecteerde locatie ligt buiten de gemeente Groningen. Meldingen kunnen alleen binnen de gemeente Groningen worden gedaan.</p>
+          </div>
+        </div>
+      </div>
+    }
+    
+    @if (errorMessage()) {
+      <div class="p-3 bg-red-50 text-red-600 rounded-md mb-4 motion-preset-shake">
+        {{ errorMessage() }}
+      </div>
+    }
+  </ui-card-content>
+  
+  <ui-card-footer class="p-4 sm:p-6 flex justify-between items-center">
+    @if (heeftVorigeStap()) {
+      <button (click)="onTerug()" class="text-gray-500 underline hover:text-gray-700">
+        Terug
+      </button>
+    }
+    <ui-button 
+      (onClick)="onVolgende()" 
+      [disabled]="!locatieAdres() || locatieBuitenGroningen() || !!errorMessage()"
+      [class]="heeftVorigeStap() ? 'ml-auto' : 'w-full'"
+    >
+      Volgende
+    </ui-button>
+  </ui-card-footer>
+</ui-card>

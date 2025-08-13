@@ -1,0 +1,48 @@
+<ui-card class="w-full max-w-lg mx-auto">
+  <ui-card-header>
+    <h2 class="text-xl font-semibold">Uw contactgegevens</h2>
+    <p class="text-gray-500">Optioneel: laat uw gegevens achter als u op de hoogte gehouden wilt worden</p>
+  </ui-card-header>
+  
+  <ui-card-content class="p-4 sm:p-6">
+    <form [formGroup]="contactForm" class="space-y-4">
+      <div>
+        <label for="naam" class="block text-sm font-medium text-gray-700 mb-1">Naam</label>
+        <ui-input 
+          id="naam" 
+          formControlName="naam" 
+          placeholder="Uw naam (optioneel)"
+        ></ui-input>
+      </div>
+      
+      <div>
+        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">E-mailadres</label>
+        <ui-input 
+          id="email" 
+          formControlName="email" 
+          placeholder="Uw e-mailadres (optioneel)"
+          [error]="!!emailError()"
+        ></ui-input>
+        
+        @if (emailError()) {
+          <p class="mt-1 text-sm text-red-600 motion-preset-shake">{{ emailError() }}</p>
+        }
+      </div>
+    </form>
+  </ui-card-content>
+  
+  <ui-card-footer class="p-4 sm:p-6 flex justify-between items-center">
+    @if (heeftVorigeStap()) {
+      <button (click)="onTerug()" class="text-gray-500 underline hover:text-gray-700">
+        Terug
+      </button>
+    }
+    <ui-button 
+      (onClick)="onVolgende()" 
+      [disabled]="contactForm.invalid"
+      [class]="heeftVorigeStap() ? 'ml-auto' : 'w-full'"
+    >
+      Volgende
+    </ui-button>
+  </ui-card-footer>
+</ui-card>

@@ -5,8 +5,15 @@
   "compilerOptions": {
     "outDir": "./out-tsc/spec",
     "types": [
-      "jasmine"
-    ]
+      "jest"
+    ],
+    "baseUrl": "./",
+    "paths": {
+      "@environments/*": ["environments/*"],
+      "@app/*": ["src/app/*"],
+      "@shared/*": ["src/app/shared/*"],
+      "@autoimports": ["src/app/shared/auto-imports"]
+    }
   },
   "include": [
     "src/**/*.ts"
