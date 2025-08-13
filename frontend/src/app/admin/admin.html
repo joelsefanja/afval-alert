@@ -1,7 +1,7 @@
 @if (selected() != null) {
 <div class="split-container">
   <div class="split-left">
-    <app-list></app-list>
+    <app-list (clicked)="onSelected($event)"></app-list>
   </div>
   <div class="split-right">
     <app-detail (clicked)="onCloseDetail()"></app-detail>
