@@ -3,11 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonComponent, CardComponent, CardContentComponent, CardFooterComponent, CardHeaderComponent, InputComponent } from '@app/app-users/shared/components/shadcn';
 import { MeldingState } from '../../services/melding-state.service';
+import { Contact } from '@models/contact';
 
-export interface ContactInfo {
-  naam?: string;
-  email?: string;
-}
+export type ContactInfo = Partial<Contact>;
 
 @Component({
   selector: 'app-contact-stap',

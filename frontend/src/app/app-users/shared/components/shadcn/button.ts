@@ -1,6 +1,6 @@
 import { Component, input, output, computed } from '@angular/core';
 import { cva, VariantProps } from 'class-variance-authority';
-import { cn } from '@app/app-users/shared/utils/cn';
+import { cn } from '../../utils/cn';
 
 const buttonVariants = cva(
   'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none motion-preset-pulse hover:motion-preset-bounce',

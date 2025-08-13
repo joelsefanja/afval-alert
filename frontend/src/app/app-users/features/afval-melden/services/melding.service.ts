@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { delay } from 'rxjs/operators';
-import { ContactInfo } from '../components/contact-stap/contact-stap.component';
+import { Contact } from '@models/contact';
 
 export interface AfvalMelding {
   fotoUrl: string;
   locatieAdres: string;
   locatieCoordinaten: { lat: number; lng: number };
-  contactInfo: ContactInfo;
+  contactInfo: Partial<Contact>;
 }
 
 @Injectable({

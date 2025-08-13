@@ -4,7 +4,8 @@
       "Bash(npx playwright:*)",
       "Bash(mkdir:*)",
       "Bash(npm run test:e2e:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []
