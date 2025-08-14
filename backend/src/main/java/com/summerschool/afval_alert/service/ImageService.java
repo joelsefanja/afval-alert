@@ -20,4 +20,9 @@ public class ImageService {
         image.setData(file.getBytes());
         return imageRepository.save(image);
     }
+
+    public Image getImage(Long id) {
+        return imageRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Image not found"));
+    }
 }

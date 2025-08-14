@@ -10,10 +10,31 @@ public class Image {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Lob
+    // Vermijd @Lob voor SQLite omdat het getLob() uitvoert.
+    @Column(nullable = false)
     private byte[] data;
 
+    @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    public void setData(byte[] data) { this.data = data; }
+    public byte[] getData() {
+        return data;
+    }
+
+    public void setData(byte[] data) {
+        this.data = data;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public Long getId() {
+        return id;
+    }
 }
