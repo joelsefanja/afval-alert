@@ -1,4 +1,3 @@
-// Export alle stap componenten
 export * from './start-stap/start-stap.component';
 export * from './foto-stap/foto-stap.component';
 export * from './locatie-stap/locatie-stap.component';

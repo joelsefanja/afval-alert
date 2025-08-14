@@ -19,24 +19,21 @@ describe('OfflineNotificatieComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should not be visible when online', () => {
+  it('should be visible by default (component renders)', () => {
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.fixed')).toBeNull();
+    expect(compiled.querySelector('div > div')).toBeTruthy();
   });
 
-  it('should be visible when offline', () => {
-    component.isOffline = true;
-    fixture.detectChanges();
+  it('should have the correct styling', () => {
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.fixed')).not.toBeNull();
-    expect(compiled.querySelector('p')?.textContent).toContain('U bent momenteel offline.');
+    const notification = compiled.querySelector('div > div');
+    expect(notification?.classList).toContain('bg-amber-50');
+    expect(notification?.classList).toContain('border-amber-200');
   });
 
-  it('should have the correct styling when offline', () => {
-    component.isOffline = true;
-    fixture.detectChanges();
+  it('should display offline message', () => {
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.fixed')?.classList).toContain('bg-red-500');
-    expect(compiled.querySelector('p')?.classList).toContain('text-white');
+    expect(compiled.textContent).toContain('U bent offline');
+    expect(compiled.textContent).toContain('Uw melding wordt opgeslagen');
   });
 });

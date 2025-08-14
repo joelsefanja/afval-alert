@@ -1,15 +1,97 @@
-<div class="text-center p-6">
-  <div class="w-24 h-24 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-6">
-    <svg class="w-16 h-16 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+<div class="max-w-2xl mx-auto p-4 space-y-8 motion-preset-fade-in">
+  <!-- Success hero -->
+  <div class="text-center space-y-6">
+    <div class="w-24 h-24 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mx-auto motion-preset-scale-in">
+      <i class="pi pi-check text-green-600 dark:text-green-400 text-4xl"></i>
+    </div>
+    
+    <div class="space-y-4">
+      <h1 class="text-3xl lg:text-4xl font-bold text-surface-900 dark:text-surface-0">
+        Bedankt voor je melding!
+      </h1>
+      <p class="text-lg text-surface-600 dark:text-surface-300 max-w-md mx-auto">
+        Je melding is succesvol ontvangen en wordt zo snel mogelijk behandeld door gemeente Groningen.
+      </p>
+    </div>
   </div>
-  <h2 class="text-2xl font-bold text-gray-800 mb-2">Melding succesvol!</h2>
-  <p class="text-gray-600 mb-6">Bedankt voor uw bijdrage aan een schonere gemeente.</p>
-  <div class="bg-gray-50 p-4 rounded-lg">
-    <p class="text-sm text-gray-700">De gemeente Groningen zal uw melding zo snel mogelijk in behandeling nemen. Als u uw contactgegevens heeft achtergelaten, houden we u op de hoogte van de voortgang.</p>
+
+  <!-- Informatie kaarten -->
+  <div class="space-y-4">
+    <!-- Wat gebeurt er nu -->
+    <p-card class="bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
+      <div class="flex items-start gap-3">
+        <i class="pi pi-info-circle text-blue-600 dark:text-blue-400 text-xl mt-0.5"></i>
+        <div>
+          <h3 class="font-semibold text-blue-800 dark:text-blue-200 mb-2">
+            Wat gebeurt er nu?
+          </h3>
+          <p class="text-sm text-blue-700 dark:text-blue-300 m-0">
+            De gemeente Groningen heeft je melding ontvangen en zal het afval zo snel mogelijk ophalen. 
+            Dit gebeurt meestal binnen 3-7 werkdagen.
+          </p>
+        </div>
+      </div>
+    </p-card>
+
+    <!-- Contact informatie (alleen als email is ingevuld) -->
+    @if (state.contactInfo().email) {
+      <p-card class="bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800">
+        <div class="flex items-start gap-3">
+          <i class="pi pi-envelope text-green-600 dark:text-green-400 text-xl mt-0.5"></i>
+          <div>
+            <h3 class="font-semibold text-green-800 dark:text-green-200 mb-2">
+              We houden je op de hoogte
+            </h3>
+            <p class="text-sm text-green-700 dark:text-green-300 m-0">
+              Je ontvangt updates over de status van je melding op {{ state.contactInfo().email }}.
+            </p>
+          </div>
+        </div>
+      </p-card>
+    }
+
+    <!-- Milieu impact -->
+    <p-card class="bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800">
+      <div class="flex items-start gap-3">
+        <i class="pi pi-heart text-emerald-600 dark:text-emerald-400 text-xl mt-0.5"></i>
+        <div>
+          <h3 class="font-semibold text-emerald-800 dark:text-emerald-200 mb-2">
+            Goed voor het milieu
+          </h3>
+          <p class="text-sm text-emerald-700 dark:text-emerald-300 m-0">
+            Door zwerfafval te melden help je mee aan een schonere stad en een beter milieu. 
+            Bedankt voor je bijdrage! 🌱
+          </p>
+        </div>
+      </div>
+    </p-card>
   </div>
-  <div class="mt-8">
-    <button (click)="onMeldingAfgerond()" class="w-full bg-primary text-white py-3 px-4 rounded-lg hover:bg-primary-dark transition-colors duration-300">
-      Nieuwe melding maken
-    </button>
+
+  <!-- Acties -->
+  <div class="space-y-3 pt-4">
+    <p-button 
+      label="Nieuwe melding maken" 
+      icon="pi pi-plus"
+      size="large"
+      (onClick)="nieuweMelding()"
+      class="w-full"
+      [raised]="true"
+    />
+    
+    <p-button 
+      label="Sluiten" 
+      variant="outlined"
+      size="large"
+      (onClick)="sluitApp()"
+      class="w-full"
+    />
+  </div>
+
+  <!-- Footer info -->
+  <div class="text-center pt-4">
+    <p class="text-xs text-surface-500 dark:text-surface-400">
+      Heb je vragen over je melding? Neem contact op met gemeente Groningen via 
+      <a href="tel:14050" class="text-primary-600 dark:text-primary-400 hover:underline">14 050</a>
+    </p>
   </div>
 </div>

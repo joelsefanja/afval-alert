@@ -12,7 +12,8 @@
       "@environments/*": ["environments/*"],
       "@app/*": ["src/app/*"],
       "@shared/*": ["src/app/shared/*"],
-      "@autoimports": ["src/app/shared/auto-imports"]
+      "@models/*": ["src/app/models/*"],
+      "@models": ["src/app/models"]
     }
   },
   "include": [

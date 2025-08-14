@@ -1,63 +1,39 @@
-import { Component, inject, input, output } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ButtonComponent, CardComponent, CardContentComponent, CardFooterComponent, CardHeaderComponent } from '@app/app-users/shared/components/shadcn';
-import { ContactInfo } from '../contact-stap/contact-stap.component';
-import { MeldingState } from '../../services/melding-state.service';
-import { MeldingVerzendService } from '../../services/melding-verzend.service';
+import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
+import { DividerModule } from 'primeng/divider';
+import { PanelModule } from 'primeng/panel';
+import { TooltipModule } from 'primeng/tooltip';
+import { MeldingsProcedureStatus } from '../../services/melding/melding-state.service';
 
 @Component({
   selector: 'app-controle-stap',
   standalone: true,
-  imports: [
-    CommonModule,
-    ButtonComponent,
-    CardComponent,
-    CardHeaderComponent,
-    CardContentComponent,
-    CardFooterComponent
-  ],
-  templateUrl: './controle-stap.component.html'
+  imports: [CommonModule, ButtonModule, CardModule, DividerModule, PanelModule, TooltipModule],
+  templateUrl: './controle-stap.component.html',
+  styleUrls: ['./controle-stap.component.scss']
 })
 export class ControleStapComponent {
-  // Services
-  private stateService = inject(MeldingState);
-  private meldingVerzendService = inject(MeldingVerzendService);
-  
-  // State
-  fotoUrl = this.stateService.fotoUrl;
-  locatieAdres = this.stateService.locatieAdres;
-  contactInfo = this.stateService.contactInfo;
-  heeftVorigeStap = this.stateService.heeftVorigeStap;
-  
-  
-  /**
-   * Controleert of de versturen knop uitgeschakeld moet worden
-   */
-  isVersturenDisabled(): boolean {
-    return !this.fotoUrl() || !this.locatieAdres() || this.stateService.isVerzenden();
+  protected state = inject(MeldingsProcedureStatus);
+
+  terug() { 
+    this.state.gaTerugNaarVorige(); 
   }
   
-  /**
-   * Handler voor het aanpassen van de melding
-   */
-  onAanpassen(): void {
-    this.stateService.gaTerugNaarStart();
-  }
-  
-  /**
-   * Handler voor het versturen van de melding
-   */
-  onVersturen(): void {
-    this.meldingVerzendService.verzendMelding().subscribe({
-      next: () => this.stateService.gaNaarVolgende(),
-      error: (error: Error) => this.meldingVerzendService.verwerkFout(error)
-    });
+  verzendMelding() {
+    this.state.setHuidigeStap(6); // Ga naar verzend stap
   }
 
-  /**
-   * Handler voor terug naar vorige stap
-   */
-  onTerug(): void {
-    this.stateService.gaTerugNaarVorige();
+  wijzigFoto() {
+    this.state.setHuidigeStap(1); // Terug naar foto stap
+  }
+
+  wijzigLocatie() {
+    this.state.setHuidigeStap(3); // Terug naar locatie stap
+  }
+
+  wijzigContact() {
+    this.state.setHuidigeStap(4); // Terug naar contact stap
   }
 }

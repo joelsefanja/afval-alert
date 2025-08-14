@@ -1,88 +1,158 @@
-<ui-card class="w-full max-w-lg mx-auto">
-  <ui-card-header>
-    <h2 class="text-xl font-semibold">Controleer uw melding</h2>
-    <p class="text-gray-500">Controleer de gegevens voordat u de melding verstuurt</p>
-  </ui-card-header>
+<div class="max-w-2xl mx-auto p-4 space-y-6 motion-preset-fade-in">
+  <!-- Terug knop -->
+  <p-button 
+    icon="pi pi-arrow-left" 
+    label="Terug" 
+    variant="text" 
+    size="small"
+    (onClick)="terug()"
+    class="!p-0"
+  />
   
-  <ui-card-content class="p-4 sm:p-6">
-    <div class="space-y-6">
-      <!-- Foto preview -->
-      <div>
-        <h3 class="text-md font-medium mb-2">Foto</h3>
-        <div class="w-full aspect-w-16 aspect-h-9 bg-gray-100 rounded-md overflow-hidden">
-          @if (fotoUrl()) {
-            <img [src]="fotoUrl()" alt="Afval foto" class="w-full h-full object-cover" />
-          } @else {
-            <div class="flex items-center justify-center h-full text-gray-400">
-              <span class="material-icons mr-2">no_photography</span>
-              Geen foto
+  <!-- Header -->
+  <div class="text-center space-y-4">
+    <h1 class="text-2xl lg:text-3xl font-bold text-surface-900 dark:text-surface-0">
+      Controleer je melding
+    </h1>
+    <p class="text-surface-600 dark:text-surface-300">
+      Controleer of alle gegevens correct zijn voordat je de melding verstuurt.
+    </p>
+  </div>
+
+  <!-- Foto sectie -->
+  <p-panel header="📷 Foto" [toggleable]="true" [collapsed]="false">
+    <div class="flex items-start justify-between">
+      <div class="flex-1">
+        <div class="flex items-start gap-4">
+          <img 
+            [src]="state.fotoUrl()" 
+            alt="Gemaakte foto"
+            class="w-20 h-20 object-cover rounded-lg border"
+          />
+          <div class="flex-1">
+            <p class="text-sm text-surface-600 dark:text-surface-300 mb-2">
+              Herkende afvaltypes:
+            </p>
+            <div class="flex flex-wrap gap-2">
+              @for (type of state.afvalTypes(); track type.id) {
+                <span 
+                  class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium"
+                  [style.background-color]="type.kleur + '20'"
+                  [style.color]="type.kleur"
+                >
+                  <i [class]="'pi ' + type.icoon"></i>
+                  {{ type.naam }}
+                </span>
+              }
             </div>
-          }
-        </div>
-      </div>
-      
-      <!-- Locatie preview -->
-      <div>
-        <h3 class="text-md font-medium mb-2">Locatie</h3>
-        <div class="p-3 bg-gray-50 rounded-md">
-          <div class="flex items-start">
-            <span class="material-icons mr-2 text-gray-500">location_on</span>
-            <p>{{ locatieAdres() }}</p>
           </div>
         </div>
       </div>
-      
-      <!-- Contact preview -->
-      <div>
-        <h3 class="text-md font-medium mb-2">Contactgegevens</h3>
-        <div class="p-3 bg-gray-50 rounded-md">
-          @if (contactInfo().naam || contactInfo().email) {
-            <dl class="space-y-1">
-              @if (contactInfo().naam) {
-                <div class="flex">
-                  <dt class="w-24 text-gray-500">Naam:</dt>
-                  <dd>{{ contactInfo().naam }}</dd>
-                </div>
-              }
-              @if (contactInfo().email) {
-                <div class="flex">
-                  <dt class="w-24 text-gray-500">E-mail:</dt>
-                  <dd>{{ contactInfo().email }}</dd>
-                </div>
-              }
-            </dl>
-          } @else {
-            <p class="text-gray-500">Geen contactgegevens opgegeven</p>
-          }
+      <p-button 
+        icon="pi pi-pencil" 
+        variant="text" 
+        size="small"
+        (onClick)="wijzigFoto()"
+        pTooltip="Wijzig foto"
+      />
+    </div>
+  </p-panel>
+
+  <p-divider />
+
+  <!-- Locatie sectie -->
+  <p-panel header="📍 Locatie" [toggleable]="true" [collapsed]="false">
+    <div class="flex items-start justify-between">
+      <div class="flex-1">
+        <div class="flex items-start gap-3">
+          <i class="pi pi-map-marker text-primary-500 text-xl mt-1"></i>
+          <div>
+            <p class="text-surface-900 dark:text-surface-0 font-medium">
+              {{ state.locatieAdres() }}
+            </p>
+            <p class="text-sm text-surface-500 dark:text-surface-400">
+              {{ state.locatieCoordinaten()?.lat | number:'1.4-4' }}, 
+              {{ state.locatieCoordinaten()?.lng | number:'1.4-4' }}
+            </p>
+          </div>
         </div>
       </div>
+      <p-button 
+        icon="pi pi-pencil" 
+        variant="text" 
+        size="small"
+        (onClick)="wijzigLocatie()"
+        pTooltip="Wijzig locatie"
+      />
     </div>
-  </ui-card-content>
-  
-  <ui-card-footer class="p-4 sm:p-6">
-    <div class="flex justify-between items-center mb-4">
-      @if (heeftVorigeStap()) {
-        <button (click)="onTerug()" class="text-gray-500 underline hover:text-gray-700">
-          Terug
-        </button>
-      }
+  </p-panel>
+
+  <p-divider />
+
+  <!-- Contact sectie -->
+  <p-card>
+    <div class="flex items-start justify-between">
+      <div class="flex-1">
+        <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-3">
+          👤 Contact
+        </h3>
+        @if (state.contactInfo().email) {
+          <div class="space-y-2">
+            <div class="flex items-center gap-2">
+              <i class="pi pi-envelope text-surface-500"></i>
+              <span class="text-surface-900 dark:text-surface-0">{{ state.contactInfo().email }}</span>
+            </div>
+            @if (state.contactInfo().naam) {
+              <div class="flex items-center gap-2">
+                <i class="pi pi-user text-surface-500"></i>
+                <span class="text-surface-900 dark:text-surface-0">{{ state.contactInfo().naam }}</span>
+              </div>
+            }
+            @if (state.contactInfo().telefoon) {
+              <div class="flex items-center gap-2">
+                <i class="pi pi-phone text-surface-500"></i>
+                <span class="text-surface-900 dark:text-surface-0">{{ state.contactInfo().telefoon }}</span>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="flex items-center gap-2 text-surface-500 dark:text-surface-400">
+            <i class="pi pi-eye-slash"></i>
+            <span>Anonieme melding</span>
+          </div>
+        }
+      </div>
+      <p-button 
+        icon="pi pi-pencil" 
+        variant="text" 
+        size="small"
+        (onClick)="wijzigContact()"
+        pTooltip="Wijzig contact"
+      />
     </div>
-    <div class="flex flex-col sm:flex-row justify-between gap-4">
-      <ui-button 
-        (onClick)="onAanpassen()" 
-        variant="outline"
-        class="w-full sm:w-auto"
-      >
-        Aanpassen
-      </ui-button>
-      
-      <ui-button 
-        (onClick)="onVersturen()" 
-        [disabled]="isVersturenDisabled()"
-        class="w-full sm:w-auto"
-      >
-        Versturen
-      </ui-button>
+  </p-card>
+
+  <!-- Verzend knop -->
+  <div class="pt-4">
+    <p-button 
+      label="Melding versturen" 
+      icon="pi pi-send" 
+      iconPos="right"
+      size="large"
+      (onClick)="verzendMelding()"
+      class="w-full"
+      [raised]="true"
+    />
+  </div>
+
+  <!-- Disclaimer -->
+  <p-card class="bg-surface-50 dark:bg-surface-800 border-surface-200 dark:border-surface-700">
+    <div class="text-center">
+      <p class="text-xs text-surface-500 dark:text-surface-400 m-0">
+        Door je melding te versturen ga je akkoord met onze 
+        <a href="#" class="text-primary-600 dark:text-primary-400 hover:underline">privacyvoorwaarden</a>.
+        Je melding wordt behandeld door gemeente Groningen.
+      </p>
     </div>
-  </ui-card-footer>
-</ui-card>
+  </p-card>
+</div>

@@ -53,7 +53,11 @@ export default defineConfig({
   ],
 
   /* Run your local dev server before starting the tests */
-  webServer: {
+  webServer: process.env.STORYBOOK_TEST ? {
+    command: 'npm run storybook',
+    url: 'http://localhost:6006',
+    reuseExistingServer: !process.env.CI,
+  } : {
     command: 'npm start',
     url: 'http://localhost:4200',
     reuseExistingServer: !process.env.CI,

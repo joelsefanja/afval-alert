@@ -5,9 +5,15 @@
       "Bash(mkdir:*)",
       "Bash(npm run test:e2e:*)",
       "Bash(npm install:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(npm test)",
+      "Bash(npm start)",
+      "Bash(npm run build:*)"
     ],
     "deny": [],
-    "ask": []
+    "ask": [],
+    "additionalDirectories": [
+      "\\users\\joels\\dev\\afval-alert"
+    ]
   }
 }

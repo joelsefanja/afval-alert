@@ -1,25 +1,25 @@
-import { Component, inject, output } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MeldingState } from '../../services/melding-state.service';
-import { Router } from '@angular/router';
+import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
+import { MeldingsProcedureStatus } from '../../services/melding/melding-state.service';
 
 @Component({
   selector: 'app-succes-stap',
   standalone: true,
-  imports: [
-    CommonModule,
-  ],
-  templateUrl: './succes-stap.component.html'
+  imports: [CommonModule, ButtonModule, CardModule],
+  templateUrl: './succes-stap.component.html',
+  styleUrls: ['./succes-stap.component.scss']
 })
 export class SuccesStapComponent {
-  private stateService = inject(MeldingState);
-  private router = inject(Router);
-  
-  /**
-   * Handler voor het afronden van de melding
-   */
-  onMeldingAfgerond(): void {
-    this.stateService.resetState();
-    this.router.navigate(['/']);
+  protected state = inject(MeldingsProcedureStatus);
+
+  nieuweMelding() {
+    this.state.resetState();
+  }
+
+  sluitApp() {
+    // In een echte app zou dit de app sluiten of naar home navigeren
+    window.close();
   }
 }

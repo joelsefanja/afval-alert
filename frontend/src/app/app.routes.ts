@@ -5,12 +5,8 @@ import { AdminComponent } from './admin/admin';
 import { AfvalMeldenProcedureComponent } from './app-users/features/afval-melden';
 
 export const routes: Routes = [
-  { path: 'admin', component: AdminComponent },
   
-  // Backwards compatibility
-  { path: 'afval-detectie', component: AfvalMeldenProcedureComponent },
-  
-  // Direct naar AfvalMeldenProcedureComponent als root
   { path: '', component: AfvalMeldenProcedureComponent, pathMatch: 'full' },
+  { path: 'admin', component: AdminComponent },
   { path: '**', component: AfvalMeldenProcedureComponent }
 ];

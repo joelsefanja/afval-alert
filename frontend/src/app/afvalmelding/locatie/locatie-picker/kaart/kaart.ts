@@ -1,5 +1,5 @@
 import { Component, AfterViewInit, output } from '@angular/core';
-import * as L from 'leaflet';
+declare const L: any;
 
 const iconRetinaUrl = 'assets/leaflet/marker-icon-2x.png';
 const iconUrl = 'assets/leaflet/marker-icon.png';
@@ -20,7 +20,6 @@ L.Marker.prototype.options.icon = iconDefault;
   selector: 'app-kaart',
   imports: [],
   templateUrl: './kaart.html',
-  styleUrl: './kaart.scss'
 })
 export class Kaart implements AfterViewInit {
   private map!: L.Map;

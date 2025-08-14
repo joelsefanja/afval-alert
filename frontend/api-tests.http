@@ -1,0 +1,202 @@
+### Afval Alert API Testing
+### HTTP file voor het testen van alle services en API endpoints
+### Gebruik: Open in VS Code met REST Client extensie
+
+# =============================================================================
+# 🌍 OpenStreetMap Nominatim API Tests
+# =============================================================================
+
+### Test 1: Reverse Geocoding - Groningen Centrum
+# Verwacht: Provincie Groningen, Gemeente Groningen, Stad Groningen
+GET https://nominatim.openstreetmap.org/reverse?lat=53.2194&lon=6.5665&format=json
+User-Agent: afval-alert-groningen/1.0
+
+### Test 2: Reverse Geocoding - Groningen Buitenwijk
+# Verwacht: Provincie Groningen, wellicht andere gemeente/wijk
+GET https://nominatim.openstreetmap.org/reverse?lat=53.2024&lon=6.5318&format=json
+User-Agent: afval-alert-groningen/1.0
+
+### Test 3: Reverse Geocoding - Buiten Groningen (Amsterdam)
+# Verwacht: Provincie Noord-Holland (moet geweigerd worden)
+GET https://nominatim.openstreetmap.org/reverse?lat=52.3676&lon=4.9041&format=json
+User-Agent: afval-alert-groningen/1.0
+
+### Test 4: Forward Geocoding - Bekende Groningen adressen
+# Test: Grote Markt, Groningen
+GET https://nominatim.openstreetmap.org/search?q=Grote%20Markt%201,%20Groningen,%20Nederland&format=json&countrycodes=NL&limit=1
+User-Agent: afval-alert-groningen/1.0
+
+### Test 5: Forward Geocoding - Martinitoren
+GET https://nominatim.openstreetmap.org/search?q=Martinitoren,%20Groningen,%20Nederland&format=json&countrycodes=NL&limit=1
+User-Agent: afval-alert-groningen/1.0
+
+### Test 6: Forward Geocoding - Noorderplantsoen
+GET https://nominatim.openstreetmap.org/search?q=Noorderplantsoen,%20Groningen,%20Nederland&format=json&countrycodes=NL&limit=1
+User-Agent: afval-alert-groningen/1.0
+
+### Test 7: Forward Geocoding - Ongeldig adres
+# Verwacht: Lege resultaten
+GET https://nominatim.openstreetmap.org/search?q=XYZ123ONBESTAAND,%20Groningen&format=json&countrycodes=NL&limit=1
+User-Agent: afval-alert-groningen/1.0
+
+### Test 8: Rate Limiting Test (VOORZICHTIG GEBRUIKEN)
+# Note: Nominatim heeft 1 request/seconde limiet
+# GET https://nominatim.openstreetmap.org/search?q=Herestraat,%20Groningen&format=json
+# User-Agent: afval-alert-groningen/1.0
+
+# =============================================================================
+# 🧪 Lokale Development Server Tests
+# =============================================================================
+
+### Test 9: Angular Dev Server Health Check
+GET http://localhost:4200/
+Accept: text/html
+
+### Test 10: Angular Dev Server - Assets Test
+GET http://localhost:4200/assets/test-images/zwerfafval-example.jpg
+Accept: image/*
+
+### Test 11: Storybook Server Health Check
+GET http://localhost:6006/
+Accept: text/html
+
+# =============================================================================
+# 🔮 Future Backend API Tests
+# =============================================================================
+# Deze endpoints zijn voorbereid voor wanneer de backend beschikbaar is
+
+### Backend Health Check (TODO: Update URL when backend is ready)
+# GET http://localhost:3000/health
+# Accept: application/json
+
+### Afval Melding Versturen (TODO: Update URL and payload)
+# POST http://localhost:3000/api/meldingen
+# Content-Type: application/json
+# 
+# {
+#   "locatie": {
+#     "latitude": 53.2194,
+#     "longitude": 6.5665,
+#     "adres": "Grote Markt 1, Groningen",
+#     "provincieGroningen": true,
+#     "wijk": "Binnenstad"
+#   },
+#   "foto": {
+#     "dataUrl": "data:image/jpeg;base64,/9j/4AAQ...",
+#     "fileSize": 245678,
+#     "contentType": "image/jpeg"
+#   },
+#   "contact": {
+#     "email": "test@example.com",
+#     "naam": "Test Gebruiker",
+#     "anoniem": false
+#   },
+#   "afvalType": "zwerfafval",
+#   "beschrijving": "Afval rond prullenbak",
+#   "timestamp": "2024-01-15T10:30:00Z"
+# }
+
+### Melding Status Ophalen (TODO: Update URL)
+# GET http://localhost:3000/api/meldingen/{{meldingId}}
+# Accept: application/json
+
+### Meldingen Lijst (Admin) (TODO: Update URL)
+# GET http://localhost:3000/api/admin/meldingen?status=open&limit=50
+# Authorization: Bearer {{adminToken}}
+# Accept: application/json
+
+### Melding Verwerken (Admin) (TODO: Update URL)
+# PATCH http://localhost:3000/api/admin/meldingen/{{meldingId}}
+# Authorization: Bearer {{adminToken}}
+# Content-Type: application/json
+# 
+# {
+#   "status": "in_behandeling",
+#   "opmerking": "Melding doorgestuurd naar reinigingsdienst",
+#   "verwachteOplossing": "2024-01-20"
+# }
+
+# =============================================================================
+# 🛠️ Development Tools Tests
+# =============================================================================
+
+### Test Image Upload Simulation (For Testing)
+# POST http://localhost:4200/api/upload/test
+# Content-Type: multipart/form-data; boundary=----WebKitFormBoundary
+# 
+# ------WebKitFormBoundary
+# Content-Disposition: form-data; name="file"; filename="test.jpg"
+# Content-Type: image/jpeg
+# 
+# [Binary image data would go here]
+# ------WebKitFormBoundary--
+
+# =============================================================================
+# 📊 Analytics & Monitoring Tests
+# =============================================================================
+
+### Test Analytics Event (TODO: Update when analytics is implemented)
+# POST http://localhost:3000/api/analytics/events
+# Content-Type: application/json
+# 
+# {
+#   "event": "melding_gestart",
+#   "data": {
+#     "userAgent": "Mozilla/5.0...",
+#     "timestamp": "2024-01-15T10:30:00Z",
+#     "sessionId": "abc123",
+#     "pagePath": "/melding/foto"
+#   }
+# }
+
+### Error Reporting Test (TODO: Update when error tracking is implemented)
+# POST http://localhost:3000/api/errors
+# Content-Type: application/json
+# 
+# {
+#   "error": {
+#     "message": "Camera toegang geweigerd",
+#     "stack": "Error: Camera toegang geweigerd\n    at FotoService.maakFoto...",
+#     "userAgent": "Mozilla/5.0...",
+#     "url": "http://localhost:4200/melding/foto",
+#     "timestamp": "2024-01-15T10:30:00Z"
+#   }
+# }
+
+# =============================================================================
+# 🔧 Environment Variables for Testing
+# =============================================================================
+
+# Voor lokale testing kun je deze variabelen gebruiken:
+# @hostname = localhost
+# @port = 4200
+# @apiPort = 3000
+# @storybookPort = 6006
+
+# =============================================================================
+# 📝 Testing Notes
+# =============================================================================
+
+# Rate Limiting:
+# - Nominatim API: 1 request/seconde
+# - Gebruik pause tussen requests in bulk testing
+# - Monitor console voor rate limit warnings
+
+# Test Data:
+# - Groningen centrum: 53.2194, 6.5665
+# - Groningen noord: 53.2300, 6.5500
+# - Groningen zuid: 53.2024, 6.5318
+# - Amsterdam (invalid): 52.3676, 4.9041
+
+# Error Scenarios:
+# - Network timeout: Simuleer met slow network
+# - Invalid coordinates: Gebruik 999.999, 999.999
+# - Rate limiting: Maak teveel requests snel achter elkaar
+# - Invalid JSON: Test met malformed requests
+
+# Success Criteria:
+# ✅ Groningen locaties worden herkend
+# ✅ Provincie validatie werkt
+# ✅ Wijk informatie wordt getoond (indien beschikbaar)
+# ✅ Error handling werkt correct
+# ✅ Fallback naar lokale validatie bij API problemen

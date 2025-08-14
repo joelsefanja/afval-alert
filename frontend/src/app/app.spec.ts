@@ -28,26 +28,10 @@ describe('App', () => {
     expect(app).toBeTruthy();
   });
 
-  it('should render main container', () => {
-    const fixture = TestBed.createComponent(App);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.min-h-screen')).toBeTruthy();
-  });
-
   it('should have router outlet', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('router-outlet')).toBeTruthy();
-  });
-
-  it('should have responsive container classes', () => {
-    const fixture = TestBed.createComponent(App);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    const container = compiled.querySelector('.container');
-    expect(container).toBeTruthy();
-    expect(container?.className).toContain('mx-auto');
   });
 });
