@@ -33,4 +33,4 @@ build/
 .vscode/
 
 # SQLite database
-/data
+/data/app.db
