@@ -60,11 +60,11 @@
       
       <div class="flex gap-2">
         <p-autoComplete 
-          [ngModel]="geselecteerdAdres()" 
-          (ngModelChange)="geselecteerdAdres.set($event)"
+          [(value)]="geselecteerdAdres()" 
+          (valueChange)="geselecteerdAdres.set($event)"
           [suggestions]="adresSuggesties()" 
           (completeMethod)="searchAdresSuggesties($event)"
-          (onSelect)="zoekAdres($event.value)"
+          (onSelect)="onAdresSelect($event)"
           placeholder="Zoek adres in Groningen..."
           [minLength]="3"
           class="flex-1"

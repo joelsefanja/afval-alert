@@ -1,10 +1,7 @@
 import { Component, inject, output, ViewChild } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatIconRegistry, MatIconModule } from '@angular/material/icon';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
 import { Kaart } from "./kaart/kaart";
 import { HuidigeLocatie } from "./huidige-locatie/huidige-locatie";
 import { KaartService } from '../../../services/kaart';
@@ -21,11 +18,9 @@ const SEARCH_ICON =
   selector: 'app-locatie-picker',
   templateUrl: './locatie-picker.html',
   standalone: true,
-  imports: [FormsModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatIconModule, Kaart, HuidigeLocatie]
+  imports: [ButtonModule, InputTextModule, Kaart, HuidigeLocatie]
 })
 export class LocatiePicker {
-  private iconRegistry = inject(MatIconRegistry);
-  private sanitizer = inject(DomSanitizer);
   private kaartService = inject(KaartService);
   @ViewChild(Kaart) kaartComponent!: Kaart;
   
@@ -34,13 +29,6 @@ export class LocatiePicker {
 
   searchQuery = '';
   selectedAddress = '';
-
-  constructor() {
-    this.iconRegistry.addSvgIconLiteral(
-      'search',
-      this.sanitizer.bypassSecurityTrustHtml(SEARCH_ICON)
-    );
-  }
 
   onInputChange(event: any) {
     this.searchQuery = event.target.value;

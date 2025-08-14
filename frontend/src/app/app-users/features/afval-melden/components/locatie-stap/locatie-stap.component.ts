@@ -229,6 +229,18 @@ export class LocatieStapComponent {
 
 
   /**
+   * Handelt adres selectie van autocomplete af
+   * @param event Het selectie event van de autocomplete
+   */
+  protected onAdresSelect(event: any): void {
+    const selectedValue = typeof event === 'string' ? event : event.value;
+    if (selectedValue) {
+      this.geselecteerdAdres.set(selectedValue);
+      this.zoekAdres(selectedValue);
+    }
+  }
+
+  /**
    * Zoekt adres suggesties voor autocomplete
    * @param event Het zoek event van de autocomplete
    */
