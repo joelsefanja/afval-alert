@@ -18,6 +18,7 @@
                 placeholder="Vul een adres in om te zoeken"
                 type="text"
                 [(ngModel)]="searchQuery"
+                (input)="onInputChange($event)"
                 (keyup.enter)="onAddressSearch()"
                 name="searchQuery">
             </div>

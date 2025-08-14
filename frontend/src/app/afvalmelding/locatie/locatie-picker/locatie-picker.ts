@@ -1,4 +1,4 @@
-import { Component, inject, ViewChild } from '@angular/core';
+import { Component, inject, output, ViewChild } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -7,6 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconRegistry, MatIconModule } from '@angular/material/icon';
 import { Kaart } from "./kaart/kaart";
 import { HuidigeLocatie } from "./huidige-locatie/huidige-locatie";
+import { KaartService } from '../../../services/kaart';
 
 const SEARCH_ICON =
   `
@@ -25,7 +26,12 @@ const SEARCH_ICON =
 export class LocatiePicker {
   private iconRegistry = inject(MatIconRegistry);
   private sanitizer = inject(DomSanitizer);
+  private kaartService = inject(KaartService);
   @ViewChild(Kaart) kaartComponent!: Kaart;
+  locationSelected = output<string>();
+
+  searchQuery = '';
+  selectedAddress = '';
 
   constructor() {
     this.iconRegistry.addSvgIconLiteral(
@@ -39,12 +45,9 @@ export class LocatiePicker {
     this.searchQuery = event.target.value;
   }
 
-  searchQuery = '';
-  selectedAddress = '';
-
-  onAddressSearch() {
+  async onAddressSearch() {
     if (this.searchQuery.trim()) {
-      this.kaartComponent.searchAddress(this.searchQuery)
+      await this.kaartService.searchAddress(this.searchQuery);
     }
   }
 
@@ -53,9 +56,9 @@ export class LocatiePicker {
     this.searchQuery = address;
   }
 
-  onCurrentLocationSelected() {
+  async onCurrentLocationSelected() {
     this.selectedAddress = '';
     this.searchQuery = '';
-    this.kaartComponent.getCurrentLocation();
+    await this.kaartService.getCurrentLocation();
   }
 }
