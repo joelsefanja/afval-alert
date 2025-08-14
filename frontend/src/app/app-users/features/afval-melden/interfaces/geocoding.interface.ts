@@ -16,6 +16,10 @@ export interface LocatieResultaat {
   stadGroningen: boolean;
   wijk?: string;
   volledigAdres: string;
+  coordinaten?: {
+    latitude: number;
+    longitude: number;
+  };
 }
 
 export interface IGeocodingService {

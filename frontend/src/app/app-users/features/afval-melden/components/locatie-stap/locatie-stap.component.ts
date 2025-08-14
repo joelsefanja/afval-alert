@@ -11,6 +11,8 @@ import { MeldingsProcedureStatus } from '../../services/melding/melding-state.se
 import { LocatieResultaat, GEOCODING_SERVICE_TOKEN } from '../../interfaces/geocoding.interface';
 import { GeocodingMockService } from '../../services/locatie/geocoding-mock.service';
 import { KaartComponent } from '../kaart/kaart.component';
+import { KaartService, GebiedInfo } from '../../../../../services/kaart';
+import { LocatiePicker } from '../../../../../afvalmelding/locatie/locatie-picker/locatie-picker';
 
 /**
  * Component voor het bepalen van de locatie waar het afval zich bevindt.
@@ -40,7 +42,7 @@ import { KaartComponent } from '../kaart/kaart.component';
 @Component({
   selector: 'app-locatie-stap',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonModule, CardModule, MessageModule, InputTextModule, AutoCompleteModule, ProgressBarModule, KaartComponent],
+  imports: [CommonModule, FormsModule, ButtonModule, CardModule, MessageModule, InputTextModule, AutoCompleteModule, ProgressBarModule, LocatiePicker],
   templateUrl: './locatie-stap.component.html',
   styleUrls: ['./locatie-stap.component.scss'],
   providers: [
@@ -52,6 +54,7 @@ export class LocatieStapComponent {
   // Dependency injection
   protected readonly state = inject(MeldingsProcedureStatus);
   private readonly geocodingService = inject(GEOCODING_SERVICE_TOKEN);
+  private readonly kaartService = inject(KaartService);
   
   // Input properties
   /** Schakelt de component uit wanneer true */
@@ -59,7 +62,7 @@ export class LocatieStapComponent {
   
   // Output events
   /** Event dat wordt uitgezonden wanneer een locatie is geselecteerd */
-  readonly locatieGeselecteerd = output<{latitude: number, longitude: number, adres: string}>();
+  readonly locatieGeselecteerd = output<{latitude: number, longitude: number, adres: string, gebiedInfo?: GebiedInfo}>();
   /** Event voor navigatie terug */
   readonly navigatieTerug = output<void>();
   /** Event voor navigatie naar volgende stap */
@@ -72,6 +75,8 @@ export class LocatieStapComponent {
   protected readonly adresZoekenBezig = signal<boolean>(false);
   /** Uitgebreide locatie informatie */
   protected readonly locatieDetails = signal<LocatieResultaat | null>(null);
+  /** Gebied informatie van OpenStreetMap */
+  protected readonly gebiedInfo = signal<GebiedInfo | null>(null);
   /** Lijst van adres suggesties voor autocomplete */
   protected readonly adresSuggesties = signal<string[]>([]);
   /** Geselecteerd adres voor autocomplete */
@@ -246,6 +251,59 @@ export class LocatieStapComponent {
     } catch (error) {
       console.error('Fout bij ophalen adres suggesties:', error);
       this.adresSuggesties.set([]);
+    }
+  }
+
+  /**
+   * Handelt locatie selectie via de kaart component af
+   * @param locatieInfo Informatie over de geselecteerde locatie
+   */
+  protected async onKaartLocatieGeselecteerd(locatieInfo: {latitude: number, longitude: number, address: string, wijk?: string, buurt?: string, gemeente?: string}): Promise<void> {
+    try {
+      // Haal uitgebreide gebied informatie op via KaartService
+      const gebiedInfo = await this.kaartService.getGebiedInfoByCoordinate(locatieInfo.latitude, locatieInfo.longitude);
+      
+      if (gebiedInfo) {
+        // Controleer of binnen provincie Groningen (Nederland specifieke controle)
+        const isGroningen = gebiedInfo.gemeente?.toLowerCase().includes('groningen') || 
+                           gebiedInfo.provincie?.toLowerCase().includes('groningen');
+        
+        if (!isGroningen) {
+          this.state.setLocatieError('Locatie ligt buiten de provincie Groningen');
+          return;
+        }
+
+        // Sla gebied informatie op
+        this.gebiedInfo.set(gebiedInfo);
+        
+        // Converteer naar het verwachte formaat voor backward compatibility
+        const locatieResultaat: LocatieResultaat = {
+          volledigAdres: locatieInfo.address,
+          stadGroningen: isGroningen,
+          gemeenteGroningen: isGroningen,
+          provincieGroningen: true,
+          wijk: gebiedInfo.wijk,
+          coordinaten: {
+            latitude: locatieInfo.latitude,
+            longitude: locatieInfo.longitude
+          }
+        };
+        
+        this.locatieDetails.set(locatieResultaat);
+        this.state.setLocatie(locatieInfo.address, { lat: locatieInfo.latitude, lng: locatieInfo.longitude });
+        this.geselecteerdAdres.set(locatieInfo.address);
+        
+        // Emit event met gebied informatie
+        this.locatieGeselecteerd.emit({
+          latitude: locatieInfo.latitude,
+          longitude: locatieInfo.longitude,
+          adres: locatieInfo.address,
+          gebiedInfo: gebiedInfo
+        });
+      }
+    } catch (error) {
+      console.error('Fout bij verwerken kaart locatie:', error);
+      this.state.setLocatieError('Kon locatie informatie niet ophalen');
     }
   }
 }

@@ -30,7 +30,7 @@ export class LocatiePicker {
   @ViewChild(Kaart) kaartComponent!: Kaart;
   
   locationSelected = output<string>();
-  locatieGeselecteerd = output<{latitude: number, longitude: number, address: string, wijk?: string}>();
+  locatieGeselecteerd = output<{latitude: number, longitude: number, address: string, wijk?: string, buurt?: string, gemeente?: string}>();
 
   searchQuery = '';
   selectedAddress = '';
@@ -58,7 +58,7 @@ export class LocatiePicker {
     this.locationSelected.emit(address);
   }
 
-  onLocatieGeselecteerd(locatieInfo: {latitude: number, longitude: number, address: string, wijk?: string}) {
+  onLocatieGeselecteerd(locatieInfo: {latitude: number, longitude: number, address: string, wijk?: string, buurt?: string, gemeente?: string}) {
     this.locatieGeselecteerd.emit(locatieInfo);
   }
 

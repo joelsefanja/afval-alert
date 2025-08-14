@@ -24,15 +24,12 @@
   <!-- Kaart -->
   <div class="space-y-4">
     <p-card>
-      <app-kaart
-        [hoogte]="'250px'"
-        [centerLatitude]="53.2193835"
-        [centerLongitude]="6.5665017"
-        [zoomLevel]="13"
-        [interactief]="false"
-        [markerLat]="state.locatieCoordinaten()?.lat"
-        [markerLng]="state.locatieCoordinaten()?.lng"
-      />
+      <div style="height: 250px;">
+        <app-locatie-picker
+          (locatieGeselecteerd)="onKaartLocatieGeselecteerd($event)"
+          (locationSelected)="geselecteerdAdres.set($event)"
+        />
+      </div>
     </p-card>
   </div>
 
