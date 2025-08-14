@@ -1,3 +1,5 @@
+import PrimeUI from 'tailwindcss-primeui';
+
 export default {
   content: [
     "./src/**/*.{html,ts}",
@@ -53,5 +55,5 @@ export default {
       },
     },
   },
-  plugins: [require('tailwindcss-motion')],
+  plugins: [PrimeUI, require('tailwindcss-motion')],
 };

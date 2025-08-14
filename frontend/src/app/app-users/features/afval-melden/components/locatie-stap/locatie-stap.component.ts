@@ -1,16 +1,9 @@
 import { Component, inject, input, output, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
-import { MessageModule } from 'primeng/message';
-import { InputTextModule } from 'primeng/inputtext';
-import { AutoCompleteModule } from 'primeng/autocomplete';
-import { ProgressBarModule } from 'primeng/progressbar';
 import { MeldingsProcedureStatus } from '../../services/melding/melding-state.service';
 import { LocatieResultaat, GEOCODING_SERVICE_TOKEN } from '../../interfaces/geocoding.interface';
 import { GeocodingMockService } from '../../services/locatie/geocoding-mock.service';
-import { KaartComponent } from '../kaart/kaart.component';
 import { KaartService, GebiedInfo } from '../../../../../services/kaart';
 import { LocatiePicker } from '../../../../../afvalmelding/locatie/locatie-picker/locatie-picker';
 
@@ -42,7 +35,7 @@ import { LocatiePicker } from '../../../../../afvalmelding/locatie/locatie-picke
 @Component({
   selector: 'app-locatie-stap',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonModule, CardModule, MessageModule, InputTextModule, AutoCompleteModule, ProgressBarModule, LocatiePicker],
+  imports: [CommonModule, LocatiePicker],
   templateUrl: './locatie-stap.component.html',
   styleUrls: ['./locatie-stap.component.scss'],
   providers: [
