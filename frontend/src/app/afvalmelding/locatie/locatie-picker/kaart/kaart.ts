@@ -1,101 +1,57 @@
-import { Component, AfterViewInit, output } from '@angular/core';
-declare const L: any;
-
-const iconRetinaUrl = 'assets/leaflet/marker-icon-2x.png';
-const iconUrl = 'assets/leaflet/marker-icon.png';
-const shadowUrl = 'assets/leaflet/marker-shadow.png';
-const iconDefault = L.icon({
-  iconRetinaUrl,
-  iconUrl,
-  shadowUrl,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  tooltipAnchor: [16, -28],
-  shadowSize: [41, 41]
-});
-L.Marker.prototype.options.icon = iconDefault;
+import { Component, OnInit, OnDestroy, output } from '@angular/core';
+import { KaartService } from '../../../../services/kaart';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-kaart',
   imports: [],
   templateUrl: './kaart.html',
 })
-export class Kaart implements AfterViewInit {
-  private map!: L.Map;
-  private currentMarker?: L.Marker;
+export class Kaart implements OnInit, OnDestroy {
+  addressSelected = output<string>();
+  locatieGeselecteerd = output<{latitude: number, longitude: number, address: string, wijk?: string}>();
+  private subscription?: Subscription;
 
-  markers: L.Marker[] = [
-    L.marker([53.2193835, 6.5665017]), // Groningen
-  ];
+  constructor(private kaartService: KaartService) {};
 
-  locatieGeselecteerd = output<{latitude: number, longitude: number}>();
-
-  ngAfterViewInit() {
-    this.initMap();
-    this.centerMap();
-    this.setupMapClickHandler();
+  ngOnInit() {
+    this.kaartService.initMap('mapContainer');
+    this.subscription = this.kaartService.addressSelected.subscribe(
+      (address: string) => {
+        this.addressSelected.emit(address);
+        // Ook locatie info doorsturen voor gebied logica
+        this.extractLocationInfo(address);
+      }
+    )
   }
 
-  private initMap() {
-    const baseMapURl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-    this.map = L.map('map');
-    L.tileLayer(baseMapURl).addTo(this.map);
-  }
-
-  private centerMap() {
-    // Create a boundary based on the markers
-    const bounds = L.latLngBounds(this.markers.map(marker => marker.getLatLng()));
-
-    // Fit the map into the boundary
-    this.map.fitBounds(bounds);
-  }
-
-  private setupMapClickHandler() {
-    this.map.on('click', (e: L.LeafletMouseEvent) => {
-      this.addMarkerAtLocation(e.latlng);
-    });
-  }
-
-  private addMarkerAtLocation(latlng: L.LatLng) {
-    // Remove existing marker if it exists
-    if (this.currentMarker) {
-      this.map.removeLayer(this.currentMarker);
-    }
-
-    // Create new marker at clicked location
-    this.currentMarker = L.marker(latlng).addTo(this.map);
+  private extractLocationInfo(address: string) {
+    // Haal wijk/buurt info uit het adres voor gebied logica
+    const addressParts = address.split(',');
+    const wijk = this.extractWijk(addressParts);
     
-    // Emit the selected location
+    // Voor nu gebruik mock coordinaten, later kan dit uit de KaartService komen
     this.locatieGeselecteerd.emit({
-      latitude: latlng.lat,
-      longitude: latlng.lng
+      latitude: 53.2193835,
+      longitude: 6.5665017,
+      address: address,
+      wijk: wijk
     });
   }
 
-  getCurrentLocation() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const lat = position.coords.latitude;
-          const lng = position.coords.longitude;
-          const latlng = L.latLng(lat, lng);
-
-          this.addMarkerAtLocation(latlng);
-          this.map.setView(latlng, 20);
-        },
-        (error) => {
-          console.error('Error getting current location:', error);
-          alert('Kon huidige locatie niet ophalen. Zorg ervoor dat locatievoorzieningen zijn ingeschakeld.');
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 5000,
-          maximumAge: 6000
-        }
-      );
-    } else {
-      alert('Geolocatie wordt niet ondersteund door deze browser.');
+  private extractWijk(addressParts: string[]): string | undefined {
+    // Zoek naar wijk/buurt informatie in de adres onderdelen
+    for (const part of addressParts) {
+      const trimmed = part.trim();
+      // Dit kan uitgebreid worden met meer specifieke wijk detectie logica
+      if (trimmed.includes('wijk') || trimmed.includes('buurt') || trimmed.length < 30) {
+        return trimmed;
+      }
     }
+    return undefined;
+  }
+
+  ngOnDestroy() {
+    this.subscription?.unsubscribe();
   }
 }
