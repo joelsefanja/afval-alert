@@ -33,4 +33,8 @@ public class Image {
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
+
+    public Long getId() {
+        return id;
+    }
 }
