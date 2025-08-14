@@ -18,6 +18,54 @@ const iconDefault = L.icon({
 });
 L.Marker.prototype.options.icon = iconDefault;
 
+interface NominatimReverseResponse {
+  place_id: number;
+  licence: string;
+  osm_type: string;
+  osm_id: number;
+  lat: string;
+  lon: string;
+  class: string;
+  type: string;
+  place_rank: number;
+  importance: number;
+  addresstype: string;
+  name?: string;
+  display_name: string;
+  address: {
+    amenity?: string;
+    road?: string;
+    neighbourhood?: string;
+    quarter?: string;
+    suburb?: string;
+    city?: string;
+    municipality?: string;
+    state?: string;
+    "ISO3166-2-lvl4"?: string;
+    country: string;
+    postcode?: string;
+    country_code: string;
+  };
+  boundingbox: [string, string, string, string];
+}
+
+interface NominatimSearchResult {
+  place_id: number;
+  licence: string;
+  osm_type: string;
+  osm_id: number;
+  lat: string;
+  lon: string;
+  class: string;
+  type: string;
+  place_rank: number;
+  importance: number;
+  addresstype: string;
+  name?: string;
+  display_name: string;
+  boundingbox: [string, string, string, string];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -39,7 +87,7 @@ export class KaartService {
     maximumAge: 6000
   };
 
-  private readonly NOMINATIM_BASE_URL = '';
+  private readonly NOMINATIM_BASE_URL = 'https://nominatim.openstreetmap.org';
   private readonly NOMINATIM_REVERSE_URL = `${this.NOMINATIM_BASE_URL}/reverse?format=json&zoom=18&addressdetails=1`;
   private readonly NOMINATIM_SEARCH_URL = `${this.NOMINATIM_BASE_URL}/search?format=json&limit=1`;
 
@@ -112,7 +160,7 @@ export class KaartService {
   private reverseGeocode(latlng: L.LatLng): Observable<string | null> {
     const url = this.buildReverseGeocodeUrl(latlng);
 
-    return this.http.get<any>(url).pipe(
+    return this.http.get<NominatimReverseResponse>(url).pipe(
       map(data => data?.display_name ?? null),
       catchError(error => {
         console.error('Error reverse geocoding:', error);
@@ -126,7 +174,7 @@ export class KaartService {
 
     try {
       const results = await lastValueFrom(
-        this.http.get<any[]>(url).pipe(
+        this.http.get<NominatimSearchResult[]>(url).pipe(
           catchError(error => {
             console.error('Error searching address:', error);
             return of([]);
