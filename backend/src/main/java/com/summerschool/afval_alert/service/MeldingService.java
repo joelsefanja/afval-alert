@@ -25,10 +25,10 @@ public class MeldingService {
         Melding melding = new Melding();
         melding.setImage(image);
 
-        StatusUpdate statusUpdate = new StatusUpdate();
-        statusUpdate.setStatusUpdate(0);
-
-        melding.addStatusUpdate(statusUpdate);
+//        StatusUpdate statusUpdate = new StatusUpdate();
+//        statusUpdate.setStatusUpdate(0);
+//
+//        melding.addStatusUpdate(statusUpdate);
 
         return meldingRepository.save(melding);
     }
