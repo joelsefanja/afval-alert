@@ -10,38 +10,7 @@ Het gebruikt een hybride aanpak:
 1. **Lokaal AI Model (MobileNetV2)**: Snelle eerste detectie van objecten in afbeeldingen
 2. **Gemini LLM**: Intelligente analyse van de lokale resultaten voor accurate classificatie
 
-## GitHub Codespaces
-
-Dit project is geconfigureerd om naadloos te werken met GitHub Codespaces, wat een complete ontwikkelomgeving in de cloud biedt. 
-De Codespaces omgeving bevat:
-- Python 3.12
-- Docker
-- Kubernetes tools (kubectl, minikube)
-- Alle benodigde dependencies zijn vooraf geïnstalleerd
-
-## Waarom Docker & Kubernetes?
-
-### Docker
-Docker maakt onze applicatie portabel en eenvoudig te draaien:
-- **Consistentie**: Werkt hetzelfde op jouw computer als op de server
-- **Isolatie**: Alles wat de app nodig heeft zit in de container
-- **Snelheid**: Start binnen seconden zonder installatie
-
-### Kubernetes
-Kubernetes zorgt voor betrouwbaarheid en schaalbaarheid:
-- **High Availability**: Meerdere kopieën van de app draaien tegelijk
-- **Auto-scaling**: Meer instanties bij hoge belasting
-- **Self-healing**: Herstart automatisch bij problemen
-- **Zero-downtime updates**: Updates zonder downtime
-
-## Architectuur Keuzes
-
-1. **Hybride AI**: Lokaal model voor snelheid, LLM voor nauwkeurigheid
-2. **Clean Architecture**: Modulaire structuur voor onderhoudbaarheid
-3. **Environment-based Config**: Flexibele configuratie via .env bestanden
-4. **Secure Authentication**: Veilige authenticatie zonder hardcoded keys
-
-## Snel Starten
+## Snel Starten (Lokaal)
 
 ### GitHub Codespaces (Aanbevolen)
 De eenvoudigste manier om te starten is met GitHub Codespaces:
@@ -54,8 +23,8 @@ De eenvoudigste manier om te starten is met GitHub Codespaces:
 ### Lokaal met Docker (Aanbevolen)
 ```bash
 # 1. Kopieer environment file en vul je Gemini API key in
-cp classifier/.env.example classifier/.env
-# Bewerk classifier/.env en voeg je GEMINI_API_KEY toe
+cp .env.example .env
+# Bewerk .env en voeg je GEMINI_API_KEY toe
 
 # 2. Start de applicatie
 make docker-dev
@@ -66,7 +35,6 @@ make docker-dev
 ### Lokaal zonder Docker
 ```bash
 # 1. Installeer dependencies met uv
-cd classifier
 pip install --upgrade pip uv
 uv pip install -e .
 
@@ -96,75 +64,18 @@ curl -X POST "http://localhost:8000/classify" \
 - `GET /health` - Health check
 - `GET /waste-types` - Lijst van alle afvaltypen
 
-## Deployment naar Kubernetes (Minikube)
-
-### GitHub Codespaces Deployment
-De eenvoudigste manier om te deployen is via GitHub Actions in Codespaces:
-1. De workflow wordt automatisch gestart bij push naar main/develop
-2. Je kunt ook handmatig de workflow starten via de GitHub Actions tab
-
-### Lokale Minikube Deployment
-Je kunt de applicatie lokaal deployen naar een Minikube cluster:
-
-1. **Start Minikube**:
-   ```bash
-   minikube start --driver=docker
-   ```
-
-2. **Stel Docker omgeving in**:
-   ```bash
-   eval $(minikube docker-env)
-   ```
-
-3. **Bouw de Docker image**:
-   ```bash
-   cd classifier
-   docker build -t afval-alert:latest .
-   ```
-
-4. **Deploy naar Kubernetes**:
-   ```bash
-   # Update de image naam in deployment.yaml
-   sed -i 's|YOUR_ARTIFACT_REGISTRY/afval-alert:latest|afval-alert:latest|g' ../k8s/deployment.yaml
-   
-   # Apply Kubernetes configuratie
-   kubectl apply -f ../k8s/
-   
-   # Wacht tot deployment klaar is
-   kubectl rollout status deployment/afval-alert
-   ```
-
-5. **Toegang tot de applicatie**:
-   ```bash
-   minikube service afval-alert-service
-   ```
-
-## Environment Variabelen
-
-### Lokaal (Docker)
-- `GEMINI_API_KEY`: Je Google Gemini API key (verplicht voor lokale Docker)
-
-### Kubernetes
-- Gebruikt Kubernetes secrets voor authenticatie (veiliger dan API keys)
-
 ## Project Structuur
 ```
-python-classifier/
-├── classifier/           # Hoofdapplicatie
-│   ├── adapters/         # Externe services (AI modellen)
-│   ├── application/      # Business logica
-│   ├── domain/          # Core modellen en interfaces
-│   ├── infrastructure/   # Implementaties
-│   ├── presentation/     # API controllers
-│   ├── shared/           # Gedeelde configuratie
-│   ├── tests/            # Testbestanden
-│   ├── .env.example      # Voorbeeld environment file
-│   └── main.py           # Applicatie entry point
-├── k8s/                  # Kubernetes configuratie
-├── .github/workflows/    # CI/CD workflows
-├── docker-compose.yml    # Productie Docker setup
-├── docker-compose.dev.yml # Development Docker setup
-└── Makefile              # Handige commando's
+classifier/
+├── adapters/         # Externe services (AI modellen)
+├── application/      # Business logica
+├── domain/           # Core modellen en interfaces
+├── infrastructure/   # Implementaties
+├── presentation/     # API controllers
+├── shared/           # Gedeelde configuratie
+├── tests/            # Testbestanden
+├── .env.example      # Voorbeeld environment file
+└── main.py           # Applicatie entry point
 ```
 
 ## Commando's
@@ -180,33 +91,11 @@ make docker-run    # Start met Docker (production)
 make docker-down   # Stop Docker services
 ```
 
-### Minikube
-```bash
-make minikube-start  # Start Minikube cluster
-make minikube-deploy # Deploy naar Minikube
-make minikube-stop   # Stop Minikube cluster
-```
+## Environment Variabelen
 
-## Veelgestelde Vragen
-
-### Waarom Kubernetes in plaats van directe Docker?
-Kubernetes biedt voordelen zoals:
-1. Automatische schaling bij hoge belasting
-2. Self-healing capabilities
-3. Zero-downtime updates
-4. Betere resource management
-
-### Kan ik dit lokaal testen zonder Kubernetes?
-Ja! Voor lokale ontwikkeling kun je gewoon Docker Compose gebruiken:
-```bash
-make docker-dev
-```
-
-### Hoe schaal ik de applicatie?
-In Kubernetes wordt automatisch geschaald op basis van CPU gebruik. Voor handmatige schaling:
-```bash
-kubectl scale deployment afval-alert --replicas=5
-```
+- `GEMINI_API_KEY`: Je Google Gemini API key (verplicht)
+- `MODEL_PATH`: Pad naar AI modellen (optioneel)
+- `TF_CPP_MIN_LOG_LEVEL`: TensorFlow log level (optioneel)
 
 ## Problemen oplossen
 
@@ -221,18 +110,19 @@ docker system prune -a
 make docker-dev
 ```
 
-### Kubernetes Problemen
-Bekijk logs:
+### Python Dependency Problemen
 ```bash
-kubectl logs deployment/afval-alert
+pip install --upgrade pip uv
+uv pip install -e .
 ```
 
 ## Documentatie
 
 Voor meer gedetailleerde informatie, zie de volgende documenten:
-- [MINIKUBE_DEPLOYMENT.md](MINIKUBE_DEPLOYMENT.md) - Gedetailleerde Minikube deployment instructies
-- [GKE_BEGRIJPEN.md](GKE_BEGRIJPEN.md) - Uitleg van GKE en cloud computing begrippen
-- [DEPLOYMENT.md](DEPLOYMENT.md) - Algemene deployment informatie
+- [Lokale Setup Gids](../LOCAL_SETUP.md) - Eenvoudige lokale setup zonder cloud toegang
+- [MINIKUBE_DEPLOYMENT.md](../MINIKUBE_DEPLOYMENT.md) - Gedetailleerde Minikube deployment instructies
+- [GKE_BEGRIJPEN.md](../GKE_BEGRIJPEN.md) - Uitleg van GKE en cloud computing begrippen
+- [DEPLOYMENT.md](../DEPLOYMENT.md) - Algemene deployment informatie
 
 ## Contributing
 1. Fork de repository

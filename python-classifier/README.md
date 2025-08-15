@@ -4,17 +4,15 @@ AI-gestuurde API voor het classificeren van zwerfafval met hybride machine learn
 
 ## Inhoudsopgave
 - [Project Overzicht](#project-overzicht)
-- [Snel Starten](#snel-starten)
+- [Snel Starten (Lokaal)](#snel-starten-lokaal)
 - [Documentatie](#documentatie)
-- [Architectuur](#architectuur)
 - [Technologieën](#technologieën)
-- [Deployment](#deployment)
 
 ## Project Overzicht
 
 AfvalAlert is een slimme afvalherkenningssysteem dat foto's kan analyseren om te bepalen of ze zwerfafval bevatten. Het gebruikt een hybride aanpak met een lokaal AI model (MobileNetV2) voor snelle detectie en Google Gemini LLM voor accurate classificatie.
 
-## Snel Starten
+## Snel Starten (Lokaal)
 
 ### GitHub Codespaces (Aanbevolen)
 1. Klik op de "Code" knop in de repository
@@ -23,16 +21,33 @@ AfvalAlert is een slimme afvalherkenningssysteem dat foto's kan analyseren om te
 4. Wacht tot de omgeving is geladen
 5. De applicatie start automatisch
 
-### Lokaal met Docker
+### Lokaal met Docker (Aanbevolen)
 ```bash
-# Kopieer environment file en vul je Gemini API key in
+# 1. Kopieer environment file en vul je Gemini API key in
 cp classifier/.env.example classifier/.env
 # Bewerk classifier/.env en voeg je GEMINI_API_KEY toe
 
-# Start de applicatie
+# 2. Start de applicatie
 make docker-dev
 
-# Open http://localhost:8000/docs in je browser
+# 3. Open http://localhost:8000/docs in je browser
+```
+
+### Lokaal zonder Docker
+```bash
+# 1. Installeer dependencies met uv
+cd classifier
+pip install --upgrade pip uv
+uv pip install -e .
+
+# 2. Kopieer environment file en vul je Gemini API key in
+cp .env.example .env
+# Bewerk .env en voeg je GEMINI_API_KEY toe
+
+# 3. Start de server
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
+
+# 4. Open http://localhost:8000/docs in je browser
 ```
 
 ## Documentatie
@@ -40,18 +55,10 @@ make docker-dev
 Voor gedetailleerde informatie over het project, zie de volgende documenten:
 
 - [Classifier README](classifier/README.md) - Hoofddocumentatie voor de Python backend
+- [Lokale Setup Gids](LOCAL_SETUP.md) - Eenvoudige lokale setup zonder cloud toegang
 - [Minikube Deployment](MINIKUBE_DEPLOYMENT.md) - Instructies voor deployment naar Minikube
 - [GKE Begrijpen](GKE_BEGRIJPEN.md) - Uitleg van GKE en cloud computing begrippen
 - [Deployment](DEPLOYMENT.md) - Algemene deployment informatie en scripts
-
-## Architectuur
-
-De applicatie volgt de Clean Architecture principes met de volgende lagen:
-
-1. **Domain** - Core business logica en entiteiten
-2. **Application** - Use cases en services
-3. **Infrastructure** - Externe service implementaties
-4. **Presentation** - API controllers en adapters
 
 ## Technologieën
 
@@ -62,7 +69,7 @@ De applicatie volgt de Clean Architecture principes met de volgende lagen:
 - **CI/CD**: GitHub Actions
 - **Development**: GitHub Codespaces
 
-## Deployment
+## Deployment Opties
 
 Het project ondersteunt meerdere deployment opties:
 

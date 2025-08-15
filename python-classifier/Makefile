@@ -4,17 +4,27 @@
 
 help:
 	@echo "Available commands:"
-	@echo "  install     - Install dependencies with uv"
-	@echo "  dev         - Run development server"
-	@echo "  test        - Run tests"
-	@echo "  test-unit   - Run unit tests only"
-	@echo "  test-e2e    - Run e2e tests only"
-	@echo "  build       - Build the application"
-	@echo "  clean       - Clean cache and temporary files"
-	@echo "  docker-build - Build Docker image"
-	@echo "  docker-run   - Run with Docker Compose (production)"
-	@echo "  docker-dev   - Run with Docker Compose (development)"
-	@echo "  docker-down  - Stop Docker services"
+	@echo "  install        - Install dependencies with uv"
+	@echo "  dev            - Run development server"
+	@echo "  test           - Run tests"
+	@echo "  test-unit      - Run unit tests only"
+	@echo "  test-e2e       - Run e2e tests only"
+	@echo "  test-integration - Run integration tests only"
+	@echo "  test-manual    - Run manual tests"
+	@echo "  test-download  - Download real test images"
+	@echo "  build          - Build the application"
+	@echo "  clean          - Clean cache and temporary files"
+	@echo "  docker-build   - Build Docker image"
+	@echo "  docker-run     - Run with Docker Compose (production)"
+	@echo "  docker-dev     - Run with Docker Compose (development)"
+	@echo "  docker-down    - Stop Docker services"
+	@echo "  docker-logs    - View Docker logs"
+	@echo "  minikube-start - Start Minikube cluster"
+	@echo "  minikube-deploy - Deploy to Minikube"
+	@echo "  minikube-service - Access the service in browser"
+	@echo "  minikube-stop  - Stop Minikube cluster"
+	@echo "  minikube-delete - Delete Minikube cluster"
+	@echo "  minikube-dashboard - Open Minikube dashboard"
 
 install:
 	cd classifier && pip install --upgrade pip uv && uv pip install -e .
@@ -62,12 +72,14 @@ docker-down:
 	docker-compose -f docker-compose.dev.yml down
 
 docker-logs:
-	docker-compose logs -f classifier-apiminikube-start:
+	docker-compose logs -f classifier-api
+
+minikube-start:
 	minikube start --driver=docker
 
 minikube-deploy: minikube-start
 	# Set Docker environment to Minikube's Docker daemon
-	eval $$(minikube docker-env)
+	eval $(minikube docker-env)
 	
 	# Build the Docker image
 	cd classifier && docker build -t afval-alert:latest .
@@ -86,8 +98,14 @@ minikube-deploy: minikube-start
 	kubectl get pods
 	kubectl get services
 
+minikube-service:
+	minikube service afval-alert-service
+
 minikube-stop:
 	minikube stop
 
 minikube-delete:
 	minikube delete
+
+minikube-dashboard:
+	minikube dashboard
