@@ -45,6 +45,8 @@ public class Melding {
         this.statusUpdate.add(statusUpdate);
     }
 
+    public void setId(long id) { this.id = id; }
+
     public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
@@ -63,6 +65,10 @@ public class Melding {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public Image getImage() {
+        return image;
     }
 
     public void setImage(Image image) {
