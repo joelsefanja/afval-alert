@@ -7,10 +7,12 @@
   [paginator]="true"
   [rows]="5"
   sortMode="multiple"
-  [multiSortMeta]="[{field: 'date', order: -1}]"
   [rowsPerPageOptions]="[5, 10, 25, 100]"
   [tableStyle]="{ 'min-width': '50rem' }"
   styleClass="p-datatable-sm"
+  stateKey="notificationTable"
+  stateStorage="session"
+  
 >
   <ng-template pTemplate="header">
     <tr>
@@ -19,6 +21,40 @@
       <th pSortableColumn="status">Status <p-sortIcon field="status"></p-sortIcon></th>
       <th pSortableColumn="date">Datum <p-sortIcon field="date"></p-sortIcon></th>
     </tr>
+     <tr>
+        <th>
+          <input
+            pInputText
+            type="text"
+            (input)="dt.filter($any($event.target).value, 'location', 'contains')"
+            placeholder="Search location"
+            class="p-column-filter">
+        </th>
+        <th>
+          <input
+            pInputText
+            type="text"
+            (input)="dt.filter($any($event.target).value, 'type', 'contains')"
+            placeholder="Search type"
+            class="p-column-filter">
+        </th>
+        <th>
+          <input
+            pInputText
+            type="text"
+            (input)="dt.filter($any($event.target).value, 'status', 'contains')"
+            placeholder="Search status"
+            class="p-column-filter">
+        </th>
+        <th>
+          <input
+            pInputText
+            type="text"
+            (input)="dt.filter($any($event.target).value, 'date', 'contains')"
+            placeholder="Search date"
+            class="p-column-filter">
+        </th>
+      </tr>
   </ng-template>
 
   <ng-template pTemplate="body" let-notification>

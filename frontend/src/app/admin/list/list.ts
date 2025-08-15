@@ -5,6 +5,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
 import { SelectionService } from '../core/id';
+import { FormsModule } from '@angular/forms';
 
 const Test_Notification_Data: ListNotification[] = [
   { id: 1, location: 1, type: 'Grofvuil', status: 'Opgehaald', date: '03/07/2025' },
@@ -21,7 +22,7 @@ const Test_Notification_Data: ListNotification[] = [
 @Component({
   selector: 'app-list',
   standalone: true,
-  imports: [TableModule, InputTextModule, ButtonModule, TooltipModule],
+  imports: [TableModule, InputTextModule, ButtonModule, TooltipModule, FormsModule],
   templateUrl: './list.html',
   styleUrl: './list.scss'
 })
@@ -40,6 +41,25 @@ export class ListComponent {
   });
 
   constructor(private selection: SelectionService) {}
+
+  ngAfterViewInit() {
+  // Enable PrimeNG session state for the table
+  this.dt.stateKey = 'notificationTable';  // unique key for this table
+  this.dt.stateStorage = 'session';        // store state in sessionStorage
+
+  // Restore table state from session if it exists
+  const stateExists = sessionStorage.getItem(this.dt.stateKey || '') !== null;
+
+  if (!stateExists) {
+    // Only apply default sort if there is no stored state
+    this.dt.sortField = 'date';
+    this.dt.sortOrder = -1; // descending
+  } else {
+    // Let the table restore the previous state (filters, sort, pagination)
+    setTimeout(() => this.dt.restoreState(), 0);
+  }
+}
+
 
   goToDetails(item: ListNotification) {
     this.selection.select(item.id);
