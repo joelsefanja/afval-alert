@@ -22,7 +22,7 @@ public class MeldingService {
     public Melding saveMelding(Float latitude,
                                Float longitude,
                                Long imageId,
-                               String trashType) throws IOException {
+                               String trashType) {
         Image image = imageRepository.findById(imageId)
                 .orElseThrow(() -> new RuntimeException("Image not found with ID " + imageId));
 
@@ -34,10 +34,23 @@ public class MeldingService {
                 trashType
         );
 
+        StatusUpdate statusUpdate = new StatusUpdate();
+        statusUpdate.setStatusUpdate(0);
+
+        melding.addStatusUpdate(statusUpdate);
+
+        System.out.println(melding.getStatusUpdates().getFirst().getId());
+
         return meldingRepository.save(melding);
     }
 
-    public Melding addStatusUpdate(Melding melding, StatusUpdate statusUpdate) {
+    public Melding addStatusUpdate(Long meldingId, int update) {
+        Melding melding = meldingRepository.findById(meldingId)
+                        .orElseThrow(() -> new RuntimeException("Melding not found with ID: " + meldingId));
+
+        StatusUpdate statusUpdate = new StatusUpdate();
+        statusUpdate.setStatusUpdate(update);
+
         melding.addStatusUpdate(statusUpdate);
 
         return meldingRepository.save(melding);

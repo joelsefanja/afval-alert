@@ -19,8 +19,7 @@ public class Melding {
 
     private String trashType;
 
-    @OneToMany
-    @JoinColumn(name = "statusupdate_id")
+    @OneToMany(mappedBy = "melding", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StatusUpdate> statusUpdate = new ArrayList<StatusUpdate>();
 
     public void setMelding(Float latitude,
@@ -35,10 +34,15 @@ public class Melding {
     }
 
     public void addStatusUpdate(StatusUpdate statusUpdate) {
+        statusUpdate.setMelding(this);
         this.statusUpdate.add(statusUpdate);
     }
 
     public Long getId() {
         return id;
+    }
+
+    public List<StatusUpdate> getStatusUpdates() {
+        return statusUpdate;
     }
 }

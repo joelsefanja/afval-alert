@@ -1,6 +1,7 @@
 package com.summerschool.afval_alert.controller;
 
 import com.summerschool.afval_alert.model.entity.Melding;
+import com.summerschool.afval_alert.model.entity.StatusUpdate;
 import com.summerschool.afval_alert.service.MeldingService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,7 +21,7 @@ public class MeldingController {
     }
 
     @PostMapping("/melding")
-    public ResponseEntity<Long> addMelding(@RequestParam("latitude") Float latitude,
+    public ResponseEntity<Long> postMelding(@RequestParam("latitude") Float latitude,
                                            @RequestParam("longitude") Float longitude,
                                            @RequestParam("imageId") Long imageId,
                                            @RequestParam("trashType") String trashType) throws IOException{

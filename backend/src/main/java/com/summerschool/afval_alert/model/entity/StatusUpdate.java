@@ -13,15 +13,35 @@ public class StatusUpdate {
 
     private int status;
 
-    @OneToMany()
-    @JoinColumn(name = "notitie_id")
+    @OneToMany(mappedBy = "statusUpdate", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Notitie> notitie = new ArrayList<Notitie>();
 
-    public void setStatusUpdate(int status) {
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "melding_id", nullable = false)
+    private Melding melding;
+
+    public void setStatusUpdate( int status) {
         this.status = status;
     }
 
+    public void setMelding(Melding melding) {
+        this.melding = melding;
+    }
+
+    public Melding getMelding() {
+        return melding;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
     public void addNotitie(Notitie notitie) {
+        notitie.setStatusUpdate(this);
         this.notitie.add(notitie);
+    }
+
+    public List<Notitie> getNotities() {
+        return notitie;
     }
 }
