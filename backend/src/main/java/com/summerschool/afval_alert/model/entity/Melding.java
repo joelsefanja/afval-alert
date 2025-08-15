@@ -63,6 +63,10 @@ public class Melding {
         this.name = name;
     }
 
+    public String getComment() {
+        return comment;
+    }
+
     public void setComment(String comment) {
         this.comment = comment;
     }

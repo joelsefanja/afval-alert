@@ -72,7 +72,18 @@ public class MeldingServiceTest {
         existingMelding.setId(1L);
         existingMelding.setComment("old comment");
 
-        // Het is veiliger om bij het updaten van de melding alleen de aangepaste velden op te slaan.
-        // Momenteel wordt de complete entity overschreven.
+        Melding updatedMelding = new Melding();
+        updatedMelding.setId(1L);
+        updatedMelding.setComment("new comment");
+
+        when(meldingRepository.save(any(Melding.class))).thenReturn(updatedMelding);
+
+        existingMelding.setComment("new comment");
+        Melding result = meldingService.updateMelding(updatedMelding);
+
+        assertNotNull(result);
+        assertEquals(existingMelding.getComment(), result.getComment());
+
+        verify(meldingRepository, times(1)).save(any(Melding.class));
     }
 }
