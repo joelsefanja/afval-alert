@@ -8,6 +8,8 @@ import com.summerschool.afval_alert.repository.MeldingRepository;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class MeldingService {
@@ -19,38 +21,36 @@ public class MeldingService {
         this.imageRepository = imageRepository;
     }
 
-    public Melding saveMelding(Float latitude,
-                               Float longitude,
-                               Long imageId,
-                               String trashType) {
-        Image image = imageRepository.findById(imageId)
-                .orElseThrow(() -> new RuntimeException("Image not found with ID " + imageId));
-
+    public Melding createMelding(Image image) {
         Melding melding = new Melding();
-        melding.setMelding(
-                latitude,
-                longitude,
-                image,
-                trashType
-        );
+        melding.setImage(image);
 
         StatusUpdate statusUpdate = new StatusUpdate();
         statusUpdate.setStatusUpdate(0);
 
         melding.addStatusUpdate(statusUpdate);
 
-        System.out.println(melding.getStatusUpdates().getFirst().getId());
-
         return meldingRepository.save(melding);
     }
 
-    public Melding addStatusUpdate(Long meldingId, int update) {
-        Melding melding = meldingRepository.findById(meldingId)
-                        .orElseThrow(() -> new RuntimeException("Melding not found with ID: " + meldingId));
+    public Melding findMeldingById(Long id) {
+        return meldingRepository.findById(id).orElse(null);
+    }
 
-        StatusUpdate statusUpdate = new StatusUpdate();
-        statusUpdate.setStatusUpdate(update);
+    public Melding updateMelding(Melding melding){
+        return meldingRepository.save(melding);
+    }
 
+    public void deleteNonFinalizedMeldingen(LocalDateTime cutoff) {
+        List<Melding> oldDrafts = meldingRepository.findByIsFinalizedFalseAndCreatedAtBefore(cutoff);
+
+        meldingRepository.deleteAll(oldDrafts);
+
+        System.out.println("Deleted " + oldDrafts.size() + " old meldingen with their linked image.");
+    }
+
+
+    public Melding addStatusUpdate(Melding melding, StatusUpdate statusUpdate) {
         melding.addStatusUpdate(statusUpdate);
 
         return meldingRepository.save(melding);

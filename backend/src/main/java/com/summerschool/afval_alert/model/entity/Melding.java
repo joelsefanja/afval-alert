@@ -1,6 +1,7 @@
 package com.summerschool.afval_alert.model.entity;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,12 +11,29 @@ public class Melding {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private Float latitude;
-    private Float longitude;
+    private double latitude;
+    private double longitude;
 
-    @OneToOne
-    @JoinColumn(name = "id")
+    @Column(length = 500)
+    private String comment;
+
+    private String email;
+
+    private String name;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "image_id")
     private Image image;
+
+    private Boolean isFinalized = false;
+
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 
     private String trashType;
 
@@ -24,13 +42,11 @@ public class Melding {
 
     public void setMelding(Float latitude,
                            Float longitude,
-                           Image imageId,
                            String trashType) {
 
         this.latitude = latitude;
         this.longitude = longitude;
         this.trashType = trashType;
-        this.image = imageId;
     }
 
     public void addStatusUpdate(StatusUpdate statusUpdate) {
@@ -38,11 +54,53 @@ public class Melding {
         this.statusUpdate.add(statusUpdate);
     }
 
-    public Long getId() {
+    public void setId(long id) { this.id = id; }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public Image getImage() {
+        return image;
+    }
+
+    public void setImage(Image image) {
+        this.image = image;
+    }
+
+    public long getId() {
         return id;
     }
 
-    public List<StatusUpdate> getStatusUpdates() {
-        return statusUpdate;
+    public Boolean getFinalized() {
+        return isFinalized;
+    }
+
+    public void setFinalized(Boolean finalized) {
+        isFinalized = finalized;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

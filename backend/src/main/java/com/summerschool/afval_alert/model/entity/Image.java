@@ -28,16 +28,9 @@ public class Image {
         this.data = data;
     }
 
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
     public Long getId() {
         return id;
     }
+
+    public void setId(Long id) { this.id = id; }
 }

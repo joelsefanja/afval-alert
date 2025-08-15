@@ -10,12 +10,5 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDateTime;
 
 public interface ImageRepository extends JpaRepository<Image, Long> {
-    // Verwijder alle afbeeldingen op basis van de cutoff tijd.
-    //
-    // Bij uitbreiden moet er waarschijnlijk gebruik worden gemaakt van een
-    // processed boolean om efficient door de verwerkte afbeeldingen heen te vliegen.
-    @Modifying
-    @Transactional
-    @Query("DELETE FROM Image i WHERE i.createdAt < :cutoff")
-    int deleteOldImages(@Param("cutoff") LocalDateTime cutoff);
+
 }
