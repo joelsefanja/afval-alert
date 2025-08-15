@@ -56,8 +56,7 @@ Voor gedetailleerde informatie over het project, zie de volgende documenten:
 
 - [Classifier README](classifier/README.md) - Hoofddocumentatie voor de Python backend
 - [Lokale Setup Gids](LOCAL_SETUP.md) - Eenvoudige lokale setup zonder cloud toegang
-- [Minikube Deployment](MINIKUBE_DEPLOYMENT.md) - Instructies voor deployment naar Minikube
-- [GKE Begrijpen](GKE_BEGRIJPEN.md) - Uitleg van GKE en cloud computing begrippen
+- [Minikube Deployment](MINIKUBE_DEPLOYMENT.md) - Instructies voor deployment naar Minikube (optioneel)
 - [Deployment](DEPLOYMENT.md) - Algemene deployment informatie en scripts
 
 ## Technologieën

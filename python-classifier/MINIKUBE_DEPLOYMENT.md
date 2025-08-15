@@ -1,6 +1,8 @@
-# Minikube Deployment Gids
+# Minikube Deployment Gids (Optioneel)
 
 Deze gids legt uit hoe je de AfvalAlert applicatie kunt deployen naar een lokale Minikube Kubernetes cluster, wat perfect is voor development en testen.
+
+**Let op: Deze setup is optioneel en alleen nodig als je Kubernetes lokaal wilt leren of testen. Voor normale ontwikkeling is de Docker Compose setup voldoende.**
 
 ## Wat is Minikube?
 

@@ -19,12 +19,6 @@ help:
 	@echo "  docker-dev     - Run with Docker Compose (development)"
 	@echo "  docker-down    - Stop Docker services"
 	@echo "  docker-logs    - View Docker logs"
-	@echo "  minikube-start - Start Minikube cluster"
-	@echo "  minikube-deploy - Deploy to Minikube"
-	@echo "  minikube-service - Access the service in browser"
-	@echo "  minikube-stop  - Stop Minikube cluster"
-	@echo "  minikube-delete - Delete Minikube cluster"
-	@echo "  minikube-dashboard - Open Minikube dashboard"
 
 install:
 	cd classifier && pip install --upgrade pip uv && uv pip install -e .
@@ -73,39 +67,3 @@ docker-down:
 
 docker-logs:
 	docker-compose logs -f classifier-api
-
-minikube-start:
-	minikube start --driver=docker
-
-minikube-deploy: minikube-start
-	# Set Docker environment to Minikube's Docker daemon
-	eval $(minikube docker-env)
-	
-	# Build the Docker image
-	cd classifier && docker build -t afval-alert:latest .
-	
-	# Update deployment.yaml with the correct image name
-	sed -i 's|YOUR_ARTIFACT_REGISTRY/afval-alert:latest|afval-alert:latest|g' k8s/deployment.yaml
-	sed -i 's|YOUR_DOMAIN|afval-alert.local|g' k8s/deployment.yaml
-	
-	# Apply Kubernetes configurations
-	kubectl apply -f k8s/
-	
-	# Wait for deployment to be ready
-	kubectl rollout status deployment/afval-alert
-	
-	# Show deployment status
-	kubectl get pods
-	kubectl get services
-
-minikube-service:
-	minikube service afval-alert-service
-
-minikube-stop:
-	minikube stop
-
-minikube-delete:
-	minikube delete
-
-minikube-dashboard:
-	minikube dashboard

@@ -5,9 +5,7 @@ Deze gids beschrijft de verschillende manieren waarop je de AfvalAlert applicati
 ## Deployment Opties Overzicht
 
 1. **Lokaal met Docker** - Voor ontwikkeling en eenvoudige testen
-2. **Minikube** - Lokale Kubernetes voor ontwikkeling en testen
-3. **Google Kubernetes Engine (GKE)** - Productie deployment in de cloud
-4. **Andere Kubernetes providers** - AWS EKS, Azure AKS, etc.
+2. **Minikube** - Lokale Kubernetes voor ontwikkeling en testen (optioneel)
 
 ## 1. Lokale Deployment met Docker
 
@@ -60,7 +58,7 @@ De eenvoudigste manier om de applicatie te draaien is met Docker Compose.
 - Geen hoge beschikbaarheid
 - Geen externe toegang
 
-## 2. Minikube Deployment
+## 2. Minikube Deployment (Optioneel)
 
 Voor ontwikkelaars die Kubernetes lokaal willen testen.
 
@@ -77,80 +75,17 @@ Zie [MINIKUBE_DEPLOYMENT.md](MINIKUBE_DEPLOYMENT.md) voor gedetailleerde instruc
 - Beperkte resources
 - Geen productieomgeving
 
-## 3. Google Kubernetes Engine (GKE) Deployment
-
-Voor productiegebruik in de Google Cloud.
-
-### Automatische Deployment met GitHub Actions
-1. Fork deze repository
-2. Configureer de benodigde secrets in GitHub:
-   - `GCP_PROJECT_ID`: Het Google Cloud project ID
-   - `GKE_CLUSTER`: De naam van het GKE cluster
-   - `GKE_ZONE`: De zone waarin het GKE cluster draait
-   - `GCP_WIF_PROVIDER`: De Workload Identity Federation provider
-   - `GCP_DEPLOY_SA`: Het Google Cloud service account voor deployment
-3. Push naar main of develop branch
-4. GitHub Actions deployt automatisch naar GKE
-
-### Handmatige Deployment met Script
-Gebruik het `deploy-gke.py` script voor een eenmalige deployment:
-
-1. **Vereisten**
-   - Google Cloud account met billing ingeschakeld
-   - Google Cloud CLI geïnstalleerd: https://cloud.google.com/sdk/docs/install
-   - kubectl geïnstalleerd: https://kubernetes.io/docs/tasks/tools/
-   - Docker geïnstalleerd: https://docs.docker.com/get-docker/
-
-2. **Gebruik**
-   ```bash
-   python deploy-gke.py
-   ```
-
-3. **Wat je nodig hebt**
-   - Google Cloud Project ID
-   - GKE Cluster naam en zone
-   - Gemini API key (gratis te verkrijgen via https://makersuite.google.com/app/apikey)
-
-### Voordelen
-- Hoge beschikbaarheid
-- Automatische schaling
-- Professionele infrastructuur
-- Zero-downtime updates
-
-### Beperkingen
-- Kosten voor cloud resources
-- Complexere setup
-- Google Cloud account vereist
-
-## 4. Andere Kubernetes Providers
-
-De applicatie kan ook worden gedeployed op andere Kubernetes providers:
-
-### Amazon Elastic Kubernetes Service (EKS)
-1. Pas de `k8s/serviceaccount.yaml` aan voor AWS IAM
-2. Gebruik AWS CLI in plaats van gcloud
-3. Deploy met kubectl
-
-### Azure Kubernetes Service (AKS)
-1. Pas de `k8s/serviceaccount.yaml` aan voor Azure AD
-2. Gebruik Azure CLI in plaats van gcloud
-3. Deploy met kubectl
-
 ## Deployment Keuzegids
 
 | Use Case | Aanbevolen Optie | Reden |
 |----------|------------------|-------|
 | Lokale ontwikkeling | Docker Compose | Eenvoudig, snel, geen complexe tools |
 | Leren Kubernetes | Minikube | Kostenloos, lokaal, volledige Kubernetes ervaring |
-| Productie | GKE/AKS/EKS | Schaalbaar, betrouwbaar, professioneel |
-| CI/CD Testen | GitHub Actions + Minikube | Automatisch testen in Kubernetes omgeving |
 
 ## Veiligheid
 
 ### API Key Management
 - **Lokaal**: Gebruik `.env` bestanden, voeg deze toe aan `.gitignore`
-- **Kubernetes**: Gebruik Kubernetes secrets
-- **Productie**: Gebruik cloud provider secrets management (Secret Manager, Vault, etc.)
 
 ### Image Security
 - Scan Docker images op kwetsbaarheden
@@ -162,21 +97,6 @@ De applicatie kan ook worden gedeployed op andere Kubernetes providers:
 ### Lokaal
 - Bekijk Docker logs: `docker logs <container-name>`
 - Gebruik de `/health` endpoint
-
-### Kubernetes
-- Bekijk pod logs: `kubectl logs deployment/afval-alert`
-- Gebruik Kubernetes dashboard
-- Integreer met monitoring tools (Prometheus, Grafana)
-
-## Backup en Herstel
-
-### Configuratie
-- Versioneer alle Kubernetes YAML bestanden
-- Gebruik tools zoals Helm voor complexe deployments
-
-### Data
-- Voor productiegebruik, implementeer persistente storage
-- Maak regelmatig backups van kritieke data
 
 ## Problemen oplossen
 
@@ -199,5 +119,4 @@ De applicatie kan ook worden gedeployed op andere Kubernetes providers:
 ### Specifieke Deployment Problemen
 Zie de specifieke deployment documentatie voor problemen met:
 - [Lokale Docker](LOCAL_SETUP.md)
-- [Minikube](MINIKUBE_DEPLOYMENT.md)
-- [GKE](GKE_BEGRIJPEN.md)
+- [Minikube](MINIKUBE_DEPLOYMENT.md) (optioneel)

@@ -120,8 +120,7 @@ uv pip install -e .
 
 Voor meer gedetailleerde informatie, zie de volgende documenten:
 - [Lokale Setup Gids](../LOCAL_SETUP.md) - Eenvoudige lokale setup zonder cloud toegang
-- [MINIKUBE_DEPLOYMENT.md](../MINIKUBE_DEPLOYMENT.md) - Gedetailleerde Minikube deployment instructies
-- [GKE_BEGRIJPEN.md](../GKE_BEGRIJPEN.md) - Uitleg van GKE en cloud computing begrippen
+- [MINIKUBE_DEPLOYMENT.md](../MINIKUBE_DEPLOYMENT.md) - Gedetailleerde Minikube deployment instructies (optioneel)
 - [DEPLOYMENT.md](../DEPLOYMENT.md) - Algemene deployment informatie
 
 ## Contributing
