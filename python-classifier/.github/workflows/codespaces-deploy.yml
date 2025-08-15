@@ -1,0 +1,71 @@
+name: Deploy AfvalAlert to Minikube in Codespaces
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Install dependencies
+      run: |
+        cd classifier
+        pip install --upgrade pip uv
+        uv pip install -e .
+
+    - name: Install Minikube and Kubernetes tools
+      run: |
+        # Install minikube
+        curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+        sudo install minikube-linux-amd64 /usr/local/bin/minikube
+        
+        # Install kubectl
+        curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+        sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+
+    - name: Start Minikube
+      run: |
+        minikube start --driver=docker
+        kubectl cluster-info
+
+    - name: Build Docker image in Minikube
+      run: |
+        # Set Docker environment to Minikube's Docker daemon
+        eval $(minikube docker-env)
+        
+        # Build the Docker image
+        cd classifier
+        docker build -t afval-alert:latest .
+
+    - name: Deploy to Minikube
+      run: |
+        # Update deployment.yaml with the correct image name
+        sed -i 's|YOUR_ARTIFACT_REGISTRY/afval-alert:latest|afval-alert:latest|g' k8s/deployment.yaml
+        sed -i 's|YOUR_DOMAIN|afval-alert.local|g' k8s/deployment.yaml
+        
+        # Apply Kubernetes configurations
+        kubectl apply -f k8s/
+        
+        # Wait for deployment to be ready
+        kubectl rollout status deployment/afval-alert
+        
+        # Show deployment status
+        kubectl get pods
+        kubectl get services
+
+    - name: Run tests
+      run: |
+        cd classifier
+        python -m pytest tests/ -v
