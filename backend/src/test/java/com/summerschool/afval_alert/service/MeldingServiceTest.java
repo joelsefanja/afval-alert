@@ -55,6 +55,8 @@ public class MeldingServiceTest {
 
         assertNotNull(result);
         assertEquals(melding.getId(), result.getId());
+
+        verify(meldingRepository, times(1)).findById(1L);
     }
 
     @Test
@@ -64,6 +66,8 @@ public class MeldingServiceTest {
         Melding result = meldingService.findMeldingById(1L);
 
         assertNull(result);
+
+        verify(meldingRepository, times(1)).findById(1L);
     }
 
     @Test
