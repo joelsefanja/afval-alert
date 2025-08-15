@@ -23,7 +23,6 @@ public class ImageService {
     }
 
     public Image getImage(Long id) {
-        System.out.println("test");
         return imageRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Image not found"));
     }
