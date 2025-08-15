@@ -11,11 +11,21 @@ public class Melding {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private Float latitude;
-    private Float longitude;
+    private double latitude;
+    private double longitude;
 
-    @Lob
-    private byte[] imageData;
+    @Column(length = 500)
+    private String comment;
+
+    private String email;
+
+    private String name;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "image_id")
+    private Image image;
+
+    private Boolean isFinalized = false;
 
     private String trashType;
 
@@ -25,15 +35,41 @@ public class Melding {
 
     public void setMelding(Float latitude,
                            Float longitude,
-                           byte[] imageData,
                            String trashType) {
         this.latitude = latitude;
         this.longitude = longitude;
-        this.imageData = imageData;
         this.trashType = trashType;
     }
 
     public void addStatusUpdate(StatusUpdate statusUpdate) {
         this.statusUpdate.add(statusUpdate);
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public void setImage(Image image) {
+        this.image = image;
+    }
+
+    public long getId() {
+        return id;
     }
 }

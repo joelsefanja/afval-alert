@@ -1,10 +1,10 @@
 package com.summerschool.afval_alert.service;
 
+import com.summerschool.afval_alert.model.entity.Image;
 import com.summerschool.afval_alert.model.entity.Melding;
 import com.summerschool.afval_alert.model.entity.StatusUpdate;
 import com.summerschool.afval_alert.repository.MeldingRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -16,15 +16,19 @@ public class MeldingService {
         this.meldingRepository = meldingRepository;
     }
 
-    public Melding saveMelding(Float latitude,
-                               Float longitude,
-                               MultipartFile imageFile,
-                               String trashType) throws IOException {
+    public Melding createMelding(Image image) {
+        Melding melding = new Melding();
+        melding.setImage(image);
+        return meldingRepository.save(melding);
+    }
+
+    public Melding updateMelding(Float latitude,
+                                 Float longitude,
+                                 String trashType) throws IOException {
         Melding melding = new Melding();
         melding.setMelding(
                 latitude,
                 longitude,
-                imageFile.getBytes(),
                 trashType
         );
 
