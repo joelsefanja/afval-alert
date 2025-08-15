@@ -1,7 +1,18 @@
-<section>
-  <h2>Details for item {{ selection.selectedId() }}</h2>
-  <button mat-button (click)="closeDetail()">Close</button>
-</section>
+<button mat-button (click)="closeDetail()">Close</button>
+
+<h1>Foto van melding</h1>
+Opmerking van gebruiker bij melding
+
+<h1>Kaart voor melding met id: {{ selection.selectedId() }}</h1>
 
 <app-tijdlijn-element [tijdlijnElementen]="TEST"></app-tijdlijn-element>
 
+<p>Update status</p>
+<div>
+  <p-select [options]="" [(ngModel)]="selectedStatus" optionLabel="name" placeholder="Selecteer een status" class="w-full md:w-56" />
+</div>
+<p>Voeg opmerking toe</p>
+<input type="text" pInputText [(ngModel)]="value" />
+<div>
+  <button mat-button>Update</button>
+</div>

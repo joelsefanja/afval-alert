@@ -1,10 +1,13 @@
 import { Component, input } from '@angular/core';
+import { DatePipe} from '@angular/common';
 import { TijdlijnElement } from '../tijdlijn-element.interface';
-import { MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatCardFooter } from '@angular/material/card';
+import { TimelineModule } from 'primeng/timeline';
+import { CardModule } from 'primeng/card';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-tijdlijn-element',
-  imports: [MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatCardFooter],
+  imports: [TimelineModule, CardModule, ButtonModule, DatePipe],
   templateUrl: './tijdlijn-element.html',
   styleUrl: './tijdlijn-element.scss'
 })

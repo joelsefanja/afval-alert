@@ -1,12 +1,17 @@
-<ul>
-  @for (element of tijdlijnElementen(); track element.date) {
-    <mat-card appearance="outlined">
-      <mat-card-header>
-        <mat-card-title>{{element.status}}</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>{{element.note}}</mat-card-content>
-      <mat-card-footer>{{element.date}}</mat-card-footer>
-    </mat-card>
-    <br/>
-  }
-</ul>
+<div class="timeline-box">
+    <p-timeline [value]="tijdlijnElementen()">
+         <ng-template #opposite let-event>
+            <small class="text-surface-500 dark:text-surface-400">{{ event.date | date: 'dd-MM-yyyy HH:mm'}}</small>
+        </ng-template>
+        <ng-template #content let-event>
+            Status: {{event.status}}
+          @for (note of event.notes; track note) {
+          <div class="note">
+            <p style="font-size:14px; ">- {{ note }}</p>
+          </div>
+           }
+        </ng-template>
+    </p-timeline>
+</div>
+
+

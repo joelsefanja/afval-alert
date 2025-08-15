@@ -1,5 +1,5 @@
 export interface TijdlijnElement {
   status: String;
-  note: String;
+  notes: String[];
   date: Date;
 }
