@@ -72,4 +72,8 @@ public class Melding {
     public long getId() {
         return id;
     }
+
+    public void setFinalized(Boolean finalized) {
+        isFinalized = finalized;
+    }
 }

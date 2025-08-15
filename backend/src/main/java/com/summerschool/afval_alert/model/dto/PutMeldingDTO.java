@@ -1,6 +1,6 @@
 package com.summerschool.afval_alert.model.dto;
 
-public class PostMeldingDTO {
+public class PutMeldingDTO {
     private double lat;
     private double lon;
     private String email;

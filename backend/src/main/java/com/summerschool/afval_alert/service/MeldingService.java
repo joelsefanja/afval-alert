@@ -22,16 +22,11 @@ public class MeldingService {
         return meldingRepository.save(melding);
     }
 
-    public Melding updateMelding(Float latitude,
-                                 Float longitude,
-                                 String trashType) throws IOException {
-        Melding melding = new Melding();
-        melding.setMelding(
-                latitude,
-                longitude,
-                trashType
-        );
+    public Melding findMeldingById(Long id) {
+        return meldingRepository.findById(id).orElse(null);
+    }
 
+    public Melding updateMelding(Melding melding){
         return meldingRepository.save(melding);
     }
 
