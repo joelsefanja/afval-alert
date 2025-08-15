@@ -7,6 +7,8 @@ import com.summerschool.afval_alert.repository.MeldingRepository;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class MeldingService {
@@ -29,6 +31,15 @@ public class MeldingService {
     public Melding updateMelding(Melding melding){
         return meldingRepository.save(melding);
     }
+
+    public void deleteNonFinalizedMeldingen(LocalDateTime cutoff) {
+        List<Melding> oldDrafts = meldingRepository.findByIsFinalizedFalseAndCreatedAtBefore(cutoff);
+
+        meldingRepository.deleteAll(oldDrafts);
+
+        System.out.println("Deleted " + oldDrafts.size() + " old meldingen with their linked image.");
+    }
+
 
     public Melding addStatusUpdate(Melding melding, StatusUpdate statusUpdate) {
         melding.addStatusUpdate(statusUpdate);

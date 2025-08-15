@@ -2,6 +2,7 @@ package com.summerschool.afval_alert.model.entity;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,11 +22,19 @@ public class Melding {
 
     private String name;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "image_id")
     private Image image;
 
     private Boolean isFinalized = false;
+
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 
     private String trashType;
 
@@ -83,7 +92,15 @@ public class Melding {
         return id;
     }
 
+    public Boolean getFinalized() {
+        return isFinalized;
+    }
+
     public void setFinalized(Boolean finalized) {
         isFinalized = finalized;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

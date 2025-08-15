@@ -32,9 +32,8 @@ public class MeldingController {
         // Markeer als finalized om opschoning te voorkomen
         melding.setFinalized(true);
 
-        Melding updatedMelding = meldingService.updateMelding(melding);
+        meldingService.updateMelding(melding);
 
-        // Waarschijnlijk beter om gebruik te maken van een melding feedback DTO
-        return ResponseEntity.ok(updatedMelding);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -9,6 +9,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -89,5 +91,20 @@ public class MeldingServiceTest {
         assertEquals(existingMelding.getComment(), result.getComment());
 
         verify(meldingRepository, times(1)).save(any(Melding.class));
+    }
+
+    @Test
+    void deleteNonFinalizedMeldingen() {
+        Image image = new Image();
+        Melding melding = new Melding();
+        melding.setId(100L);
+        melding.setImage(image);
+
+        when(meldingRepository.findByIsFinalizedFalseAndCreatedAtBefore(any()))
+                .thenReturn(List.of(melding));
+
+        meldingService.deleteNonFinalizedMeldingen(LocalDateTime.now().minusHours(1));
+
+        verify(meldingRepository, times(1)).deleteAll(List.of(melding));
     }
 }
