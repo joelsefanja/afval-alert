@@ -9,11 +9,11 @@ import { LocatiePicker } from '../../../../../afvalmelding/locatie/locatie-picke
 
 /**
  * Component voor het bepalen van de locatie waar het afval zich bevindt.
- * 
+ *
  * Deze component biedt twee methoden voor locatie bepaling:
  * 1. GPS locatie ophalen (huidige positie)
  * 2. Adres zoeken via tekst invoer
- * 
+ *
  * Features:
  * - Automatische GPS locatie met gebruiker toestemming
  * - Adres zoekfunctionaliteit met autocomplete
@@ -21,10 +21,10 @@ import { LocatiePicker } from '../../../../../afvalmelding/locatie/locatie-picke
  * - Validatie of locatie binnen gemeente Groningen ligt
  * - Kaart preview van geselecteerde locatie
  * - Error handling voor locatie services
- * 
+ *
  * @example
  * ```html
- * <app-locatie-stap 
+ * <app-locatie-stap
  *   [disabled]="false"
  *   (locatieGeselecteerd)="onLocatieGeselecteerd($event)"
  *   (navigatieTerug)="onTerug()"
@@ -35,7 +35,7 @@ import { LocatiePicker } from '../../../../../afvalmelding/locatie/locatie-picke
 @Component({
   selector: 'app-locatie-stap',
   standalone: true,
-  imports: [CommonModule, LocatiePicker],
+  imports: [CommonModule],
   templateUrl: './locatie-stap.component.html',
   styleUrls: ['./locatie-stap.component.scss'],
   providers: [
@@ -43,16 +43,16 @@ import { LocatiePicker } from '../../../../../afvalmelding/locatie/locatie-picke
   ]
 })
 export class LocatieStapComponent {
-  
+
   // Dependency injection
   protected readonly state = inject(MeldingsProcedureStatus);
   private readonly geocodingService = inject(GEOCODING_SERVICE_TOKEN);
   private readonly kaartService = inject(KaartService);
-  
+
   // Input properties
   /** Schakelt de component uit wanneer true */
   readonly disabled = input<boolean>(false);
-  
+
   // Output events
   /** Event dat wordt uitgezonden wanneer een locatie is geselecteerd */
   readonly locatieGeselecteerd = output<{latitude: number, longitude: number, adres: string, gebiedInfo?: GebiedInfo}>();
@@ -60,7 +60,7 @@ export class LocatieStapComponent {
   readonly navigatieTerug = output<void>();
   /** Event voor navigatie naar volgende stap */
   readonly navigatieVolgende = output<void>();
-  
+
   // Component state signals
   /** Geeft aan of GPS locatie wordt opgehaald */
   protected readonly gpsBezig = signal<boolean>(false);
@@ -78,17 +78,17 @@ export class LocatieStapComponent {
   /**
    * Navigeert terug naar de vorige stap
    */
-  protected terug(): void { 
+  protected terug(): void {
     this.navigatieTerug.emit();
-    this.state.gaTerugNaarVorige(); 
+    this.state.gaTerugNaarVorige();
   }
-  
+
   /**
    * Navigeert naar de volgende stap
    */
-  protected volgende(): void { 
+  protected volgende(): void {
     this.navigatieVolgende.emit();
-    this.state.gaNaarVolgende(); 
+    this.state.gaNaarVolgende();
   }
 
   /**
@@ -100,10 +100,10 @@ export class LocatieStapComponent {
    */
   protected async getCurrentLocation(): Promise<void> {
     if (this.disabled() || this.gpsBezig()) return;
-    
+
     this.gpsBezig.set(true);
     this.state.setLocatieError('');
-    
+
     try {
       // GPS locatie ophalen
       const position = await new Promise<GeolocationPosition>((resolve, reject) => {
@@ -119,33 +119,33 @@ export class LocatieStapComponent {
       });
 
       const { latitude, longitude } = position.coords;
-      
+
       // Analyseer locatie met uitgebreide informatie
       const locatieAnalyse = await this.geocodingService.analyseLocatie(latitude, longitude).toPromise();
       if (!locatieAnalyse) {
         throw new Error('Locatie informatie kon niet worden opgehaald');
       }
-      
+
       // Controleer of binnen provincie Groningen
       if (!locatieAnalyse.provincieGroningen) {
         throw new Error('Locatie ligt buiten provincie Groningen');
       }
-      
+
       // Sla locatie en details op
       this.locatieDetails.set(locatieAnalyse);
       this.state.setLocatie(locatieAnalyse.volledigAdres, { lat: latitude, lng: longitude });
-      
-      
-      this.locatieGeselecteerd.emit({ 
-        latitude, 
-        longitude, 
-        adres: locatieAnalyse.volledigAdres 
+
+
+      this.locatieGeselecteerd.emit({
+        latitude,
+        longitude,
+        adres: locatieAnalyse.volledigAdres
       });
-      
+
     } catch (error: any) {
       console.error('GPS locatie ophalen mislukt:', error);
       let errorMessage = 'Locatie kon niet worden bepaald';
-      
+
       if (error.code === 1) {
         errorMessage = 'Locatie toegang geweigerd. Sta locatie toe in je browser.';
       } else if (error.code === 2) {
@@ -155,7 +155,7 @@ export class LocatieStapComponent {
       } else if (error.message) {
         errorMessage = error.message;
       }
-      
+
       this.state.setLocatieError(errorMessage);
     } finally {
       this.gpsBezig.set(false);
@@ -167,51 +167,51 @@ export class LocatieStapComponent {
    * - Valideert invoer (niet leeg)
    * - Gebruikt geocoding service voor adres → GPS conversie
    * - Controleert of gevonden locatie binnen Groningen ligt
-   * 
+   *
    * @param adres Het te zoeken adres
    */
   protected async zoekAdres(adres: string): Promise<void> {
     if (!adres?.trim() || this.disabled() || this.adresZoekenBezig()) return;
-    
+
     this.adresZoekenBezig.set(true);
     this.state.setLocatieError('');
-    
+
     try {
       // Haal coördinaten op voor adres
       const coordinates = await this.geocodingService.getCoordinatenVanAdres(adres.trim()).toPromise();
       if (!coordinates) {
         throw new Error('Adres niet gevonden');
       }
-      
+
       // Analyseer locatie met uitgebreide informatie
       const locatieAnalyse = await this.geocodingService.analyseLocatie(
-        coordinates.latitude, 
+        coordinates.latitude,
         coordinates.longitude
       ).toPromise();
-      
+
       if (!locatieAnalyse) {
         throw new Error('Locatie informatie kon niet worden opgehaald');
       }
-      
+
       // Controleer of binnen provincie Groningen
       if (!locatieAnalyse.provincieGroningen) {
         throw new Error('Adres ligt buiten provincie Groningen');
       }
-      
+
       // Sla locatie en details op
       this.locatieDetails.set(locatieAnalyse);
-      this.state.setLocatie(locatieAnalyse.volledigAdres, { 
-        lat: coordinates.latitude, 
-        lng: coordinates.longitude 
+      this.state.setLocatie(locatieAnalyse.volledigAdres, {
+        lat: coordinates.latitude,
+        lng: coordinates.longitude
       });
-      
-      
-      this.locatieGeselecteerd.emit({ 
-        latitude: coordinates.latitude, 
-        longitude: coordinates.longitude, 
-        adres: locatieAnalyse.volledigAdres 
+
+
+      this.locatieGeselecteerd.emit({
+        latitude: coordinates.latitude,
+        longitude: coordinates.longitude,
+        adres: locatieAnalyse.volledigAdres
       });
-      
+
     } catch (error: any) {
       console.error('Adres zoeken mislukt:', error);
       this.state.setLocatieError(error.message || 'Adres niet gevonden');
@@ -267,12 +267,12 @@ export class LocatieStapComponent {
     try {
       // Haal uitgebreide gebied informatie op via KaartService
       const gebiedInfo = await this.kaartService.getGebiedInfoByCoordinate(locatieInfo.latitude, locatieInfo.longitude);
-      
+
       if (gebiedInfo) {
         // Controleer of binnen provincie Groningen (Nederland specifieke controle)
-        const isGroningen = gebiedInfo.gemeente?.toLowerCase().includes('groningen') || 
+        const isGroningen = gebiedInfo.gemeente?.toLowerCase().includes('groningen') ||
                            gebiedInfo.provincie?.toLowerCase().includes('groningen');
-        
+
         if (!isGroningen) {
           this.state.setLocatieError('Locatie ligt buiten de provincie Groningen');
           return;
@@ -280,7 +280,7 @@ export class LocatieStapComponent {
 
         // Sla gebied informatie op
         this.gebiedInfo.set(gebiedInfo);
-        
+
         // Converteer naar het verwachte formaat voor backward compatibility
         const locatieResultaat: LocatieResultaat = {
           volledigAdres: locatieInfo.address,
@@ -293,11 +293,11 @@ export class LocatieStapComponent {
             longitude: locatieInfo.longitude
           }
         };
-        
+
         this.locatieDetails.set(locatieResultaat);
         this.state.setLocatie(locatieInfo.address, { lat: locatieInfo.latitude, lng: locatieInfo.longitude });
         this.geselecteerdAdres.set(locatieInfo.address);
-        
+
         // Emit event met gebied informatie
         this.locatieGeselecteerd.emit({
           latitude: locatieInfo.latitude,

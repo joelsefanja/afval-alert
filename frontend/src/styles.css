@@ -1,15 +1,14 @@
-@use "tailwindcss/base";
-@use "tailwindcss/components";
-@use "tailwindcss/utilities";
+@use "tailwindcss";
+@plugin "tailwindcss-primeui";
+
+@use "primeicons/primeicons.css";
 
 /* PrimeNG Theme */
 /* De PrimeNG theme wordt geladen via CDN in index.html */
 
-/* Leaflet CSS wordt geladen via CDN in index.html */
-
 /* Map container style */
-#map { 
-  height: 400px; 
+#map {
+  height: 400px;
   width: 100%;
   border-radius: var(--radius);
 }

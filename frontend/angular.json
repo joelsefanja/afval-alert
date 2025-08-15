@@ -23,12 +23,6 @@
             ],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
-            "externalDependencies": [
-              "@angular/animations",
-              "@angular/material",
-              "@primeng/themes",
-              "leaflet"
-            ],
             "assets": [
               {
                 "glob": "**/*",
@@ -41,7 +35,7 @@
               }
             ],
             "styles": [
-              "src/styles.scss",
+              "src/styles.css",
               "node_modules/leaflet/dist/leaflet.css"
             ],
             "scripts": [
@@ -113,38 +107,8 @@
               }
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles.css"
             ]
-          }
-        },
-        "storybook": {
-          "builder": "@storybook/angular:start-storybook",
-          "options": {
-            "configDir": ".storybook",
-            "browserTarget": "afval-alert:build",
-            "compodoc": true,
-            "compodocArgs": [
-              "-e",
-              "json",
-              "-d",
-              "."
-            ],
-            "port": 6006
-          }
-        },
-        "build-storybook": {
-          "builder": "@storybook/angular:build-storybook",
-          "options": {
-            "configDir": ".storybook",
-            "browserTarget": "afval-alert:build",
-            "compodoc": true,
-            "compodocArgs": [
-              "-e",
-              "json",
-              "-d",
-              "."
-            ],
-            "outputDir": "storybook-static"
           }
         }
       }

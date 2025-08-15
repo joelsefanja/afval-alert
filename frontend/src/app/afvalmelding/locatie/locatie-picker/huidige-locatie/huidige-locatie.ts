@@ -1,6 +1,5 @@
 import { Component, inject, output } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-import { MatIconRegistry, MatIconModule } from '@angular/material/icon';
 
 const CURRENT_LOCATION_ICON =
   `
@@ -11,23 +10,13 @@ const CURRENT_LOCATION_ICON =
 
 @Component({
   selector: 'app-huidige-locatie',
-  imports: [MatIconModule],
+  imports: [],
   templateUrl: './huidige-locatie.html',
   styleUrl: './huidige-locatie.scss'
 })
 export class HuidigeLocatie {
-  private iconRegistry = inject(MatIconRegistry);
-  private sanitizer = inject(DomSanitizer);
-
   getCurrentLocationClicked = output<void>();
   openModalClicked = output<void>();
-
-  constructor() {
-    this.iconRegistry.addSvgIconLiteral(
-      'current-location',
-      this.sanitizer.bypassSecurityTrustHtml(CURRENT_LOCATION_ICON)
-    );
-  }
 
   onGetCurrentLocation() {
     this.getCurrentLocationClicked.emit();
