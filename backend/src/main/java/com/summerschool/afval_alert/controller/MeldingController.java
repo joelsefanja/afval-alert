@@ -2,6 +2,8 @@ package com.summerschool.afval_alert.controller;
 
 import com.summerschool.afval_alert.model.entity.Melding;
 import com.summerschool.afval_alert.service.MeldingService;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +29,6 @@ public class MeldingController {
 
         Melding melding = meldingService.saveMelding(latitude, longitude, imageId, trashType);
 
-        return ResponseEntity.ok(melding.getId());
+        return ResponseEntity.ok().body(melding.getId());
     }
 }
