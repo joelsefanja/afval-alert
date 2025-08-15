@@ -1,5 +1,4 @@
 package com.summerschool.afval_alert.model.entity;
-
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -14,8 +13,9 @@ public class Melding {
     private Float latitude;
     private Float longitude;
 
-    @Lob
-    private byte[] imageData;
+    @OneToOne
+    @JoinColumn(name = "id")
+    private Image image;
 
     private String trashType;
 
@@ -25,15 +25,20 @@ public class Melding {
 
     public void setMelding(Float latitude,
                            Float longitude,
-                           byte[] imageData,
+                           Image imageId,
                            String trashType) {
+
         this.latitude = latitude;
         this.longitude = longitude;
-        this.imageData = imageData;
         this.trashType = trashType;
+        this.image = imageId;
     }
 
     public void addStatusUpdate(StatusUpdate statusUpdate) {
         this.statusUpdate.add(statusUpdate);
+    }
+
+    public Long getId() {
+        return id;
     }
 }

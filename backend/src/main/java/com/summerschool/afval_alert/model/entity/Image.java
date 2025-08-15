@@ -17,6 +17,9 @@ public class Image {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    @OneToOne(mappedBy = "image")
+    private Melding melding;
+
     public byte[] getData() {
         return data;
     }

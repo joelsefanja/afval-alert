@@ -11,15 +11,13 @@ public class StatusUpdate {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @OneToOne(optional = false)
-    @JoinColumn(name = "status_id")
-    private Status status;
+    private int status;
 
     @OneToMany()
     @JoinColumn(name = "notitie_id")
     private List<Notitie> notitie = new ArrayList<Notitie>();
 
-    public void setStatusUpdate(Status status) {
+    public void setStatusUpdate(int status) {
         this.status = status;
     }
 

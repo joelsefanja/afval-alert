@@ -4,27 +4,28 @@ import com.summerschool.afval_alert.model.entity.Melding;
 import com.summerschool.afval_alert.model.entity.StatusUpdate;
 import com.summerschool.afval_alert.repository.MeldingRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
 @Service
 public class MeldingService {
     private final MeldingRepository meldingRepository;
+    private final ImageService imageService;
 
-    public MeldingService(MeldingRepository meldingRepository) {
+    public MeldingService(MeldingRepository meldingRepository, ImageService imageService) {
         this.meldingRepository = meldingRepository;
+        this.imageService = imageService;
     }
 
     public Melding saveMelding(Float latitude,
                                Float longitude,
-                               MultipartFile imageFile,
+                               Long imageId,
                                String trashType) throws IOException {
         Melding melding = new Melding();
         melding.setMelding(
                 latitude,
                 longitude,
-                imageFile.getBytes(),
+                imageService.getImage(imageId),
                 trashType
         );
 

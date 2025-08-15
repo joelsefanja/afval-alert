@@ -14,7 +14,7 @@ public class StatusUpdateService {
         this.statusUpdateRepository = statusUpdateRepository;
     }
 
-    public StatusUpdate saveStatusUpdate(Status update) {
+    public StatusUpdate saveStatusUpdate(int update) {
         StatusUpdate statusUpdate = new StatusUpdate();
         statusUpdate.setStatusUpdate(update);
 
