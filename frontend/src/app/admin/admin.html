@@ -1,11 +1,12 @@
-@if (selected() != null) {
-<div class="split-container">
-  <div class="split-left">
-    <app-list (clicked)="onSelected($event)"></app-list>
+@if (showDetail()) {
+  <div class="split-container">
+    <div class="split-left">
+      <app-list></app-list>
+    </div>
+    <div class="split-right">
+      <app-detail></app-detail>
+    </div>
   </div>
-  <div class="split-right">
-    <app-detail (clicked)="onCloseDetail()"></app-detail>
-  </div>
-</div>} @else {
-  <app-list (clicked)="onSelected($event)"></app-list>
+} @else {
+  <app-list></app-list>
 }

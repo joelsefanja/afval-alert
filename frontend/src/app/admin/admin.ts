@@ -1,7 +1,7 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, computed } from '@angular/core';
 import { ListComponent } from './list/list';
 import { DetailComponent } from './detail/detail';
+import { SelectionService } from './core/id';
 
 @Component({
   selector: 'app-admin',
@@ -10,15 +10,8 @@ import { DetailComponent } from './detail/detail';
   templateUrl: './admin.html',
   styleUrls: ['./admin.scss']
 })
-
 export class AdminComponent {
-  selected = signal<any>(null);
+  constructor(public selection: SelectionService) {}
 
-  onSelected(id: Number) {
-    this.selected.set(id);
-  }
-
-  onCloseDetail() {
-    this.selected.set(null);
-  }
+  showDetail = computed(() => this.selection.isDetailOpen());
 }
