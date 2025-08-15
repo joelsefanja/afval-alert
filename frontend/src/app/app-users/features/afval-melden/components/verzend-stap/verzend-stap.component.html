@@ -1,0 +1,110 @@
+<div class="max-w-2xl mx-auto p-4 space-y-6 motion-preset-fade-in">
+  <!-- Header -->
+  <div class="text-center space-y-4">
+    <h1 class="text-2xl lg:text-3xl font-bold text-surface-900 dark:text-surface-0">
+      Melding verzenden...
+    </h1>
+  </div>
+
+  <!-- Verzend status -->
+  @switch (verzendStatus) {
+    @case ('verzenden') {
+      <p-card class="text-center">
+        <div class="space-y-4">
+          <p-progressSpinner styleClass="w-16 h-16" />
+          <div>
+            <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-2">
+              Melding wordt verzonden...
+            </h3>
+            <p class="text-surface-600 dark:text-surface-300">
+              Je melding wordt veilig verzonden naar gemeente Groningen.
+            </p>
+          </div>
+          
+          <!-- Samenvatting tijdens verzenden -->
+          <div class="mt-6 p-4 bg-surface-100 dark:bg-surface-800 rounded-lg text-left">
+            <h4 class="font-medium text-surface-900 dark:text-surface-0 mb-3">Samenvatting:</h4>
+            <div class="space-y-2 text-sm">
+              <div class="flex items-center gap-2">
+                <i class="pi pi-image text-surface-500"></i>
+                <span>{{ state.afvalTypes().length }} afvaltype(s) herkend</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <i class="pi pi-map-marker text-surface-500"></i>
+                <span>Locatie: {{ state.locatieAdres() }}</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <i class="pi pi-user text-surface-500"></i>
+                <span>
+                  @if (state.contactInfo().email) {
+                    Contact: {{ state.contactInfo().email }}
+                  } @else {
+                    Anonieme melding
+                  }
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </p-card>
+    }
+    
+    @case ('succes') {
+      <p-card class="text-center">
+        <div class="space-y-4">
+          <div class="w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mx-auto">
+            <i class="pi pi-check text-green-600 dark:text-green-400 text-2xl"></i>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-green-800 dark:text-green-200 mb-2">
+              Melding succesvol verzonden!
+            </h3>
+            <p class="text-surface-600 dark:text-surface-300">
+              Je wordt doorgestuurd naar de bevestigingspagina...
+            </p>
+          </div>
+        </div>
+      </p-card>
+    }
+    
+    @case ('fout') {
+      <div class="space-y-4">
+        <p-message 
+          severity="error" 
+          [text]="foutmelding"
+          class="motion-preset-shake"
+        />
+        
+        <p-card class="bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800">
+          <div class="text-center space-y-4">
+            <i class="pi pi-exclamation-triangle text-red-600 dark:text-red-400 text-2xl"></i>
+            <div>
+              <h3 class="font-semibold text-red-800 dark:text-red-200 mb-2">
+                Verzending mislukt
+              </h3>
+              <p class="text-sm text-red-700 dark:text-red-300">
+                Je melding kon niet worden verzonden. Controleer je internetverbinding en probeer het opnieuw.
+              </p>
+            </div>
+          </div>
+        </p-card>
+        
+        <div class="flex gap-3">
+          <p-button 
+            label="Probeer opnieuw" 
+            icon="pi pi-refresh"
+            (onClick)="probeerOpnieuw()"
+            class="flex-1"
+          />
+          <p-button 
+            label="Terug naar controle" 
+            icon="pi pi-arrow-left"
+            variant="outlined"
+            (onClick)="terugNaarControle()"
+            class="flex-1"
+          />
+        </div>
+      </div>
+    }
+  }
+</div>

@@ -17,7 +17,7 @@ Deze gids geeft UI/UX tips voor de Afval Alert app, gebaseerd op de requirements
 *   GPS: Automatisch ophalen (binnen 3s). / GEO Data uit foto gebruiken.
 *   Kaart: Handmatige locatie selectie of ingesteld locatie zien.
 *   Pin: Verslepen voor correcte positie.
-*   Waarschuwing: Buiten Groningen?
+*   Waarschuwing: Buiten Groningen neem circel afstand vanaf Groningen.
 
 **R5: Melding Valideren**
 
