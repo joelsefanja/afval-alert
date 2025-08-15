@@ -1,0 +1,1 @@
+- Gebruik angular 20 en nooit meer *ngif of *ngfor maar @if en @for. ook enkel signals gebruiken en import output en nooit oude @Output en @Input

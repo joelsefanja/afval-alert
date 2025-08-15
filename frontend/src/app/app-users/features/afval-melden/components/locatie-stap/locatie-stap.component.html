@@ -1,0 +1,146 @@
+<div class="max-w-2xl mx-auto p-4 space-y-6 motion-preset-fade-in">
+  <!-- Terug knop -->
+  <button
+    type="button"
+    (click)="terug()"
+    class="text-blue-600 hover:underline text-sm flex items-center gap-1"
+  >
+    ← Terug
+  </button>
+
+  <!-- Header -->
+  <div class="text-center space-y-4">
+    <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-gray-100">
+      Waar ligt het afval?
+    </h1>
+    <div class="bg-gray-50 dark:bg-gray-800 rounded p-3">
+      <p class="text-sm text-gray-600 dark:text-gray-300 m-0">
+        Geef de locatie aan waar je het afval hebt gezien.
+      </p>
+    </div>
+  </div>
+
+  <!-- Kaart -->
+  <div class="space-y-4">
+    <div class="border rounded p-2">
+      <div style="height: 250px">
+        <app-locatie-picker
+          (locatieGeselecteerd)="onKaartLocatieGeselecteerd($event)"
+          (locationSelected)="geselecteerdAdres = $event"
+        ></app-locatie-picker>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error message -->
+  @if (state.locatieError()) {
+    <div class="bg-red-100 text-red-700 p-2 rounded motion-preset-shake">
+      {{ state.locatieError() }}
+    </div>
+  }
+
+  <!-- Locatie keuze knoppen -->
+  <div class="space-y-3">
+    <button
+      type="button"
+      (click)="getCurrentLocation()"
+      [disabled]="gpsBezig()"
+      class="w-full h-12 bg-blue-600 text-white rounded"
+    >
+      📍 Haal mijn locatie op
+      @if (gpsBezig()) {
+        <span> (Bezig...)</span>
+      }
+    </button>
+
+    <div class="space-y-2">
+      <p class="text-sm text-gray-500 dark:text-gray-400 text-center">
+        of selecteer locatie / zoek een adres
+      </p>
+
+      <div class="flex gap-2">
+        <input
+          type="text"
+          [(ngModel)]="geselecteerdAdres"
+          placeholder="Zoek adres in Groningen..."
+          class="flex-1 border rounded p-2"
+        />
+        <button
+          type="button"
+          (click)="zoekAdres(geselecteerdAdres)"
+          [disabled]="!geselecteerdAdres?.trim() || adresZoekenBezig()"
+          class="px-4 bg-gray-200 rounded"
+        >
+          🔍
+        </button>
+      </div>
+
+      <!-- Progress bar -->
+      @if (adresZoekenBezig()) {
+        <div class="w-full bg-gray-200 h-1 rounded overflow-hidden">
+          <div class="bg-blue-500 h-1 w-full animate-pulse"></div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Geselecteerde locatie info -->
+  @if (state.locatieAdres()) {
+    <div class="space-y-4 motion-preset-scale-in">
+      <div
+        class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-4 rounded"
+      >
+        <div class="flex items-start gap-3">
+          <span class="text-green-600 dark:text-green-400 text-xl mt-1"
+            >✔</span
+          >
+          <div class="flex-1 space-y-2">
+            <h3 class="font-semibold text-green-800 dark:text-green-200">
+              Locatie geselecteerd
+            </h3>
+            <p class="text-green-700 dark:text-green-300 text-sm">
+              {{ state.locatieAdres() }}
+            </p>
+
+            <!-- Extra locatie details -->
+            @if (locatieDetails()) {
+              <div
+                class="space-y-1 pt-1 border-t border-green-200 dark:border-green-700"
+              >
+                @if (locatieDetails()?.stadGroningen) {
+                  <div
+                    class="flex items-center gap-2 text-xs text-green-600 dark:text-green-400"
+                  >
+                    📍 <span>Stad Groningen</span>
+                  </div>
+                }
+                @if (locatieDetails()?.wijk) {
+                  <div
+                    class="flex items-center gap-2 text-xs text-green-600 dark:text-green-400"
+                  >
+                    🏠 <span>Wijk: {{ locatieDetails()?.wijk }}</span>
+                  </div>
+                }
+                @if (locatieDetails()?.provincieGroningen) {
+                  <div
+                    class="flex items-center gap-2 text-xs text-green-600 dark:text-green-400"
+                  >
+                    ✅ <span>Provincie Groningen</span>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        (click)="volgende()"
+        class="w-full bg-blue-600 text-white rounded h-12"
+      >
+        Volgende →
+      </button>
+    </div>
+  }
+</div>

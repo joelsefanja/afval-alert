@@ -1,10 +1,7 @@
 import { Component, inject, output, ViewChild } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatIconRegistry, MatIconModule } from '@angular/material/icon';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
 import { Kaart } from "./kaart/kaart";
 import { HuidigeLocatie } from "./huidige-locatie/huidige-locatie";
 import { KaartService } from '../../../services/kaart';
@@ -19,29 +16,21 @@ const SEARCH_ICON =
 
 @Component({
   selector: 'app-locatie-picker',
-  imports: [FormsModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, Kaart, HuidigeLocatie],
   templateUrl: './locatie-picker.html',
-  styleUrl: './locatie-picker.scss'
+  standalone: true,
+  imports: [ButtonModule, InputTextModule, Kaart, HuidigeLocatie]
 })
 export class LocatiePicker {
-  private iconRegistry = inject(MatIconRegistry);
-  private sanitizer = inject(DomSanitizer);
   private kaartService = inject(KaartService);
   @ViewChild(Kaart) kaartComponent!: Kaart;
+  
   locationSelected = output<string>();
+  locatieGeselecteerd = output<{latitude: number, longitude: number, address: string, wijk?: string, buurt?: string, gemeente?: string}>();
 
   searchQuery = '';
   selectedAddress = '';
 
-  constructor() {
-    this.iconRegistry.addSvgIconLiteral(
-      'search',
-      this.sanitizer.bypassSecurityTrustHtml(SEARCH_ICON)
-    );
-  }
-
   onInputChange(event: any) {
-    // Update de waarde wanneer de gebruiker typt
     this.searchQuery = event.target.value;
   }
 
@@ -54,6 +43,11 @@ export class LocatiePicker {
   onAddressSelected(address: string) {
     this.selectedAddress = address;
     this.searchQuery = address;
+    this.locationSelected.emit(address);
+  }
+
+  onLocatieGeselecteerd(locatieInfo: {latitude: number, longitude: number, address: string, wijk?: string, buurt?: string, gemeente?: string}) {
+    this.locatieGeselecteerd.emit(locatieInfo);
   }
 
   async onCurrentLocationSelected() {

@@ -66,6 +66,15 @@ interface NominatimSearchResult {
   boundingbox: [string, string, string, string];
 }
 
+export interface GebiedInfo {
+  wijk?: string;
+  buurt?: string;
+  gemeente?: string;
+  provincie?: string;
+  postcode?: string;
+  coordinate: { lat: number, lng: number };
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -73,6 +82,7 @@ export class KaartService {
   private map!: L.Map;
   private currentMarker?: L.Marker;
   addressSelected = new EventEmitter<string>();
+  gebiedSelected = new EventEmitter<GebiedInfo>();
 
   private readonly defaultLocation = { lat: 53.2193835, lng: 6.5665017 } as const; // Groningen
   private readonly mapConfig = {
@@ -142,9 +152,14 @@ export class KaartService {
   private async addMarkerAtLocation(latlng: L.LatLng) {
     this.removeCurrentMarker();
     this.currentMarker = L.marker(latlng).addTo(this.map);
-    this.reverseGeocode(latlng).subscribe(address => {
-      if (address) {
-        this.addressSelected.emit(address);
+    
+    this.reverseGeocode(latlng).subscribe(response => {
+      if (response) {
+        this.addressSelected.emit(response.display_name);
+        
+        // Extract gebied informatie voor gebied logica
+        const gebiedInfo = this.extractGebiedInfo(response, latlng);
+        this.gebiedSelected.emit(gebiedInfo);
       }
     });
   }
@@ -157,16 +172,39 @@ export class KaartService {
     }
   }
 
-  private reverseGeocode(latlng: L.LatLng): Observable<string | null> {
+  private reverseGeocode(latlng: L.LatLng): Observable<NominatimReverseResponse | null> {
     const url = this.buildReverseGeocodeUrl(latlng);
 
     return this.http.get<NominatimReverseResponse>(url).pipe(
-      map(data => data?.display_name ?? null),
       catchError(error => {
         console.error('Error reverse geocoding:', error);
         return of(null);
       })
     );
+  }
+
+  private extractGebiedInfo(response: NominatimReverseResponse, latlng: L.LatLng): GebiedInfo {
+    const address = response.address;
+    
+    return {
+      wijk: address.neighbourhood || address.quarter || address.suburb,
+      buurt: address.neighbourhood,
+      gemeente: address.city || address.municipality,
+      provincie: address.state,
+      postcode: address.postcode,
+      coordinate: { lat: latlng.lat, lng: latlng.lng }
+    };
+  }
+
+  async getGebiedInfoByCoordinate(lat: number, lng: number): Promise<GebiedInfo | null> {
+    const latlng = L.latLng(lat, lng);
+    try {
+      const response = await lastValueFrom(this.reverseGeocode(latlng));
+      return response ? this.extractGebiedInfo(response, latlng) : null;
+    } catch (error) {
+      console.error('Error getting gebied info:', error);
+      return null;
+    }
   }
 
   async searchAddress(address: string): Promise<void> {
