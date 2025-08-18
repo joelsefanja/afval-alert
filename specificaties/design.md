@@ -297,43 +297,6 @@ Het ophalen van de afbeelding van een melding.
 
 Het ophalen van alle status enums.
 
-
-
-<!-- ### `POST /api/meldingen`
-
-**Content-Type:** `multipart/form-data`
-Body:
-
-* `foto` → Blob (JPEG/PNG, geoptimaliseerd).
-* `locatie` → JSON: `{ "latitude": 53.2194, "longitude": 6.5665 }`
-
----
-
-### `PUT /api/meldingen/{id}/status`
-
-**Content-Type:** `application/json`
-
-```json
-{
-  "status": "IN_BEHANDELING",
-  "opmerkingen": "Wordt morgen opgehaald"
-}
-```
-
----
-
-### `POST /api/ai/classify`
-
-**Content-Type:** `application/json`
-
-```json
-{
-  "imageBase64": "<base64-data>",
-  "imageFormat": "jpeg",
-  "confidence_threshold": 0.8
-}
-``` -->
-
 ---
 
 ## Security (JWT)
