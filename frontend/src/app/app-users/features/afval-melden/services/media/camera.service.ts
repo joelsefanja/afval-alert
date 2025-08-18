@@ -5,31 +5,135 @@ import { Injectable, signal } from '@angular/core';
 })
 export class CameraService {
   private readonly activeStream = signal<MediaStream | null>(null);
+  private availableDevices: MediaDeviceInfo[] = [];
   
   async requestUserMedia(): Promise<MediaStream> {
     if (!this.isMediaSupported()) {
-      throw new Error('MediaDevices niet ondersteund');
+      throw new Error('MediaDevices API niet ondersteund');
     }
     
     // Stop any existing stream first
     this.stopCurrentStream();
     
     try {
-      const stream = await this.tryEnvironmentCamera();
+      // First enumerate available devices to make informed choices
+      await this.enumerateDevices();
+      
+      // Try to get optimal camera with progressive fallback
+      const stream = await this.getOptimalCameraStream();
+      
+      // Verify stream is active
+      const videoTracks = stream.getVideoTracks();
+      if (videoTracks.length === 0) {
+        throw new Error('No video tracks in stream');
+      }
+      
+      const videoTrack = videoTracks[0];
+      console.log(`Using video device: ${videoTrack.label}`);
+      console.log('Video track settings:', videoTrack.getSettings());
+      
+      // Set up stream monitoring
+      stream.onremovetrack = () => {
+        console.log('Stream track ended');
+        this.activeStream.set(null);
+      };
+      
       this.activeStream.set(stream);
       return stream;
     } catch (error) {
-      console.warn('Environment camera niet beschikbaar, proberen met user camera:', error);
-      try {
-        const stream = await this.tryUserCamera();
-        this.activeStream.set(stream);
-        return stream;
-      } catch (fallbackError) {
-        console.warn('User camera gefaald, proberen met elke camera:', fallbackError);
-        const stream = await this.tryAnyCamera();
-        this.activeStream.set(stream);
-        return stream;
+      this.handleGetUserMediaError(error);
+      throw error;
+    }
+  }
+
+  private async enumerateDevices(): Promise<void> {
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      this.availableDevices = devices.filter(device => device.kind === 'videoinput');
+      
+      console.log('Available video devices:', this.availableDevices.map(d => 
+        `${d.label || 'Unknown'} (${d.deviceId.substring(0, 8)}...)`
+      ));
+    } catch (error) {
+      console.warn('Could not enumerate devices:', error);
+      this.availableDevices = [];
+    }
+  }
+
+  private async getOptimalCameraStream(): Promise<MediaStream> {
+    // Progressive fallback strategy for best compatibility
+    const strategies = [
+      // Strategy 1: High-quality user camera (front-facing for selfies)
+      {
+        video: {
+          facingMode: 'user',
+          width: { ideal: 1280, min: 640 },
+          height: { ideal: 720, min: 480 },
+          frameRate: { ideal: 30, min: 15 }
+        },
+        audio: false
+      },
+      
+      // Strategy 2: Any user camera with lower requirements
+      {
+        video: {
+          facingMode: 'user',
+          width: { ideal: 640, min: 320 },
+          height: { ideal: 480, min: 240 }
+        },
+        audio: false
+      },
+      
+      // Strategy 3: Environment camera (back-facing)
+      {
+        video: {
+          facingMode: 'environment',
+          width: { ideal: 1280, min: 640 },
+          height: { ideal: 720, min: 480 }
+        },
+        audio: false
+      },
+      
+      // Strategy 4: Any available camera (minimal constraints)
+      {
+        video: true,
+        audio: false
       }
+    ];
+
+    let lastError: Error | null = null;
+
+    for (const [index, constraints] of strategies.entries()) {
+      try {
+        console.log(`Trying camera strategy ${index + 1}:`, constraints);
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        
+        const videoTracks = stream.getVideoTracks();
+        if (videoTracks.length > 0) {
+          console.log(`Strategy ${index + 1} successful`);
+          return stream;
+        }
+      } catch (error) {
+        console.warn(`Strategy ${index + 1} failed:`, error);
+        lastError = error as Error;
+        continue;
+      }
+    }
+
+    throw lastError || new Error('Alle camera strategieën gefaald');
+  }
+
+  private handleGetUserMediaError(error: any): void {
+    if (error.name === 'OverconstrainedError') {
+      console.error('Camera constraints niet ondersteund door apparaat:', error);
+    } else if (error.name === 'NotAllowedError') {
+      console.error('Camera toegang geweigerd door gebruiker:', error);
+    } else if (error.name === 'NotFoundError') {
+      console.error('Geen camera gevonden:', error);
+    } else if (error.name === 'NotReadableError') {
+      console.error('Camera in gebruik door andere applicatie:', error);
+    } else {
+      console.error(`getUserMedia error: ${error.name}`, error);
     }
   }
 
@@ -37,102 +141,33 @@ export class CameraService {
     return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
   }
 
-  private async tryEnvironmentCamera(): Promise<MediaStream> {
-    return navigator.mediaDevices.getUserMedia({ 
-      video: { 
-        facingMode: 'environment',
-        width: { ideal: 1280 },
-        height: { ideal: 720 }
-      } 
-    });
+  async attachStreamToVideo(video: HTMLVideoElement, stream: MediaStream): Promise<void> {
+  video.srcObject = stream;
+  try {
+    await video.play();
+  } catch (err) {
+    console.warn('Autoplay prevented:', err);
+  }
+}
+
+  getSupportedConstraints(): MediaTrackSupportedConstraints {
+    return navigator.mediaDevices.getSupportedConstraints();
   }
 
-  private async tryUserCamera(): Promise<MediaStream> {
-    return navigator.mediaDevices.getUserMedia({ 
-      video: { 
-        facingMode: 'user',
-        width: { ideal: 1280 },
-        height: { ideal: 720 }
-      } 
-    });
-  }
-
-  private async tryAnyCamera(): Promise<MediaStream> {
-    return navigator.mediaDevices.getUserMedia({ 
-      video: {
-        width: { ideal: 1280 },
-        height: { ideal: 720 }
-      }
-    });
-  }
-
-  attachStreamToVideo(video: HTMLVideoElement, stream: MediaStream): void {
-    if (!video || !stream) return;
-    
-    // Essential attributes for proper camera display
-    video.autoplay = true;
-    video.playsInline = true; // Critical for iOS
-    video.muted = true; // Required for autoplay
-    video.controls = false;
-    
-    // Set the stream - modern browsers all support srcObject
-    video.srcObject = stream;
-  }
-
-  async playVideo(video: HTMLVideoElement): Promise<void> {
-    if (!video) return;
-    
-    // Wait for metadata to load before playing
-    return new Promise((resolve, reject) => {
-      const playVideo = async () => {
-        try {
-          await video.play();
-          resolve();
-        } catch (error) {
-          console.warn('First play attempt failed, retrying:', error);
-          try {
-            await this.retryPlayVideo(video);
-            resolve();
-          } catch (retryError) {
-            reject(retryError);
-          }
-        }
-      };
-      
-      if (video.readyState >= 2) {
-        // Metadata already loaded
-        playVideo();
-      } else {
-        // Wait for metadata to load
-        video.onloadedmetadata = playVideo;
-        video.onerror = (e) => {
-          console.error('Video element error:', e);
-          reject(e);
-        };
-      }
-    });
-  }
-
-  private async retryPlayVideo(video: HTMLVideoElement): Promise<void> {
-    return new Promise((resolve, reject) => {
-      setTimeout(async () => {
-        try {
-          await video.play();
-          resolve();
-        } catch (error) {
-          reject(error);
-        }
-      }, 500);
-    });
+  getAvailableDevices(): MediaDeviceInfo[] {
+    return [...this.availableDevices];
   }
 
   stopAllTracks(stream: MediaStream | null): void {
     if (!stream) return;
     
     stream.getTracks().forEach(track => {
-      console.log(`Stopping ${track.kind} track:`, track.label);
+      console.log(`Stopping ${track.kind} track: ${track.label}`);
       track.stop();
     });
+    
+    // Clean up event handlers
+    stream.onremovetrack = null;
   }
 
   stopCurrentStream(): void {
@@ -146,32 +181,40 @@ export class CameraService {
 
   capturePhotoFromVideo(video: HTMLVideoElement): string {
     if (!this.isVideoReady(video)) {
-      throw new Error('Video niet gereed voor capture');
+      throw new Error('Video niet gereed voor foto capture');
     }
 
-    const canvas = this.createCanvas(video);
-    const context = this.getCanvasContext(canvas);
+    // Create canvas with video dimensions
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
     
-    context.drawImage(video, 0, 0);
+    const context = canvas.getContext('2d');
+    if (!context) {
+      throw new Error('Canvas 2D context niet beschikbaar');
+    }
+    
+    // Draw video frame to canvas (mirror horizontally for selfie effect)
+    context.scale(-1, 1);
+    context.drawImage(video, -video.videoWidth, 0, video.videoWidth, video.videoHeight);
+    
+    // Convert to JPEG with 80% quality
     return canvas.toDataURL('image/jpeg', 0.8);
   }
 
   private isVideoReady(video: HTMLVideoElement): boolean {
-    return video && video.videoWidth > 0 && video.videoHeight > 0;
+    return !!(video && 
+             video.videoWidth > 0 && 
+             video.videoHeight > 0 && 
+             video.readyState >= 2);
   }
 
-  private createCanvas(video: HTMLVideoElement): HTMLCanvasElement {
-    const canvas = document.createElement('canvas');
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    return canvas;
+  // Listen for device changes (camera connect/disconnect)
+  onDeviceChange(callback: () => void): void {
+    navigator.mediaDevices.addEventListener('devicechange', callback);
   }
 
-  private getCanvasContext(canvas: HTMLCanvasElement): CanvasRenderingContext2D {
-    const context = canvas.getContext('2d');
-    if (!context) {
-      throw new Error('Canvas context niet beschikbaar');
-    }
-    return context;
+  removeDeviceChangeListener(callback: () => void): void {
+    navigator.mediaDevices.removeEventListener('devicechange', callback);
   }
 }

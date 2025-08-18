@@ -39,9 +39,9 @@
             #video
             autoplay
             muted
-            playsinline
-            class="w-full h-48 object-cover bg-black"
-            (loadedmetadata)="onVideoLoaded(video)">
+            playsInline
+            [style.transform]="'scaleX(-1)'"
+            class="w-full h-48 object-cover bg-black">
           </video>
           
           <!-- Camera overlay indicators -->
