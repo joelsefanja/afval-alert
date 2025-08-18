@@ -1,0 +1,16 @@
+.split-container {
+  display: flex;
+  height: 100vh; /* Full height */
+}
+
+.split-left {
+  flex: 0 0 40%; /* Fixed 40% width */
+  border-right: 1px solid #ccc;
+  overflow-y: auto; /* Scroll if content too tall */
+}
+
+.split-right {
+  flex: 1; /* Take remaining space */
+  padding: 1rem;
+  overflow-y: auto;
+}

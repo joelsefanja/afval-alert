@@ -1,3 +1,4 @@
 frontend-gebruikers/.env
 .kiro
 github-feature-builder-prompt.md
+/node_modules

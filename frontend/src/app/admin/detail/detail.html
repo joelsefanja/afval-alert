@@ -1,0 +1,25 @@
+<p-button label="Sluiten" (click)="closeDetail()" />
+
+<h1>Foto van melding</h1>
+<p>Afvaltype, status, datum</p>
+Opmerking van gebruiker bij melding
+
+
+<h1>Kaart voor melding met id: {{ selection.selectedId() }}</h1>
+
+<app-tijdlijn-element [tijdlijnElementen]="TEST"></app-tijdlijn-element>
+
+<p>Update status</p>
+<div>
+  <p-select [options]="states" [(ngModel)]="selectedStatus" optionLabel="status" placeholder="Selecteer een status" class="w-full md:w-56" />
+</div>
+<p>1 </p>
+<p>2 </p>
+<p>3 </p>
+<p>4 </p>
+
+<p>Voeg opmerking toe</p>
+<input type="text" pInputText [(ngModel)]="value" />
+<div>
+  <p-button label="Update" />
+</div>
