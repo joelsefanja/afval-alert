@@ -2,12 +2,12 @@ package com.summerschool.afval_alert.service;
 
 import com.summerschool.afval_alert.model.entity.Image;
 import com.summerschool.afval_alert.model.entity.Melding;
-import com.summerschool.afval_alert.model.entity.StatusUpdate;
+import com.summerschool.afval_alert.model.entity.Notitie;
 import com.summerschool.afval_alert.repository.ImageRepository;
 import com.summerschool.afval_alert.repository.MeldingRepository;
+import com.summerschool.afval_alert.repository.NotitieRepository;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -15,20 +15,17 @@ import java.util.List;
 public class MeldingService {
     private final MeldingRepository meldingRepository;
     private final ImageRepository imageRepository;
+    private final NotitieRepository notitieRepository;
 
-    public MeldingService(MeldingRepository meldingRepository, ImageRepository imageRepository) {
+    public MeldingService(MeldingRepository meldingRepository, ImageRepository imageRepository, NotitieRepository notitieRepository) {
         this.meldingRepository = meldingRepository;
         this.imageRepository = imageRepository;
+        this.notitieRepository = notitieRepository;
     }
 
     public Melding createMelding(Image image) {
         Melding melding = new Melding();
         melding.setImage(image);
-
-//        StatusUpdate statusUpdate = new StatusUpdate();
-//        statusUpdate.setStatusUpdate(0);
-//
-//        melding.addStatusUpdate(statusUpdate);
 
         return meldingRepository.save(melding);
     }
@@ -49,10 +46,26 @@ public class MeldingService {
         System.out.println("Deleted " + oldDrafts.size() + " old meldingen with their linked image.");
     }
 
+    public void addNotitie(long meldingId, String note) {
+        Melding melding = meldingRepository.findById(meldingId)
+                .orElseThrow(() -> new RuntimeException("Melding not found with ID: " + meldingId));
 
-    public Melding addStatusUpdate(Melding melding, StatusUpdate statusUpdate) {
-        melding.addStatusUpdate(statusUpdate);
+        Notitie notitie = new Notitie();
+        notitie.setNotitie(note);
 
-        return meldingRepository.save(melding);
+        melding.setNotitie(notitie);
+
+        meldingRepository.save(melding);
+
+        return;
+    }
+
+    public List<Notitie> getNotities(long meldingId) {
+        Melding melding = meldingRepository.findById(meldingId)
+                .orElseThrow(() -> new RuntimeException("Melding not found with ID: " + meldingId));
+
+        List<Notitie> notities = notitieRepository.findByMeldingId(meldingId);
+
+        return notities;
     }
 }
