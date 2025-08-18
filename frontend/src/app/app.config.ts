@@ -5,6 +5,14 @@ import { provideHttpClient } from '@angular/common/http';
 import { providePrimeNG } from 'primeng/config';
 
 import { routes } from './app.routes';
+import { AppInitService } from './app-init.service';
+
+// App initialisatie functie
+export function initializeApp(appInitService: AppInitService) {
+  return (): Promise<any> => {
+    return appInitService.initializeApp();
+  };
+}
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -13,6 +21,13 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     providePrimeNG(),
-    provideAnimations()
+    provideAnimations(),
+    AppInitService,
+    {
+      provide: 'APP_INITIALIZER',
+      useFactory: initializeApp,
+      deps: [AppInitService],
+      multi: true
+    }
   ]
 };
