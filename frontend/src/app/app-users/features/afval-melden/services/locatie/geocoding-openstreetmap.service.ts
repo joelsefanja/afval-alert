@@ -1,207 +1,154 @@
-import { Injectable } from '@angular/core';
-import { Observable, of, throwError, map, catchError } from 'rxjs';
-import { IGeocodingServiceInterface, AdresInfo, LocatieResultaat, GEOCODING_SERVICE_TOKEN } from '../../interfaces/geocoding.interface';
+import { Injectable, Inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
+import * as L from 'leaflet';
+import { LocatieConfigService } from '../../../../../services/locatie-config.service';
+
+export interface AddressDetails {
+  road?: string;
+  house_number?: string;
+  postcode?: string;
+  city?: string;
+  town?: string;
+  village?: string;
+  municipality?: string;
+  county?: string;
+  state?: string;
+  country?: string;
+  neighbourhood?: string;
+  quarter?: string;
+  suburb?: string;
+  [key: string]: any;
+}
+
+export interface NominatimResponse {
+  place_id: number;
+  licence: string;
+  osm_type: string;
+  osm_id: number;
+  lat: string;
+  lon: string;
+  display_name: string;
+  address: AddressDetails;
+  boundingbox: [string, string, string, string];
+}
+
+export interface FormattedAddress {
+  straat: string;
+  huisnummer: string;
+  postcode: string;
+  plaats: string;
+  land: string;
+  wijk?: string;
+  buurt?: string;
+  gemeente?: string;
+  provincie?: string;
+  rawAddress: AddressDetails;
+}
 
 @Injectable({
   providedIn: 'root'
 })
-export class GeocodingOpenStreetMapService implements IGeocodingServiceInterface {
+export class GeocodingOpenstreetmapService {
+  private config: any;
 
-  private readonly nominatimBaseUrl = 'https://nominatim.openstreetmap.org';
-  private readonly userAgent = 'afval-alert-groningen/1.0';
-
-  getAdresVanCoordinaten(latitude: number, longitude: number): Observable<AdresInfo> {
-    const url = `${this.nominatimBaseUrl}/reverse?lat=${latitude}&lon=${longitude}&format=json`;
-    
-    return new Observable<AdresInfo>(observer => {
-      fetch(url, {
-        headers: { 'User-Agent': this.userAgent }
-      })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then(data => {
-        const address = data.address || {};
-        
-        const adresInfo: AdresInfo = {
-          volledigAdres: data.display_name || `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`,
-          straat: address.road || '',
-          huisnummer: address.house_number || '',
-          postcode: address.postcode || '',
-          plaats: address.city || address.town || address.village || '',
-          land: address.country || 'Nederland'
-        };
-        
-        observer.next(adresInfo);
-        observer.complete();
-      })
-      .catch(error => {
-        console.error('Nominatim reverse geocoding error:', error);
-        observer.error(new Error('Adres kon niet worden opgehaald'));
-      });
+  constructor(
+    private http: HttpClient,
+    @Inject(LocatieConfigService) private locatieConfigService: LocatieConfigService
+  ) {
+    // Laad de configuratie
+    this.locatieConfigService.loadConfig().subscribe((config: any) => {
+      this.config = config;
     });
   }
 
-  getLocatieResultaat(latitude: number, longitude: number): Observable<LocatieResultaat> {
-    return this.getAdresVanCoordinaten(latitude, longitude).pipe(
-      map(adresInfo => {
-        // Controleer of de locatie in Groningen ligt
-        const isGroningen = adresInfo.plaats.toLowerCase().includes('groningen');
-        const isProvincie = isGroningen;
-        const isGemeente = isGroningen;
-        const isStad = isGroningen;
+  /**
+   * Formatteer adresgegevens van OpenStreetMap
+   */
+  private formatAddress(data: NominatimResponse): FormattedAddress {
+    const address = data.address || {};
+    
+    return {
+      straat: address.road || '',
+      huisnummer: address.house_number || '',
+      postcode: address.postcode || '',
+      plaats: address.city || address.town || address.village || '',
+      land: address.country || 'Nederland',
+      wijk: address.neighbourhood || address.quarter || address.suburb,
+      buurt: address.neighbourhood,
+      gemeente: address.city || address.municipality,
+      provincie: address.state,
+      rawAddress: address
+    };
+  }
+
+  /**
+   * Haal adresgegevens op op basis van coördinaten
+   */
+  getAddressFromCoordinates(lat: number, lon: number): Observable<FormattedAddress> {
+    if (!this.config) {
+      throw new Error('Locatieconfiguratie niet geladen');
+    }
+
+    const nominatimConfig = this.config.nominatim;
+    const url = `${nominatimConfig.baseUrl}/reverse?format=${nominatimConfig.format}&lat=${lat}&lon=${lon}&zoom=${nominatimConfig.reverseZoom}&addressdetails=${nominatimConfig.addressdetails}`;
+
+    return this.http.get<NominatimResponse>(url).pipe(
+      map(response => {
+        // Controleer of het adres in een toegestaan gebied ligt
+        if (!this.locatieConfigService.isToegestaanGebied(response.address)) {
+          throw new Error('Locatie valt buiten het toegestane gebied');
+        }
         
-        return {
-          provincieGroningen: isProvincie,
-          gemeenteGroningen: isGemeente,
-          stadGroningen: isStad,
-          wijk: '',
-          volledigAdres: adresInfo.volledigAdres
-        };
+        return this.formatAddress(response);
       }),
       catchError(error => {
-        console.error('Fout bij ophalen locatie resultaat:', error);
-        return throwError(() => new Error('Locatie informatie kon niet worden opgehaald'));
+        console.error('Fout bij ophalen adresgegevens:', error);
+        throw error;
       })
-    );
-  }
-
-  getCoordinatenVanAdres(adres: string): Observable<{ latitude: number; longitude: number }> {
-    // Beperk zoekopdracht tot Groningen voor betere resultaten
-    const zoekQuery = `${adres}, Groningen, Nederland`;
-    const url = `${this.nominatimBaseUrl}/search?q=${encodeURIComponent(zoekQuery)}&format=json&countrycodes=NL&limit=1`;
-    
-    return new Observable<{ latitude: number; longitude: number }>(observer => {
-      fetch(url, {
-        headers: { 'User-Agent': this.userAgent }
-      })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then(data => {
-        if (!data || data.length === 0) {
-          throw new Error('Adres niet gevonden');
-        }
-        
-        const result = data[0];
-        observer.next({
-          latitude: parseFloat(result.lat),
-          longitude: parseFloat(result.lon)
-        });
-        observer.complete();
-      })
-      .catch(error => {
-        console.error('Nominatim search error:', error);
-        observer.error(new Error('Adres niet gevonden'));
-      });
-    });
-  }
-
-  isLocatieBinnenGroningen(latitude: number, longitude: number): Observable<boolean> {
-    return this.analyseLocatie(latitude, longitude).pipe(
-      map(result => result.provincieGroningen),
-      catchError(() => of(false))
     );
   }
 
   /**
-   * Analyseert locatie met behulp van OpenStreetMap Nominatim API
+   * Haal coördinaten op op basis van een adres
    */
-  analyseLocatie(latitude: number, longitude: number): Observable<LocatieResultaat> {
-    const url = `${this.nominatimBaseUrl}/reverse?lat=${latitude}&lon=${longitude}&format=json`;
-    
-    return new Observable<LocatieResultaat>(observer => {
-      fetch(url, {
-        headers: { 'User-Agent': this.userAgent }
-      })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+  getCoordinatesFromAddress(address: string): Observable<{ lat: number; lng: number; display_name: string; address: FormattedAddress }> {
+    if (!this.config) {
+      throw new Error('Locatieconfiguratie niet geladen');
+    }
+
+    const nominatimConfig = this.config.nominatim;
+    const url = `${nominatimConfig.baseUrl}/search?format=${nominatimConfig.format}&q=${encodeURIComponent(address)}&addressdetails=${nominatimConfig.addressdetails}`;
+
+    return this.http.get<NominatimResponse[]>(url).pipe(
+      map(results => {
+        if (results.length === 0) {
+          throw new Error('Adres niet gevonden');
         }
-        return response.json();
-      })
-      .then(data => {
-        const address = data.address || {};
+
+        const result = results[0];
+        const lat = parseFloat(result.lat);
+        const lng = parseFloat(result.lon);
         
-        // Analyseer de verschillende administratieve niveaus
-        const provincie = (address.state || '').toLowerCase();
-        const gemeente = (address.county || address.municipality || '').toLowerCase();
-        const stad = (address.city || address.town || '').toLowerCase();
-        const wijk = address.suburb || address.neighbourhood;
-        
-        // Bouw volledig adres op uit componenten
-        const adresComponents = [];
-        if (address.house_number && address.road) {
-          adresComponents.push(`${address.road} ${address.house_number}`);
-        } else if (address.road) {
-          adresComponents.push(address.road);
-        }
-        if (address.postcode) {
-          adresComponents.push(address.postcode);
-        }
-        if (address.city || address.town) {
-          adresComponents.push(address.city || address.town);
+        // Controleer of het adres in een toegestaan gebied ligt
+        if (!this.locatieConfigService.isToegestaanGebied(result.address)) {
+          throw new Error('Locatie valt buiten het toegestane gebied');
         }
         
-        const volledigAdres = adresComponents.length > 0 
-          ? adresComponents.join(', ')
-          : data.display_name || `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+        const formattedAddress = this.formatAddress(result);
         
-        const result: LocatieResultaat = {
-          provincieGroningen: provincie.includes('groningen'),
-          gemeenteGroningen: gemeente.includes('groningen'),
-          stadGroningen: stad === 'groningen',
-          wijk: wijk || undefined,
-          volledigAdres
+        return {
+          lat,
+          lng,
+          display_name: result.display_name,
+          address: formattedAddress
         };
-        
-        console.log('Locatie analyse resultaat:', {
-          ...result,
-          debug: {
-            provincie,
-            gemeente,
-            stad,
-            rawAddress: address
-          }
-        });
-        
-        observer.next(result);
-        observer.complete();
+      }),
+      catchError(error => {
+        console.error('Fout bij ophalen coördinaten:', error);
+        throw error;
       })
-      .catch(error => {
-        console.error('Nominatim API error:', error);
-        
-        // Fallback: simpele coördinaten check voor Groningen provincie
-        // Groningen provincie ligt ongeveer tussen deze coördinaten
-        const groningenGrenzen = {
-          noord: 53.5,
-          zuid: 52.9,
-          oost: 7.2,
-          west: 6.1
-        };
-        
-        const binnenGroningen = latitude >= groningenGrenzen.zuid &&
-                               latitude <= groningenGrenzen.noord &&
-                               longitude >= groningenGrenzen.west &&
-                               longitude <= groningenGrenzen.oost;
-        
-        const fallbackResult: LocatieResultaat = {
-          provincieGroningen: binnenGroningen,
-          gemeenteGroningen: binnenGroningen,
-          stadGroningen: false, // Kan niet bepalen zonder API
-          wijk: undefined,
-          volledigAdres: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`
-        };
-        
-        observer.next(fallbackResult);
-        observer.complete();
-      });
-    });
+    );
   }
 }

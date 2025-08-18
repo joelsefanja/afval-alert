@@ -1,59 +1,47 @@
-# AfvalAlert
+# Afval Alert Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.1.5.
+Welkom bij de frontend van de Afval Alert applicatie. 
+Deze Angular-applicatie stelt burgers in staat om zwerfafval gemakkelijk te melden via hun mobiele telefoon.
 
-## Development server
+## Projectstructuur
 
-To start a local development server, run:
+- `/src` - Hoofdbroncode van de applicatie
+- `/config` - Configuratiebestanden voor de applicatie
+- `/documentatie` - Technische documentatie
+- `/public` - Statische assets
+- `/tests` - Alle testbestanden en testconfiguraties:
+  - `/config` - Jest en andere testconfiguratiebestanden
+  - `/e2e` - End-to-end testbestanden
+  - `/unit` - Unit testbestanden (gespiegeld van `/src`)
+- `/environments` - Omgevingsspecifieke configuraties
 
+## Ontwikkelinstallatie
+
+1. Installeer Node.js (versie 18+)
+2. Installeer de afhankelijkheden: `npm install`
+3. Start de ontwikkelserver: `npm start`
+
+## Ontwikkeling
+
+Voor gedetailleerde informatie over het opzetten van de ontwikkelomgeving, testen en debugging, zie [DEVELOPMENT.md](documentatie/DEVELOPMENT.md).
+
+## Testen
+
+### Unit Tests
 ```bash
-ng serve
+npm run test
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
+### End-to-end Tests
 ```bash
-ng generate component component-name
+npm run test:e2e
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
+## Productiebuild
 ```bash
-ng generate --help
+npm run build
 ```
 
-## Building
+## Configuratie
 
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+De applicatie kan worden geconfigureerd voor verschillende gemeentes via het configuratiesysteem. Zie `/documentatie/CONFIGURATIE.md` voor meer details.

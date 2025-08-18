@@ -1,25 +1,67 @@
-<div class="surface-ground px-4 py-8 md:px-6 lg:px-8 min-h-screen flex align-items-center justify-content-center">
-    <div class="flex flex-column">
-        <div class="text-center mb-5">
-            <div class="flex align-items-center justify-content-center bg-primary-100 border-circle w-6rem h-6rem mx-auto">
-                <i class="pi pi-trash text-4xl text-primary"></i>
-            </div>
-            <div class="text-900 font-bold text-3xl mt-3 mb-2">Zie je zwerfafval?</div>
-            <p class="text-700 text-xl mb-5">Met één foto laat je ons weten waar het ligt.</p>
-        </div>
-        <div>
-            <p-button label="🚀 Start melding" (onClick)="start()" styleClass="p-button-lg"></p-button>
-        </div>
-        <div class="mt-6">
-            <p-card>
-                <div class="text-center">
-                    <p class="text-sm">Meldingen worden direct naar de gemeente gestuurd</p>
-                    <div class="flex align-items-center justify-content-center gap-2 text-xs">
-                        <i class="pi pi-shield-check text-green-600"></i>
-                        <span>Veilig en anoniem</span>
-                    </div>
-                </div>
-            </p-card>
-        </div>
+<!-- Start stap - Volledig herontworpen moderne interface -->
+<div class="h-full flex flex-col justify-between bg-gradient-to-br from-green-50 to-green-100 rounded-3xl shadow-xl overflow-hidden">
+  
+  <!-- Hero Section -->
+  <div class="flex-1 flex flex-col items-center justify-center px-8 py-12">
+    
+    <!-- Animated Icon Hero -->
+    <div class="relative mb-8 motion-preset-bounce">
+      <!-- Main icon -->
+      <div class="w-32 h-32 bg-green-500 rounded-full flex items-center justify-center shadow-2xl motion-preset-float">
+        <i class="pi pi-leaf text-white text-7xl"></i>
+      </div>
+      
+      <!-- Floating particles -->
+      <div class="absolute -top-2 -right-2 w-4 h-4 bg-green-300 rounded-full opacity-60 motion-preset-float motion-delay-200"></div>
+      <div class="absolute -bottom-1 -left-3 w-3 h-3 bg-green-400 rounded-full opacity-40 motion-preset-float motion-delay-500"></div>
+      <div class="absolute top-1/2 -right-4 w-2 h-2 bg-green-600 rounded-full opacity-50 motion-preset-float motion-delay-300"></div>
     </div>
+
+    <!-- Modern Typography -->
+    <div class="text-center space-y-4 max-w-xs motion-preset-slide-up motion-delay-200">
+      <h1 class="text-3xl font-bold text-gray-900 tracking-tight">
+        Zwerfafval Melden
+      </h1>
+      <p class="text-lg text-gray-700 font-medium leading-relaxed">
+        Help mee om je buurt schoon te houden
+      </p>
+      <p class="text-sm text-gray-500">
+        Simpel • Snel • Effectief
+      </p>
+    </div>
+  </div>
+
+  <!-- Action Section -->
+  <div class="px-8 pb-8">
+    
+    <!-- CTA Button -->
+    <div class="space-y-4">
+      <button 
+        (click)="start()"
+        class="group w-full bg-green-500 hover:bg-green-600 text-white font-bold py-5 px-8 rounded-2xl shadow-lg transform transition-all duration-300 ease-out hover:scale-105 hover:shadow-2xl active:scale-95 focus:outline-none focus:ring-4 focus:ring-green-300">
+        
+        <div class="flex items-center justify-center gap-4">
+          <i class="pi pi-camera text-2xl"></i>
+          <span class="text-xl">Begin nu</span>
+          <i class="pi pi-arrow-right text-xl transition-transform group-hover:translate-x-2"></i>
+        </div>
+      </button>
+
+      <!-- Quick Features -->
+      <div class="grid grid-cols-3 gap-3 text-center">
+        <div class="bg-white bg-opacity-70 backdrop-blur-sm rounded-xl p-3 shadow-sm">
+          <i class="pi pi-clock text-green-600 text-lg mb-1"></i>
+          <p class="text-xs font-medium text-gray-700">2 min</p>
+        </div>
+        <div class="bg-white bg-opacity-70 backdrop-blur-sm rounded-xl p-3 shadow-sm">
+          <i class="pi pi-shield text-green-600 text-lg mb-1"></i>
+          <p class="text-xs font-medium text-gray-700">Anoniem</p>
+        </div>
+        <div class="bg-white bg-opacity-70 backdrop-blur-sm rounded-xl p-3 shadow-sm">
+          <i class="pi pi-check text-green-600 text-lg mb-1"></i>
+          <p class="text-xs font-medium text-gray-700">Direct</p>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

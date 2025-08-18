@@ -13,6 +13,7 @@ import {
   OfflineNotificatieComponent
 } from './components/index';
 import { StepsModule } from 'primeng/steps';
+import { ProgressBarModule } from 'primeng/progressbar';
 import { MenuItem } from 'primeng/api';
 
 export interface Stap {
@@ -25,45 +26,88 @@ export interface Stap {
 @Component({
   selector: 'app-afval-meld-procedure',
   template: `
-    <div class="min-h-screen bg-surface-50 dark:bg-surface-950 flex flex-col">
-      <header class="bg-white dark:bg-surface-900 shadow-sm border-b border-surface-200 dark:border-surface-700 px-4 py-3">
-        <div class="max-w-7xl mx-auto">
-          <div class="flex items-center justify-between">
-            <h1 class="text-xl font-semibold text-surface-900 dark:text-surface-100">Afval Alert</h1>
-            <div class="flex items-center gap-3">
-              @if (!state.isOffline()) {
-                <div class="flex items-center gap-2">
-                  <div class="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span class="text-sm text-surface-600 dark:text-surface-400">Online</span>
+    <div class="h-screen bg-green-50 flex flex-col">
+      
+      <!-- Progress Header - alleen tonen tijdens stappen -->
+      @if (stappenData().length > 0) {
+        <div class="bg-white dark:bg-surface-900 shadow-sm border-b border-surface-200 dark:border-surface-700 px-4 py-4">
+          <div class="max-w-4xl mx-auto">
+            <!-- Modern Step Progress Indicator -->
+            <div class="mb-4">
+              <div class="flex items-center justify-between mb-2">
+                <h2 class="text-xl font-bold text-surface-900 dark:text-surface-100 slide-in-right-animation">
+                  {{ getCurrentStepTitle() }}
+                </h2>
+                <span class="text-sm font-medium text-primary-600 bg-primary-50 px-3 py-1 rounded-full">
+                  Stap {{ getActiveIndex() + 1 }} van {{ stappenData().length }}
+                </span>
+              </div>
+              
+              <!-- Animated Progress Bar -->
+              <div class="relative pt-1">
+                <div class="flex items-center justify-between mb-1">
+                  <div class="w-full bg-surface-200 dark:bg-surface-700 rounded-full h-2.5">
+                    <div 
+                      class="bg-gradient-to-r from-primary-500 to-green-500 h-2.5 rounded-full step-progress-bar"
+                      [style.width.%]="getProgressPercentage()"
+                      [class.progress-fill-animation]="true">
+                    </div>
+                  </div>
                 </div>
-              } @else {
-                <div class="flex items-center gap-2">
-                  <div class="w-2 h-2 bg-red-500 rounded-full"></div>
-                  <span class="text-sm text-surface-600 dark:text-surface-400">Offline</span>
+                
+                <!-- Step Labels with Animation -->
+                <div class="flex justify-between mt-3 relative">
+                  @for (stap of stappenData(); track stap.id) {
+                    <div class="flex flex-col items-center relative">
+                      <!-- Step Circle with Animation -->
+                      <div 
+                        class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 step-circle"
+                        [class]="getStepCircleClass(stap)">
+                        @if (stap.voltooid) {
+                          <i class="pi pi-check text-white animate-fade-in"></i>
+                        } @else if (stap.actief) {
+                          <span class="text-white">{{ stap.id }}</span>
+                        } @else {
+                          <span class="text-surface-400 dark:text-surface-500">{{ stap.id }}</span>
+                        }
+                      </div>
+                      <!-- Step Label -->
+                      <span 
+                        class="text-xs mt-1 font-medium transition-colors duration-300 step-label"
+                        [class]="getStepLabelClass(stap)">
+                        {{ stap.titel }}
+                      </span>
+                    </div>
+                  }
                 </div>
+              </div>
+            </div>
+            
+            <!-- Connection Lines Between Steps -->
+            <div class="flex justify-between relative px-4 -mt-1 mb-2">
+              @for (stap of stappenData(); track $index; let i = $index) {
+                @if (i < stappenData().length - 1) {
+                  <div 
+                    class="absolute top-4 h-0.5 -translate-y-1/2 transition-all duration-500"
+                    [style.left.%]="(i * (100 / (stappenData().length - 1))) + (25 / stappenData().length)"
+                    [style.width.%]="(50 / (stappenData().length - 1))"
+                    [class]="getConnectionLineColor(stap)">
+                  </div>
+                }
               }
             </div>
           </div>
-          @if (stappenData().length > 0) {
-            <div class="mt-4">
-              <p-steps 
-                [model]="getMenuItems()" 
-                [readonly]="true" 
-                [activeIndex]="getActiveIndex()"
-                styleClass="w-full"
-              ></p-steps>
-            </div>
-          }
         </div>
-      </header>
+      }
       
-      <main class="flex-grow flex items-center justify-center lg:pt-8">
-        <div class="w-full max-w-md lg:max-w-2xl mx-auto">
-          <div class="animate-fade-in">
+      <!-- Main Content -->
+      <main class="flex-1 flex">
+        <div class="w-full flex items-center justify-center">
+          <div class="w-full max-w-md mx-auto h-[70vh] flex flex-col motion-preset-slide-up">
             @switch (state.huidigeStap()) {
               @case (AfvalMeldProcedureStap.START) { <app-start-stap></app-start-stap> }
               @case (AfvalMeldProcedureStap.FOTO) { <app-foto-stap></app-foto-stap> }
-              @case (AfvalMeldProcedureStap.LOCATIE) { <app-locatie-stap></app-locatie-stap> }
+              @case (AfvalMeldProcedureStap.LOCATIE) { <app-locatie-stap titel="Locatie" subtitel="Geef aan waar het afval ligt"></app-locatie-stap> }
               @case (AfvalMeldProcedureStap.CONTACT) { <app-contact-stap></app-contact-stap> }
               @case (AfvalMeldProcedureStap.CONTROLE) { <app-controle-stap></app-controle-stap> }
               @case (AfvalMeldProcedureStap.SUCCES) { <app-succes-stap></app-succes-stap> }
@@ -79,6 +123,7 @@ export interface Stap {
   imports: [
     CommonModule,
     StepsModule,
+    ProgressBarModule,
     StartStapComponent,
     FotoStapComponent,
     LocatieStapComponent,
@@ -142,6 +187,48 @@ export class AfvalMeldenProcedureComponent implements OnInit {
   getActiveIndex(): number {
     const actiefIndex = this.stappenData().findIndex(stap => stap.actief);
     return actiefIndex !== -1 ? actiefIndex : 0;
+  }
+
+  protected getProgressPercentage(): number {
+    const stappenCount = this.stappenData().length;
+    if (stappenCount === 0) return 0;
+    
+    const activeIndex = this.getActiveIndex();
+    return ((activeIndex + 1) / stappenCount) * 100;
+  }
+
+  protected getCurrentStepTitle(): string {
+    const activeStap = this.stappenData().find(stap => stap.actief);
+    return activeStap?.titel || '';
+  }
+  
+  // Helper methods for styling
+  protected getStepCircleClass(stap: Stap): string {
+    if (stap.voltooid) {
+      return 'bg-green-500 border-2 border-green-500 shadow-lg shadow-green-500/30';
+    } else if (stap.actief) {
+      return 'bg-primary-500 border-2 border-primary-500 shadow-lg shadow-primary-500/30 step-circle-active bounce-smooth-animation';
+    } else {
+      return 'bg-white border-2 border-surface-300 dark:border-surface-600';
+    }
+  }
+  
+  protected getStepLabelClass(stap: Stap): string {
+    if (stap.voltooid) {
+      return 'text-green-600 dark:text-green-400';
+    } else if (stap.actief) {
+      return 'text-primary-600 dark:text-primary-400 font-semibold';
+    } else {
+      return 'text-surface-500 dark:text-surface-400';
+    }
+  }
+  
+  protected getConnectionLineColor(stap: Stap): string {
+    if (stap.voltooid) {
+      return 'bg-green-500';
+    } else {
+      return 'bg-surface-200 dark:bg-surface-700';
+    }
   }
   
   ngOnInit() {

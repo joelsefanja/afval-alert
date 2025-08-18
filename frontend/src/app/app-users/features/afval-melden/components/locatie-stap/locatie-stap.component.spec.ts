@@ -2,82 +2,171 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
 import { LocatieStapComponent } from './locatie-stap.component';
 import { MeldingsProcedureStatus } from '../../services/melding/melding-state.service';
-import { LocatieService } from '../../services/locatie.service';
+import { LocatieService } from '../../services/locatie/locatie.service';
+import { GeocodingOpenstreetmapService } from '../../services/locatie/geocoding-openstreetmap.service';
+import { LocatieConfigService } from '../../../../../services/locatie-config.service';
 
 describe('LocatieStapComponent', () => {
+  // Component en mocks declareren
   let component: LocatieStapComponent;
   let fixture: ComponentFixture<LocatieStapComponent>;
   let mockMeldingsProcedureStatus: jest.Mocked<MeldingsProcedureStatus>;
   let mockLocatieService: jest.Mocked<LocatieService>;
+  let mockGeocodingService: jest.Mocked<GeocodingOpenstreetmapService>;
+  let mockLocatieConfigService: jest.Mocked<LocatieConfigService>;
 
+  // Setup voor alle tests
   beforeEach(async () => {
+    // Mock services aanmaken
     const meldingsSpy = {
       gaTerugNaarVorige: jest.fn(),
       gaNaarVolgende: jest.fn(),
-      setLocatie: jest.fn(),
-      setLocatieError: jest.fn(),
-      locatieAdres: signal(''),
-      locatieError: signal('')
+      locatieError: signal(''),
+      locatieAdres: signal('')
     } as unknown as jest.Mocked<MeldingsProcedureStatus>;
 
     const locatieSpy = {
       getCurrentPosition: jest.fn(),
       getAddressFromCoordinates: jest.fn(),
-      getCoordinatesFromAddress: jest.fn()
+      getCoordinatesFromAddress: jest.fn(),
+      valideerLocatie: jest.fn()
     } as unknown as jest.Mocked<LocatieService>;
 
+    const geocodingSpy = {
+      getAddressFromCoordinates: jest.fn()
+    } as unknown as jest.Mocked<GeocodingOpenstreetmapService>;
+
+    const locatieConfigSpy = {
+      loadConfig: jest.fn()
+    } as unknown as jest.Mocked<LocatieConfigService>;
+
+    // TestBed configureren
     await TestBed.configureTestingModule({
       imports: [LocatieStapComponent],
       providers: [
         { provide: MeldingsProcedureStatus, useValue: meldingsSpy },
-        { provide: LocatieService, useValue: locatieSpy }
+        { provide: LocatieService, useValue: locatieSpy },
+        { provide: GeocodingOpenstreetmapService, useValue: geocodingSpy },
+        { provide: LocatieConfigService, useValue: locatieConfigSpy }
       ]
     }).compileComponents();
 
+    // Component en mocks instellen
     fixture = TestBed.createComponent(LocatieStapComponent);
     component = fixture.componentInstance;
     mockMeldingsProcedureStatus = TestBed.inject(MeldingsProcedureStatus) as jest.Mocked<MeldingsProcedureStatus>;
     mockLocatieService = TestBed.inject(LocatieService) as jest.Mocked<LocatieService>;
+    mockGeocodingService = TestBed.inject(GeocodingOpenstreetmapService) as jest.Mocked<GeocodingOpenstreetmapService>;
+    mockLocatieConfigService = TestBed.inject(LocatieConfigService) as jest.Mocked<LocatieConfigService>;
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  // Basis tests voor component en navigatie functies
+  describe('Basis functionaliteit', () => {
+    it('moet component aanmaken', () => {
+      expect(component).toBeTruthy();
+    });
+
+    // Test navigatie functies
+    describe('Navigatie', () => {
+      it('moet terug functie aanroepen', () => {
+        // Roep de protected methode aan
+        (component as any).terug();
+        
+        // Verificatie
+        expect(mockMeldingsProcedureStatus.gaTerugNaarVorige).toHaveBeenCalledTimes(1);
+      });
+      
+      it('moet volgende functie aanroepen', () => {
+        // Roep de protected methode aan
+        (component as any).volgende();
+        
+        // Verificatie
+        expect(mockMeldingsProcedureStatus.gaNaarVolgende).toHaveBeenCalledTimes(1);
+      });
+    });
   });
 
-  it('should call gaTerugNaarVorige when terug is called', () => {
-    component.terug();
-    expect(mockMeldingsProcedureStatus.gaTerugNaarVorige).toHaveBeenCalled();
-  });
+  // Locatie functionaliteit tests
+  describe('Locatie functionaliteit', () => {
+    it('moet huidige locatie ophalen', async () => {
+      // Mock de locatie service
+      const mockPosition = {
+        coords: {
+          latitude: 53.2193835,
+          longitude: 6.5665017
+        }
+      } as GeolocationPosition;
+      
+      mockLocatieService.getCurrentPosition.mockResolvedValue(mockPosition);
+      mockLocatieService.getAddressFromCoordinates.mockResolvedValue('Groningen');
+      mockLocatieService.valideerLocatie.mockResolvedValue(true);
+      
+      // Test huidige locatie ophalen
+      await (component as any).getCurrentLocation();
+      
+      // Verificatie
+      expect(mockLocatieService.getCurrentPosition).toHaveBeenCalled();
+      expect(mockLocatieService.getAddressFromCoordinates).toHaveBeenCalledWith(53.2193835, 6.5665017);
+      expect(mockLocatieService.valideerLocatie).toHaveBeenCalledWith(53.2193835, 6.5665017);
+    });
 
-  it('should call gaNaarVolgende when volgende is called', () => {
-    component.volgende();
-    expect(mockMeldingsProcedureStatus.gaNaarVolgende).toHaveBeenCalled();
-  });
+    it('moet fouten bij locatie ophalen afhandelen', async () => {
+      // Mock de locatie service om een fout te gooien
+      mockLocatieService.getCurrentPosition.mockRejectedValue(new Error('Locatie niet beschikbaar'));
+      
+      // Test foutafhandeling
+      await (component as any).getCurrentLocation();
+      
+      // Verificatie
+      expect(mockLocatieService.getCurrentPosition).toHaveBeenCalled();
+      expect(component['foutmelding']).toBe('Er is een fout opgetreden bij het ophalen van uw locatie');
+    });
 
-  it('should get current location', async () => {
-    const mockPosition = {
-      coords: { latitude: 53.2194, longitude: 6.5665 }
-    } as GeolocationPosition;
-    
-    mockLocatieService.getCurrentPosition.mockResolvedValue(mockPosition);
-    mockLocatieService.getAddressFromCoordinates.mockResolvedValue('Test Adres 123');
+    it('moet adres zoeken', async () => {
+      // Mock de component state
+      (component as any).zoekQuery.setValue('Groningen');
+      
+      // Mock de locatie service
+      mockLocatieService.getCoordinatesFromAddress.mockResolvedValue({ lat: 53.2193835, lng: 6.5665017 });
+      mockLocatieService.valideerLocatie.mockResolvedValue(true);
+      
+      // Test adres zoeken
+      await (component as any).onAddressSearch();
+      
+      // Verificatie
+      expect(mockLocatieService.getCoordinatesFromAddress).toHaveBeenCalledWith('Groningen');
+      expect(mockLocatieService.valideerLocatie).toHaveBeenCalledWith(53.2193835, 6.5665017);
+    });
 
-    await component.getCurrentLocation();
-
-    expect(mockLocatieService.getCurrentPosition).toHaveBeenCalled();
-    expect(mockLocatieService.getAddressFromCoordinates).toHaveBeenCalledWith(53.2194, 6.5665);
-    expect(mockMeldingsProcedureStatus.setLocatie).toHaveBeenCalledWith(
-      'Test Adres 123',
-      { lat: 53.2194, lng: 6.5665 },
-      false
-    );
-  });
-
-  it('should handle location error', async () => {
-    mockLocatieService.getCurrentPosition.mockRejectedValue(new Error('Location not available'));
-
-    await component.getCurrentLocation();
-
-    expect(mockMeldingsProcedureStatus.setLocatieError).toHaveBeenCalledWith('Locatie kon niet worden bepaald');
+    it('moet locatie selectie van kaart verwerken', async () => {
+      // Mock de locatie info
+      const mockLocatieInfo = {
+        latitude: 53.2193835,
+        longitude: 6.5665017,
+        address: 'Groningen'
+      };
+      
+      // Mock de locatie service
+      mockLocatieService.valideerLocatie.mockResolvedValue(true);
+      
+      // Mock de geocoding service
+      const mockAddressData = {
+        straat: 'Teststraat',
+        huisnummer: '1',
+        postcode: '1234AB',
+        plaats: 'Groningen'
+      };
+      
+      mockGeocodingService.getAddressFromCoordinates.mockReturnValue({
+        toPromise: () => Promise.resolve(mockAddressData)
+      } as any);
+      
+      // Test locatie selectie verwerken
+      await (component as any).onKaartLocatieGeselecteerd(mockLocatieInfo);
+      
+      // Verificatie
+      expect(mockLocatieService.valideerLocatie).toHaveBeenCalledWith(53.2193835, 6.5665017);
+      expect(mockGeocodingService.getAddressFromCoordinates).toHaveBeenCalledWith(53.2193835, 6.5665017);
+    });
   });
 });

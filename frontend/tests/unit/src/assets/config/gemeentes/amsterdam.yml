@@ -1,0 +1,29 @@
+# Locatie configuratie
+gebied:
+  naam: "Amsterdam"
+  type: "gemeente"
+  land: "Nederland"
+  # Begrenzingen voor validatie (optioneel)
+  begrenzing:
+    noord: 52.4500
+    zuid: 52.2800
+    oost: 5.0200
+    west: 4.7500
+
+# OpenStreetMap configuratie
+nominatim:
+  baseUrl: "https://nominatim.openstreetmap.org"
+  reverseZoom: 18
+  searchZoom: 18
+  addressdetails: 1
+  format: "json"
+
+# Locatie validatie
+validatie:
+  vereisteVelden:
+    - "gemeente"
+    - "provincie"
+  toegestaneLanden:
+    - "Nederland"
+    - "Netherlands"
+    - "NL"
