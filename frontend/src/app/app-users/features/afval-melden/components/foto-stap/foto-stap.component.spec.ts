@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
 import { FotoStapComponent } from './foto-stap.component';
 import { MeldingsProcedureStatus } from '../../services/melding/melding-state.service';
-import { FotoService } from '../../services/foto.service';
+import { FotoService } from '../../services/media/foto.service';
 // Import van test-helpers voor JestSpy type
 import { toegankelijkVoorTests, maakMediaDevicesSpy, maakOutputEventSpy } from '../../test/test-helpers';
 
@@ -26,8 +26,10 @@ describe('FotoStapComponent', () => {
     } as unknown as jest.Mocked<MeldingsProcedureStatus>;
 
     const fotoSpy = {
+      maakFoto: jest.fn(),
       kiesFotoUitGalerij: jest.fn(),
-      blobToDataUrl: jest.fn()
+      blobToDataUrl: jest.fn(),
+      optimaliseerFoto: jest.fn()
     } as unknown as jest.Mocked<FotoService>;
 
     // TestBed configureren
@@ -121,6 +123,66 @@ describe('FotoStapComponent', () => {
       expect(mockMediaDevices).toHaveBeenCalled();
       expect(mockMeldingsProcedureStatus.setFotoError).toHaveBeenCalledWith('Camera niet beschikbaar. Controleer je browser instellingen.');
       expect(toegankelijkVoorTests(component).cameraActive()).toBe(false);
+    });
+  });
+
+  // Foto maken tests
+  describe('Foto maken', () => {
+    it('moet foto maken en opslaan', async () => {
+      // Mock de foto service
+      const mockBlob = new Blob(['test'], { type: 'image/jpeg' });
+      mockFotoService.maakFoto.mockResolvedValue(mockBlob);
+      mockFotoService.blobToDataUrl.mockResolvedValue('data:image/jpeg;base64,test');
+      
+      // Test foto maken
+      await toegankelijkVoorTests(component).maakFoto();
+      
+      // Verificatie
+      expect(mockFotoService.maakFoto).toHaveBeenCalled();
+      expect(mockFotoService.blobToDataUrl).toHaveBeenCalledWith(mockBlob);
+      expect(mockMeldingsProcedureStatus.setFotoUrl).toHaveBeenCalledWith('data:image/jpeg;base64,test');
+    });
+
+    it('moet fouten bij foto maken afhandelen', async () => {
+      // Mock de foto service om een fout te gooien
+      mockFotoService.maakFoto.mockRejectedValue(new Error('Foto maken mislukt'));
+      
+      // Test foutafhandeling
+      await toegankelijkVoorTests(component).maakFoto();
+      
+      // Verificatie
+      expect(mockFotoService.maakFoto).toHaveBeenCalled();
+      expect(mockMeldingsProcedureStatus.setFotoError).toHaveBeenCalledWith('Foto maken mislukt. Probeer het opnieuw.');
+    });
+  });
+
+  // Galerij tests
+  describe('Galerij', () => {
+    it('moet foto kiezen uit galerij en opslaan', async () => {
+      // Mock de foto service
+      const mockBlob = new Blob(['test'], { type: 'image/jpeg' });
+      mockFotoService.kiesFotoUitGalerij.mockResolvedValue(mockBlob);
+      mockFotoService.blobToDataUrl.mockResolvedValue('data:image/jpeg;base64,test');
+      
+      // Test foto kiezen uit galerij
+      await toegankelijkVoorTests(component).kiesFotoUitGalerij();
+      
+      // Verificatie
+      expect(mockFotoService.kiesFotoUitGalerij).toHaveBeenCalled();
+      expect(mockFotoService.blobToDataUrl).toHaveBeenCalledWith(mockBlob);
+      expect(mockMeldingsProcedureStatus.setFotoUrl).toHaveBeenCalledWith('data:image/jpeg;base64,test');
+    });
+
+    it('moet fouten bij foto kiezen afhandelen', async () => {
+      // Mock de foto service om een fout te gooien
+      mockFotoService.kiesFotoUitGalerij.mockRejectedValue(new Error('Foto kiezen mislukt'));
+      
+      // Test foutafhandeling
+      await toegankelijkVoorTests(component).kiesFotoUitGalerij();
+      
+      // Verificatie
+      expect(mockFotoService.kiesFotoUitGalerij).toHaveBeenCalled();
+      expect(mockMeldingsProcedureStatus.setFotoError).toHaveBeenCalledWith('Foto kiezen mislukt. Probeer het opnieuw.');
     });
   });
 });

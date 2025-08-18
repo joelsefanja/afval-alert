@@ -1,18 +1,18 @@
-import { Component, inject, output, ViewChild } from '@angular/core';
+import { Component, AfterViewInit, inject, output, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { Kaart } from "./kaart/kaart";
+import { Kaart } from '../../../app-users/features/afval-melden/components/kaart';
 import { HuidigeLocatie } from "./huidige-locatie/huidige-locatie";
-import { KaartService } from '../../../services/kaart';
+import { KaartService } from '../../../app-users/features/afval-melden/services/kaart';
 
 @Component({
   selector: 'app-locatie-picker',
   templateUrl: './locatie-picker.html',
   standalone: true,
-  imports: [ButtonModule, InputTextModule, Kaart, HuidigeLocatie]
+  imports: [FormsModule, ButtonModule, InputTextModule, Kaart, HuidigeLocatie]
 })
-export class LocatiePicker {
+export class LocatiePicker implements AfterViewInit {
   private kaartService = inject(KaartService);
   @ViewChild(Kaart) kaartComponent!: Kaart;
 
@@ -21,6 +21,11 @@ export class LocatiePicker {
 
   searchQuery = '';
   selectedAddress = '';
+
+  ngAfterViewInit() {
+    // The map is now initialized automatically in the Kaart component
+    // No need to manually initialize it here
+  }
 
   onInputChange(event: any) {
     this.searchQuery = event.target.value;
