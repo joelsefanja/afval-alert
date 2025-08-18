@@ -1,9 +1,13 @@
 <p-button label="Sluiten" (click)="closeDetail()" />
 
 <h1>Foto van melding</h1>
+<p-image src="https://media.istockphoto.com/id/845816364/nl/foto/de-stapel-van-vuilnis-in-de-prullenmand-dump-of-storten-verontreiniging-concept.jpg?s=612x612&w=0&k=20&c=_9pkYruHcbDs4sFnstJ1A_gPhnOKQdFe3adEn5D3d4g=" alt="Image" class="mapp" />
 <p>Afvaltype, status, datum</p>
 Opmerking van gebruiker bij melding
 
+<div class="mapp">
+  <app-kaart></app-kaart>
+</div>
 
 <h1>Kaart voor melding met id: {{ selection.selectedId() }}</h1>
 
@@ -13,13 +17,8 @@ Opmerking van gebruiker bij melding
 <div>
   <p-select [options]="states" [(ngModel)]="selectedStatus" optionLabel="status" placeholder="Selecteer een status" class="w-full md:w-56" />
 </div>
-<p>1 </p>
-<p>2 </p>
-<p>3 </p>
-<p>4 </p>
-
 <p>Voeg opmerking toe</p>
-<input type="text" pInputText [(ngModel)]="value" />
+<textarea rows="5"cols="30" pTextarea [autoResize]="true"></textarea>
 <div>
   <p-button label="Update" />
 </div>

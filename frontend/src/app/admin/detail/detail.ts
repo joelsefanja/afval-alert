@@ -1,12 +1,17 @@
-import { Component } from '@angular/core';
+import { Component, inject, ViewChild, output} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TijdlijnElementen } from '../tijdlijn-element/tijdlijn-element';
 import { TijdlijnElement } from '../interfaces/tijdlijn-element.interface';
 import { IDService } from '../services/id/id';
-import { InputTextModule } from 'primeng/inputtext';
+import { TextareaModule } from 'primeng/textarea';
 import { FormsModule } from '@angular/forms';
 import { State } from '../interfaces/state.interface';
 import { ButtonModule } from 'primeng/button';
+import { KaartService } from '../../app-users/features/afval-melden/services/kaart';
+import { Kaart } from '../../app-users/features/afval-melden/components/kaart';
+
+import { ImageModule } from 'primeng/image';
+  
 
 import { SelectModule } from 'primeng/select';
 
@@ -20,16 +25,24 @@ const tijdlijnElementen: TijdlijnElement[] = [
 @Component({
   selector: 'app-detail',
   standalone: true,
-  imports: [CommonModule, TijdlijnElementen, InputTextModule, FormsModule, SelectModule, ButtonModule],
+  imports: [CommonModule, TijdlijnElementen, TextareaModule, FormsModule, SelectModule, ButtonModule, Kaart, ImageModule],
   templateUrl: './detail.html',
   styleUrl: './detail.scss'
 })
 export class DetailComponent {
+  private kaartService = inject(KaartService);
+  @ViewChild(Kaart) kaartComponent!: Kaart;
   TEST = tijdlijnElementen;
   value: string = ''; // Initialize with a default value
   states!: State[];
 
   selectedStatus : string = '';
+
+  locationSelected = output<string>();
+  locatieGeselecteerd = output<{latitude: number, longitude: number, address: string, wijk?: string, buurt?: string, gemeente?: string}>();
+
+  searchQuery = '';
+  selectedAddress = '';
 
   ngOnInit() {
         this.states = [
@@ -45,4 +58,6 @@ export class DetailComponent {
   closeDetail() {
     this.selection.closeDetail();
   }
+
+
 }
