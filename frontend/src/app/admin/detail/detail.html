@@ -1,7 +1,9 @@
 <button mat-button (click)="closeDetail()">Close</button>
 
 <h1>Foto van melding</h1>
+<p>Afvaltype, status, datum</p>
 Opmerking van gebruiker bij melding
+
 
 <h1>Kaart voor melding met id: {{ selection.selectedId() }}</h1>
 
@@ -9,8 +11,13 @@ Opmerking van gebruiker bij melding
 
 <p>Update status</p>
 <div>
-  <p-select [options]="" [(ngModel)]="selectedStatus" optionLabel="name" placeholder="Selecteer een status" class="w-full md:w-56" />
+  <p-select [options]="states" [(ngModel)]="selectedStatus" optionLabel="status" placeholder="Selecteer een status" class="w-full md:w-56" />
 </div>
+<p>1 </p>
+<p>2 </p>
+<p>3 </p>
+<p>4 </p>
+
 <p>Voeg opmerking toe</p>
 <input type="text" pInputText [(ngModel)]="value" />
 <div>

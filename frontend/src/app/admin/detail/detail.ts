@@ -2,10 +2,10 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TijdlijnElementen } from '../tijdlijn-element/tijdlijn-element';
 import { TijdlijnElement } from '../tijdlijn-element.interface';
-import { MatButtonModule } from '@angular/material/button';
 import { SelectionService } from '../core/id';
 import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule } from '@angular/forms';
+import { State } from '../state.interface';
 
 import { SelectModule } from 'primeng/select';
 
@@ -19,19 +19,23 @@ const tijdlijnElementen: TijdlijnElement[] = [
 @Component({
   selector: 'app-detail',
   standalone: true,
-  imports: [CommonModule, TijdlijnElementen, MatButtonModule, InputTextModule, FormsModule, SelectModule],
+  imports: [CommonModule, TijdlijnElementen, InputTextModule, FormsModule, SelectModule],
   templateUrl: './detail.html',
   styleUrl: './detail.scss'
 })
 export class DetailComponent {
   TEST = tijdlijnElementen;
   value: string = ''; // Initialize with a default value
-  state: [] | undefined;
+  states!: State[];
 
   selectedStatus : string = '';
 
   ngOnInit() {
-        this.state = [
+        this.states = [
+          {status: 'Nieuw'},
+          {status: 'Gecontroleerd'},
+          {status: 'Ingepland'},
+          {status: 'Opgehaald'}
         ];
     }
 

@@ -1,7 +1,7 @@
+@import "primeicons/primeicons.css";
+
 @import "tailwindcss";
 @plugin "tailwindcss-primeui";
-
-@import "primeicons/primeicons.css";
 
 /* Custom Animations for Step Progress */
 @keyframes pulse-grow {
