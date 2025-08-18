@@ -12,7 +12,7 @@
   1. Als ik op "Maak Foto" klik, gaat de camera aan.
   2. De app herkent automatisch wat voor afval het is.
   3. Grote foto's worden automatisch kleiner gemaakt.
-  4. Als de app het afval niet herkent, kan ik het zelf kiezen.
+  4. Als de app het afval niet herkent, geeft het een melding en vraagt het om nieuwe foto.
   5. Als de camera niet werkt, kan ik een foto uploaden.
 
 - **R2** – Ik wil precies laten zien waar het afval ligt.

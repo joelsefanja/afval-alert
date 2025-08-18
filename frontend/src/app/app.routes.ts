@@ -1,10 +1,12 @@
 import { Routes } from '@angular/router';
-import { AppUsersComponent } from './app-users/app-users';
 import { AdminComponent } from './admin/admin';
-import { routes as adminRoutes } from './admin/admin.routes';
+
+// Nieuwe AfvalMeldenProcedureComponent met Shadcn UI en signals
+import { AfvalMeldenProcedureComponent } from './app-users/features/afval-melden';
 
 export const routes: Routes = [
-  { path: '', component: AppUsersComponent },
-  { path: 'admin', component: AdminComponent, children: adminRoutes },
-  { path: '**', redirectTo: '' }
+  
+  { path: '', component: AfvalMeldenProcedureComponent, pathMatch: 'full' },
+  { path: 'admin', component: AdminComponent },
+  { path: '**', component: AfvalMeldenProcedureComponent }
 ];
