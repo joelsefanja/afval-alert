@@ -1,8 +1,11 @@
 package com.summerschool.afval_alert.service;
 
+import com.summerschool.afval_alert.model.entity.Melding;
 import com.summerschool.afval_alert.model.entity.Notitie;
 import com.summerschool.afval_alert.repository.NotitieRepository;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 public class NotitieService {
@@ -12,9 +15,12 @@ public class NotitieService {
         this.notitieRepository = notitieRepository;
     }
 
-    public Notitie createNotitie(String note) {
+    public Notitie createNotitie(Melding melding, String note) {
         Notitie notitie = new Notitie();
         notitie.setContent(note);
+        notitie.setMelding(melding);
+        notitie.setCreatedAt(LocalDateTime.now());
+        melding.addNotitie(notitie);
 
         return notitieRepository.save(notitie);
     }

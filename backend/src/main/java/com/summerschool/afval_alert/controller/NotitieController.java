@@ -29,13 +29,8 @@ public class NotitieController {
             @RequestBody PostNotitieDTO postNotitieDTO
     ) {
 
-        Notitie notitie = new Notitie();
-        notitie.setContent(postNotitieDTO.getNotitie());
-        notitie.setCreatedAt(LocalDateTime.now());
-
         Melding melding = meldingService.findMeldingById(id);
-        notitie.setMelding(melding);
-        melding.addNotitie(notitie);
+        notitieService.createNotitie(melding, postNotitieDTO.getNotitie());
 
         meldingService.updateMelding(melding);
 
