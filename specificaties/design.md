@@ -180,11 +180,11 @@ class MeldingService {
 
 ## REST API Endpoints & Request Bodies
 
-post - Uploaden foto (waarbij lege melding wordt aangemaakt)
-
 ### `POST /api/image`
 
 **Content-Type:** `application/json`
+
+Het uploaden van een foto. Hiermee wordt ook een lege, bijbehorende melding aangemaakt.
 
 ```json
 {
@@ -194,11 +194,11 @@ post - Uploaden foto (waarbij lege melding wordt aangemaakt)
 
 ---
 
-put - Melding afmaken
-
 ### `PUT /api/melding`
 
 **Content-Type** `application/json`
+
+Het afmaken van een eerder aangemaakte melding.
 
 ```json
   "lat": "Float",
@@ -209,11 +209,11 @@ put - Melding afmaken
 
 ---
 
-put - Status melding updaten
-
 ### `PUT /api/melding/status`
 
 **Content-Type** `application/json`
+
+Het updaten van de status van een melding.
 
 ```json
   "meldingId": "Long",
@@ -222,11 +222,11 @@ put - Status melding updaten
 
 ---
 
-post - Notititie toevoegen aan melding
-
 ### `POST /api/notitie`
 
 **Content-Type** `application/json`
+
+Het toevoegen van een notitie aan een melding.
 
 ```json
   "meldingId": "Long",
@@ -235,55 +235,55 @@ post - Notititie toevoegen aan melding
 
 ---
 
-get - Lijst met meldingen ophalen
-
 ### `GET  /api/meldingen`
 
 **Content-Type** `application/json`
 
----
+Het ophalen van alle meldingen.
 
-get - Een specifieke melding ophalen
+---
 
 ### `GET /api/melding`
 
 **Content-Type** `application/json`
 
+Het ophalen van een specifieke melding.
+
 ```json
   "meldingId": "Long"
 ```
 
 ---
-
-get - Alle notities van een melding ophalen
 
 ### `GET /api/notities`
 
 **Content-Type** `application/json`
 
+Het ophalen van alle notities van een melding
+
 ```json
   "meldingId": "Long"
 ```
 
 ---
-
-get - Image van melding ophalen
 
 ### `GET /api/image`
 
 **Content-Type** `application/json`
 
+Het ophalen van de afbeelding van een melding.
+
 ```json
   "meldingId": "Long"
 ```
 
 ---
 
-get - Alle status enums ophalen
-
 ### `GET /api/status`
 
 **Content-Type** `application/json`
+
+Het ophalen van alle status enums.
 
 
 
