@@ -201,10 +201,12 @@ Het uploaden van een foto. Hiermee wordt ook een lege, bijbehorende melding aang
 Het afmaken van een eerder aangemaakte melding.
 
 ```json
+{
   "lat": "Float",
   "lon": "Float",
   "email": "String",
   "name": "String"
+}
 ```
 
 ---
@@ -216,8 +218,10 @@ Het afmaken van een eerder aangemaakte melding.
 Het updaten van de status van een melding.
 
 ```json
+{
   "meldingId": "Long",
   "status": "String"
+}
 ```
 
 ---
@@ -229,8 +233,10 @@ Het updaten van de status van een melding.
 Het toevoegen van een notitie aan een melding.
 
 ```json
+{
   "meldingId": "Long",
   "notitie": "String"
+}
 ```
 
 ---
@@ -250,7 +256,9 @@ Het ophalen van alle meldingen.
 Het ophalen van een specifieke melding.
 
 ```json
+{
   "meldingId": "Long"
+}
 ```
 
 ---
@@ -262,7 +270,9 @@ Het ophalen van een specifieke melding.
 Het ophalen van alle notities van een melding
 
 ```json
+{
   "meldingId": "Long"
+}
 ```
 
 ---
@@ -274,7 +284,9 @@ Het ophalen van alle notities van een melding
 Het ophalen van de afbeelding van een melding.
 
 ```json
+{
   "meldingId": "Long"
+}
 ```
 
 ---
