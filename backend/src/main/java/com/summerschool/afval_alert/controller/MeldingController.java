@@ -50,7 +50,7 @@ public class MeldingController {
     public ResponseEntity<Melding> updateStatusMelding(
             @PathVariable Long id,
             @RequestBody PutStatusMeldingDTO putStatusMeldingDTO
-            ) {
+    ) {
 
         Melding melding = meldingService.findMeldingById(id);
 

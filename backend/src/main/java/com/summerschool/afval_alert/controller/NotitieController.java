@@ -1,5 +1,6 @@
 package com.summerschool.afval_alert.controller;
 
+import com.summerschool.afval_alert.model.dto.PostNotitieDTO;
 import com.summerschool.afval_alert.model.entity.Melding;
 import com.summerschool.afval_alert.model.entity.Notitie;
 import com.summerschool.afval_alert.service.MeldingService;
@@ -8,6 +9,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -21,13 +23,23 @@ public class NotitieController {
         this.meldingService = meldingService;
     }
 
-    @PostMapping("/addNotitie")
-    public ResponseEntity<String> postNotitie(@RequestParam("meldingId") Long meldingId,
-                                            @RequestParam("notitie") String notitie) {
+    @PostMapping("/notitie/{id}")
+    public ResponseEntity<Melding> postNotitie(
+            @PathVariable Long id,
+            @RequestBody PostNotitieDTO postNotitieDTO
+    ) {
 
-        meldingService.addNotitie(meldingId, notitie);
+        Notitie notitie = new Notitie();
+        notitie.setContent(postNotitieDTO.getNotitie());
+        notitie.setCreatedAt(LocalDateTime.now());
 
-        return ResponseEntity.status(HttpStatusCode.valueOf(200)).body("Notitie added to melding");
+        Melding melding = meldingService.findMeldingById(id);
+        notitie.setMelding(melding);
+        melding.addNotitie(notitie);
+
+        meldingService.updateMelding(melding);
+
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/notities")

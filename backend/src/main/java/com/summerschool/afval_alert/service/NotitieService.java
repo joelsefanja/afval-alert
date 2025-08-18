@@ -12,7 +12,7 @@ public class NotitieService {
         this.notitieRepository = notitieRepository;
     }
 
-    public Notitie saveNotitie(String note) {
+    public Notitie createNotitie(String note) {
         Notitie notitie = new Notitie();
         notitie.setContent(note);
 

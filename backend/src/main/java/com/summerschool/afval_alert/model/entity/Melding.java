@@ -131,4 +131,8 @@ public class Melding {
     public void setNotities(List<Notitie> notities) {
         this.notities = notities;
     }
+
+    public void addNotitie(Notitie notitie) {
+        this.notities.add(notitie);
+    }
 }
