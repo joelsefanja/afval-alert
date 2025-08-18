@@ -192,6 +192,8 @@ post - Uploaden foto (waarbij lege melding wordt aangemaakt)
 }
 ```
 
+---
+
 put - Melding afmaken
 
 ### `PUT /api/melding`
@@ -205,6 +207,8 @@ put - Melding afmaken
   "name": "String"
 ```
 
+---
+
 put - Status melding updaten
 
 ### `PUT /api/melding/status`
@@ -215,6 +219,8 @@ put - Status melding updaten
   "meldingId": "Long",
   "status": "String"
 ```
+
+---
 
 post - Notititie toevoegen aan melding
 
@@ -227,11 +233,15 @@ post - Notititie toevoegen aan melding
   "notitie": "String"
 ```
 
+---
+
 get - Lijst met meldingen ophalen
 
 ### `GET  /api/meldingen`
 
 **Content-Type** `application/json`
+
+---
 
 get - Een specifieke melding ophalen
 
@@ -243,6 +253,8 @@ get - Een specifieke melding ophalen
   "meldingId": "Long"
 ```
 
+---
+
 get - Alle notities van een melding ophalen
 
 ### `GET /api/notities`
@@ -252,6 +264,8 @@ get - Alle notities van een melding ophalen
 ```json
   "meldingId": "Long"
 ```
+
+---
 
 get - Image van melding ophalen
 
@@ -263,11 +277,14 @@ get - Image van melding ophalen
   "meldingId": "Long"
 ```
 
+---
+
 get - Alle status enums ophalen
 
 ### `GET /api/status`
 
 **Content-Type** `application/json`
+
 
 
 <!-- ### `POST /api/meldingen`
