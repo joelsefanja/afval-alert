@@ -1,158 +1,161 @@
-<div class="max-w-2xl mx-auto p-4 space-y-6 motion-preset-fade-in">
-  <!-- Terug knop -->
-  <p-button 
-    icon="pi pi-arrow-left" 
-    label="Terug" 
-    variant="text" 
-    size="small"
-    (onClick)="terug()"
-    class="!p-0"
-  />
+<!-- Foto stap - Volledig herontworpen camera interface -->
+<div class="h-full flex flex-col bg-gradient-to-br from-green-50 to-green-100 rounded-3xl shadow-xl overflow-hidden motion-preset-fade-in">
   
-  <!-- Header -->
-  <div class="text-center space-y-4">
-    <h1 class="text-2xl lg:text-3xl font-bold text-surface-900 dark:text-surface-0">
-      Maak een foto van het afval
-    </h1>
-    <p-card class="bg-surface-50 dark:bg-surface-800">
-      <p class="text-sm text-surface-600 dark:text-surface-300 m-0">
-        Houd je telefoon recht en tik op de foto knop.<br>
-        De app maakt de foto kleiner en stuurt hem meteen naar de gemeente.
-      </p>
-    </p-card>
+  <!-- Clean Header -->
+  <div class="flex items-center justify-between px-6 py-4 bg-white bg-opacity-50 backdrop-blur-sm">
+    <button 
+      (click)="terug()"
+      class="flex items-center gap-2 text-gray-700 hover:text-gray-900 transition-all duration-200 p-2 hover:bg-white hover:bg-opacity-60 rounded-xl">
+      <i class="pi pi-arrow-left text-lg"></i>
+      <span class="font-medium">Terug</span>
+    </button>
+    
+    <div class="text-center">
+      <h2 class="text-lg font-bold text-gray-900">Foto</h2>
+      <p class="text-xs text-gray-600">Stap 1 van 4</p>
+    </div>
+    
+    <div class="w-16"></div> <!-- Spacer for centering -->
   </div>
 
-  <!-- Error message -->
-  @if (state.fotoError()) {
-    <p-message 
-      severity="error" 
-      [text]="state.fotoError()"
-      class="motion-preset-shake"
-    />
-  }
-  
-  <!-- Camera view -->
-  @if (cameraActive()) {
-    <div class="space-y-4">
-      <p-card class="!p-0 overflow-hidden">
-        <div class="relative bg-surface-900 rounded-lg overflow-hidden">
-          <video 
-            #videoElement
-            autoplay 
-            playsinline 
-            muted
-            class="w-full h-64 lg:h-80 object-cover"
-            (loadedmetadata)="onVideoLoaded(videoElement)"
-          ></video>
-          
-          <!-- Camera controls overlay -->
-          <div class="absolute bottom-4 left-0 right-0 flex justify-center items-center gap-4">
-            <p-button 
-              icon="pi pi-times" 
-              severity="secondary"
-              [rounded]="true"
-              size="large"
-              (onClick)="stopCamera()"
-              class="!w-12 !h-12"
-            />
-            
-            <!-- Foto knop - typische camera stijl met SpeedDial -->
-            <p-speedDial 
-              [model]="speedDialItems" 
-              [radius]="80" 
-              type="circle" 
-              [hideOnClickOutside]="false"
-              buttonClass="p-button-rounded p-button-lg"
-              class="!w-16 !h-16"
-            ></p-speedDial>
-          </div>
-          
-          <!-- Camera instructies overlay -->
-          <div class="absolute top-2 left-0 right-0 text-center">
-            <p-chip label="Richt op het afval" icon="pi pi-info-circle" class="bg-surface-900/70 text-white"></p-chip>
-          </div>
+  <!-- Main Content -->
+  <div class="flex-1 flex flex-col px-6">
+    
+    <!-- Error Message -->
+    @if (state.fotoError()) {
+      <div class="bg-red-100 border border-red-300 rounded-2xl p-4 mb-4 motion-preset-shake">
+        <div class="flex items-center gap-3">
+          <i class="pi pi-exclamation-triangle text-red-500 text-lg"></i>
+          <span class="text-red-700 font-medium">{{ state.fotoError() }}</span>
         </div>
-      </p-card>
-    </div>
-  }
-  
-  <!-- Foto preview -->
-  @else if (state.fotoUrl()) {
-    <div class="space-y-4 motion-preset-scale-in">
-      <p-card class="!p-0 overflow-hidden">
+      </div>
+    }
+
+    <!-- Camera view compact -->
+    @if (fotoState().cameraActive) {
+      <div class="bg-white bg-opacity-80 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg mb-4 motion-preset-scale-in">
         <div class="relative">
-          <p-image 
-            [src]="state.fotoUrl()" 
+          <video
+            #video
+            autoplay
+            muted
+            playsInline
+            [style.transform]="'scaleX(-1)'"
+            class="w-full h-48 object-cover bg-black">
+          </video>
+          
+          <!-- Camera overlay indicators -->
+          <div class="absolute inset-0 pointer-events-none">
+            <div class="absolute top-2 left-2 w-4 h-4 border-l-2 border-t-2 border-white opacity-60"></div>
+            <div class="absolute top-2 right-2 w-4 h-4 border-r-2 border-t-2 border-white opacity-60"></div>
+            <div class="absolute bottom-2 left-2 w-4 h-4 border-l-2 border-b-2 border-white opacity-60"></div>
+            <div class="absolute bottom-2 right-2 w-4 h-4 border-r-2 border-b-2 border-white opacity-60"></div>
+            
+            <div class="absolute inset-0 flex items-center justify-center">
+              <div class="w-12 h-12 border-2 border-white rounded-full opacity-50 animate-pulse"></div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Camera controls compact -->
+        <div class="bg-gray-900 px-4 py-3 flex items-center justify-between">
+          <button
+            (click)="stopCamera()"
+            class="w-10 h-10 bg-gray-700 hover:bg-gray-600 rounded-full flex items-center justify-center transition-colors duration-200">
+            <i class="pi pi-times text-white"></i>
+          </button>
+          
+          <button
+            (click)="maakFoto()"
+            class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg transform transition-all duration-200 hover:scale-105 active:scale-95">
+            <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+              <i class="pi pi-camera text-white"></i>
+            </div>
+          </button>
+          
+          <div class="w-10 h-10"></div>
+        </div>
+      </div>
+    }
+
+    <!-- Photo preview compact -->
+    @if (!fotoState().cameraActive && state.fotoUrl()) {
+      <div class="bg-white bg-opacity-80 backdrop-blur-sm rounded-xl p-4 border border-gray-200 shadow-lg mb-4 motion-preset-scale-in">
+        <h3 class="text-base font-semibold mb-3 text-gray-900 flex items-center gap-2">
+          <i class="pi pi-check-circle text-green-600"></i>
+          Foto gemaakt!
+        </h3>
+        
+        <div class="rounded-lg overflow-hidden shadow-lg mb-3">
+          <img
+            [src]="state.fotoUrl()"
             alt="Gemaakte foto"
-            [preview]="true"
-            imageClass="w-full h-64 lg:h-80 object-cover rounded-lg"
-            [previewImageSrc]="state.fotoUrl()"
-          ></p-image>
-          <p-button 
-            icon="pi pi-times" 
-            severity="secondary"
-            [rounded]="true"
-            size="small"
-            (onClick)="annuleerFoto()"
-            class="!absolute !top-2 !right-2 !w-8 !h-8"
+            class="w-full h-48 object-cover"
           />
         </div>
-      </p-card>
-      
-      <p-button 
-        label="Volgende" 
-        icon="pi pi-arrow-right" 
-        iconPos="right"
-        size="large"
-        (onClick)="volgende()"
-        class="w-full"
-      />
-    </div>
-  }
-  
-  <!-- Foto opties -->
-  @else {
-    <div class="space-y-4 motion-preset-fade-in">
-      <p-card>
-        <div class="grid grid-cols-1 gap-4">
-          <p-button 
-            label="📷 Maak foto" 
-            icon="pi pi-camera"
-            size="large"
-            (onClick)="startCamera()"
-            class="!h-16 !text-lg"
-          />
-          <p-divider>
-            <span class="text-xs text-surface-500">OF</span>
-          </p-divider>
-          <p-button 
-            label="🖼️ Kies uit galerij" 
-            icon="pi pi-images"
-            variant="outlined"
-            size="large"
-            (onClick)="kiesFotoUitGalerij()"
-            class="!h-16 !text-lg"
-          />
+        
+        <p class="text-xs text-gray-600 text-center">
+          Foto is klaar voor verzending
+        </p>
+      </div>
+    }
+  </div>
+
+  <!-- Bottom action area -->
+  <div class="px-4 pb-4 space-y-3 motion-preset-slide-up motion-delay-500">
+    
+    <!-- No photo yet - show options -->
+    @if (!fotoState().cameraActive && !state.fotoUrl()) {
+      <!-- Primary camera button -->
+      <button 
+        (click)="startCamera()"
+        class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-4 rounded-xl shadow-lg transform transition-all duration-300 ease-out hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-green-300">
+        
+        <div class="flex items-center justify-center gap-2">
+          <i class="pi pi-camera"></i>
+          <span>Maak foto</span>
         </div>
-      </p-card>
-      
-      <!-- File upload component -->
-      <p-card>
-        <div class="text-center mb-3">
-          <i class="pi pi-upload text-2xl text-surface-500"></i>
-          <h3 class="text-lg font-medium mt-2">Upload een foto</h3>
-        </div>
-        <p-fileUpload 
-          mode="basic" 
-          accept="image/*" 
-          (onSelect)="onFileSelect($event)"
-          (onUpload)="onFileUpload($event)"
-          [auto]="true"
-          chooseLabel="Selecteer bestand"
-          chooseIcon="pi pi-file-image"
-          class="w-full">
-        </p-fileUpload>
-      </p-card>
-    </div>
-  }
+      </button>
+
+      <!-- Secondary actions row -->
+      <div class="flex gap-2">
+        <button 
+          (click)="kiesFotoUitGalerij()"
+          class="flex-1 bg-white hover:bg-gray-50 text-gray-700 border-2 border-gray-200 hover:border-gray-300 font-medium py-2 px-3 rounded-lg transition-all duration-200">
+          
+          <div class="flex items-center justify-center gap-2">
+            <i class="pi pi-images text-sm"></i>
+            <span class="text-sm">Kies uit galerij</span>
+          </div>
+        </button>
+      </div>
+    }
+
+    <!-- Photo taken - show actions -->
+    @if (!fotoState().cameraActive && state.fotoUrl()) {
+      <div class="flex gap-2">
+        <!-- Retake photo button -->
+        <button 
+          (click)="startCamera()"
+          class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-600 font-medium py-2 px-3 rounded-lg transition-all duration-200">
+          
+          <div class="flex items-center justify-center gap-2">
+            <i class="pi pi-refresh text-sm"></i>
+            <span class="text-sm">Opnieuw</span>
+          </div>
+        </button>
+
+        <!-- Next step button -->
+        <button 
+          (click)="volgende()"
+          class="flex-1 bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-4 rounded-lg shadow-lg transform transition-all duration-300 ease-out hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-green-300">
+          
+          <div class="flex items-center justify-center gap-2">
+            <span>Volgende</span>
+            <i class="pi pi-arrow-right transition-transform group-hover:translate-x-1"></i>
+          </div>
+        </button>
+      </div>
+    }
+  </div>
 </div>
