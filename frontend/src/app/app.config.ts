@@ -7,6 +7,9 @@ import { providePrimeNG } from 'primeng/config';
 import { routes } from './app.routes';
 import { AppInitService } from './app-init.service';
 
+// @ts-ignore
+import Aura from '@primeuix/themes/aura';
+
 // App initialisatie functie
 export function initializeApp(appInitService: AppInitService) {
   return (): Promise<any> => {
@@ -20,7 +23,17 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    providePrimeNG(),
+    providePrimeNG({
+      theme: {
+        preset: Aura,
+          options: {
+            cssLayer: {
+              name: 'primeng',
+              order: 'theme, base, primeng'
+            }
+          }
+        }
+      }),
     provideAnimations(),
     AppInitService,
     {
@@ -31,3 +44,8 @@ export const appConfig: ApplicationConfig = {
     }
   ]
 };
+
+
+
+
+
