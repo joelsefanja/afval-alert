@@ -76,8 +76,6 @@ public class MeldingService {
         melding.getNotities().add(notitie);
 
         meldingRepository.save(melding);
-
-        return;
     }
 
     public List<Notitie> getNotities(long meldingId) {
