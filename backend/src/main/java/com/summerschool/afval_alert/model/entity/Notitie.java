@@ -12,8 +12,8 @@ public class Notitie {
     private String notitie;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "statusUpdate_id", nullable = false)
-    private StatusUpdate statusUpdate;
+    @JoinColumn(name = "melding_id", nullable = false)
+    private Melding melding;
 
     public Long getId() {
         return id;
@@ -27,7 +27,7 @@ public class Notitie {
         this.notitie = notitie;
     }
 
-    public void setStatusUpdate(StatusUpdate statusUpdate) {
-        this.statusUpdate = statusUpdate;
+    public void setMelding(Melding melding) {
+        this.melding = melding;
     }
 }

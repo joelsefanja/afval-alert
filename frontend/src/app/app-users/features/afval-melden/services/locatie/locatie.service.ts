@@ -1,50 +1,20 @@
-import { Injectable, inject } from '@angular/core';
-import { MeldingsProcedureStatus } from '../melding/melding-state.service';
-import { Locatie } from '@app/models';
+import { Injectable, Inject } from '@angular/core';
+import { GeocodingOpenstreetmapService } from './geocoding-openstreetmap.service';
+import { LocatieConfigService } from '../../../../../services/locatie-config.service';
 
-/**
- * Service voor het beheren van locaties in de afvalmeldprocedure
- */
 @Injectable({
   providedIn: 'root'
 })
 export class LocatieService {
-  private afvalMeldProcedureState = inject(MeldingsProcedureStatus);
-  
-  /**
-   * Verwerkt een geselecteerde locatie
-   * @param locatie De geselecteerde locatie
-   */
-  verwerkLocatie(locatie: Locatie): void {
-    const coordinaten = { lat: locatie.latitude, lng: locatie.longitude };
-    const buitenGroningen = this.isLocatieInGroningen(coordinaten);
-    this.afvalMeldProcedureState.setLocatie(locatie.adres || '', coordinaten);
-  }
-  
-  /**
-   * Controleert of een locatie binnen de gemeente Groningen ligt
-   * @param coordinaten De coördinaten om te controleren
-   * @returns Of de locatie buiten Groningen ligt
-   */
-  private isLocatieInGroningen(coordinaten: { lat: number; lng: number }): boolean {
-    // Implementeer logica om te controleren of de locatie binnen Groningen ligt
-    // Dit is een simpele simulatie
-    const groningenCentrum = { lat: 53.2194, lng: 6.5665 };
-    const maxAfstand = 0.1; // ~10km
-    
-    const afstand = Math.sqrt(
-      Math.pow(coordinaten.lat - groningenCentrum.lat, 2) +
-      Math.pow(coordinaten.lng - groningenCentrum.lng, 2)
-    );
-    
-    return afstand > maxAfstand;
-  }
+  constructor(
+    @Inject(GeocodingOpenstreetmapService) private geocodingService: GeocodingOpenstreetmapService,
+    @Inject(LocatieConfigService) private locatieConfigService: LocatieConfigService
+  ) {}
 
   /**
-   * Krijg de huidige locatie van de gebruiker
-   * @returns Promise met de huidige locatie
+   * Haal de huidige positie van de gebruiker op
    */
-  async krijgHuidigeLocatie(): Promise<Locatie> {
+  getCurrentPosition(): Promise<GeolocationPosition> {
     return new Promise((resolve, reject) => {
       if (!navigator.geolocation) {
         reject(new Error('Geolocatie wordt niet ondersteund door deze browser'));
@@ -52,46 +22,79 @@ export class LocatieService {
       }
 
       navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          
-          // Controleer of locatie binnen Groningen ligt
-          const coordinaten = { lat: latitude, lng: longitude };
-          const buitenGroningen = this.isLocatieInGroningen(coordinaten);
-          
-          if (buitenGroningen) {
-            this.afvalMeldProcedureState.setLocatie('', coordinaten);
-            reject(new Error('Je bent buiten Groningen. Deze melding kunnen we helaas niet aannemen.'));
-            return;
-          }
-
-          const locatie: Locatie = {
-            latitude,
-            longitude,
-            adres: 'Huidige locatie'
-          };
-
-          // Stel locatie in state in
-          this.afvalMeldProcedureState.setLocatie('Huidige locatie', coordinaten);
-          resolve(locatie);
-        },
-        (error) => {
-          let errorMessage = 'Kon je locatie niet vinden';
+        position => resolve(position),
+        error => {
           switch (error.code) {
             case GeolocationPositionError.PERMISSION_DENIED:
-              errorMessage = 'Locatie toegang geweigerd. Controleer je instellingen.';
+              reject(new Error('Toestemming voor locatiegegevens geweigerd'));
               break;
             case GeolocationPositionError.POSITION_UNAVAILABLE:
-              errorMessage = 'Locatie informatie niet beschikbaar.';
+              reject(new Error('Locatiegegevens niet beschikbaar'));
               break;
             case GeolocationPositionError.TIMEOUT:
-              errorMessage = 'Locatie aanvraag duurde te lang.';
+              reject(new Error('Time-out bij ophalen locatiegegevens'));
+              break;
+            default:
+              reject(new Error('Onbekende fout bij ophalen locatiegegevens'));
               break;
           }
-          reject(new Error(errorMessage));
         },
-        { enableHighAccuracy: true, timeout: 8000 }
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 60000
+        }
       );
     });
+  }
+
+  /**
+   * Haal adresgegevens op op basis van coördinaten
+   */
+  async getAddressFromCoordinates(lat: number, lon: number): Promise<string> {
+    try {
+      const addressData = await this.geocodingService.getAddressFromCoordinates(lat, lon).toPromise();
+      
+      // Combineer adrescomponenten tot een volledig adres
+      const components = [];
+      if (addressData?.straat) components.push(addressData.straat);
+      if (addressData?.huisnummer) components.push(addressData.huisnummer);
+      if (addressData?.postcode) components.push(addressData.postcode);
+      if (addressData?.plaats) components.push(addressData.plaats);
+      
+      return components.join(' ');
+    } catch (error) {
+      console.error('Fout bij ophalen adres:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Haal coördinaten op op basis van een adres
+   */
+  async getCoordinatesFromAddress(address: string): Promise<{ lat: number; lng: number }> {
+    try {
+      const result = await this.geocodingService.getCoordinatesFromAddress(address).toPromise();
+      return { lat: result?.lat || 0, lng: result?.lng || 0 };
+    } catch (error) {
+      console.error('Fout bij ophalen coördinaten:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Valideer of een locatie binnen het toegestane gebied ligt
+   */
+  async valideerLocatie(lat: number, lng: number): Promise<boolean> {
+    try {
+      // Haal adresgegevens op om te valideren
+      const addressData = await this.geocodingService.getAddressFromCoordinates(lat, lng).toPromise();
+      
+      // Valideer op basis van configuratie
+      return this.locatieConfigService.isToegestaanGebied(addressData?.rawAddress);
+    } catch (error) {
+      console.error('Fout bij valideren locatie:', error);
+      return false;
+    }
   }
 }

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 public class Melding {
@@ -30,28 +31,75 @@ public class Melding {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    private enum status{
+        Nieuw(1),
+        MeldingVerwerkt(2),
+        WordtOpgehaald(3),
+        Opgehaald(4);
+
+        private final int code;
+
+        status(int code) {
+            this.code = code;
+        }
+
+        public int getCode() {
+            return code;
+        }
+
+        public static status fromCode(int code) {
+            for (status s : status.values()) {
+                if(s.getCode() == code) {
+                    return s;
+                }
+            }
+            throw new IllegalArgumentException("Invalid code for Status: " + code);
+        }
+    };
+
+    private enum trashType{
+        Kleinvuil(1),
+        Glas(2),
+        Grofvuil(3);
+
+        private final int code;
+
+        trashType(int code) {
+            this.code = code;
+        }
+
+        public int getCode() {
+            return code;
+        }
+
+        public static trashType fromCode(int code) {
+            for (trashType t : trashType.values()) {
+                if (t.getCode() == code) {
+                    return t;
+                }
+            }
+            throw new IllegalArgumentException("Invalid code for TrashType: " + code);
+        }
+    };
+
+    private status Status;
+
+    private trashType TrashType;
+
+    @OneToMany(mappedBy = "melding", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Notitie> notitie = new ArrayList<Notitie>();
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
     }
 
-    private String trashType;
-
-    @OneToMany(mappedBy = "melding", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<StatusUpdate> statusUpdate = new ArrayList<StatusUpdate>();
-
     public void setMelding(Float latitude,
                            Float longitude,
-                           String trashType) {
+                           int trashType) {
 
         this.latitude = latitude;
         this.longitude = longitude;
-        this.trashType = trashType;
-    }
-
-    public void addStatusUpdate(StatusUpdate statusUpdate) {
-        statusUpdate.setMelding(this);
-        this.statusUpdate.add(statusUpdate);
     }
 
     public void setId(long id) { this.id = id; }
@@ -102,5 +150,18 @@ public class Melding {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public void setStatus(int status) {
+        this.Status = Melding.status.fromCode(status);
+    }
+
+    public void setTrashType(int trashType) {
+        this.TrashType = Melding.trashType.fromCode(trashType);
+    }
+
+    public void setNotitie(Notitie notitie) {
+        notitie.setMelding(this);
+        this.notitie.add(notitie);
     }
 }

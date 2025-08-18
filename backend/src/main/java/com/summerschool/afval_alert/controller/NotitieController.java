@@ -1,10 +1,10 @@
 package com.summerschool.afval_alert.controller;
 
-import ch.qos.logback.core.status.StatusUtil;
+import com.summerschool.afval_alert.model.entity.Melding;
 import com.summerschool.afval_alert.model.entity.Notitie;
-import com.summerschool.afval_alert.model.entity.StatusUpdate;
+import com.summerschool.afval_alert.service.MeldingService;
 import com.summerschool.afval_alert.service.NotitieService;
-import com.summerschool.afval_alert.service.StatusUpdateService;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,25 +14,25 @@ import java.util.List;
 @RequestMapping("/api")
 public class NotitieController {
     private final NotitieService notitieService;
-    private final StatusUpdateService statusUpdateService;
+    private final MeldingService meldingService;
 
-    public NotitieController(NotitieService notitieService, StatusUpdateService statusUpdateService) {
+    public NotitieController(NotitieService notitieService, MeldingService meldingService) {
         this.notitieService = notitieService;
-        this.statusUpdateService = statusUpdateService;
+        this.meldingService = meldingService;
     }
 
     @PostMapping("/addNotitie")
-    public ResponseEntity<Long> postNotitie(@RequestParam("statusUpdateId") Long statusUpdateId,
+    public ResponseEntity<String> postNotitie(@RequestParam("meldingId") Long meldingId,
                                             @RequestParam("notitie") String notitie) {
 
-        StatusUpdate statusUpdate = statusUpdateService.addNotitieStatusUpdate(statusUpdateId, notitie);
+        meldingService.addNotitie(meldingId, notitie);
 
-        return ResponseEntity.ok().body(statusUpdate.getId());
+        return ResponseEntity.status(HttpStatusCode.valueOf(200)).body("Notitie added to melding");
     }
 
     @GetMapping("/notities")
-    public ResponseEntity<List<Notitie>> getNotities(@RequestParam("statusUpdateId") Long statusUpdateId) {
-        List<Notitie> notities = statusUpdateService.getNotities(statusUpdateId);
+    public ResponseEntity<List<Notitie>> getNotities(@RequestParam("meldingId") Long meldingId) {
+        List<Notitie> notities = meldingService.getNotities(meldingId);
 
         return ResponseEntity.ok().body(notities);
     }
