@@ -69,10 +69,19 @@ export class FotoStapComponent implements OnDestroy {
     if (this.disabled()) return;
     
     try {
+      console.log('Starting camera from component');
       this.videoStream = await this.fotoFacade.startCamera();
-      await this.attachStreamToVideo();
+
+      // Zorg dat het DOM-element al bestaat
+      await new Promise(resolve => setTimeout(resolve));
+
+      const video = this.videoRef?.nativeElement;
+      if (video && this.videoStream) {
+        await this.cameraService.attachStreamToVideo(video, this.videoStream);
+        console.log('Camera stream attached to video element');
+      }
     } catch (error) {
-      // Error handling is done by the facade
+      console.error('Camera start failed:', error);
     }
   }
 
@@ -101,33 +110,6 @@ export class FotoStapComponent implements OnDestroy {
       this.fotoGemaakt.emit(photoUrl);
     } catch (error) {
       // Error handling is done by the facade
-    }
-  }
-
-  protected onVideoLoaded(video: HTMLVideoElement): void {
-    if (!video || !this.videoStream) return;
-    
-    console.log('Video loaded event triggered, attaching stream');
-    this.cameraService.attachStreamToVideo(video, this.videoStream);
-    
-    // Play immediately after stream attachment
-    this.cameraService.playVideo(video).catch(error => {
-      console.error('Error playing video in onVideoLoaded:', error);
-    });
-  }
-
-  private async attachStreamToVideo(): Promise<void> {
-    if (!this.videoRef || !this.videoStream) return;
-    
-    console.log('Attaching stream to video element');
-    const video = this.videoRef.nativeElement;
-    this.cameraService.attachStreamToVideo(video, this.videoStream);
-    
-    try {
-      await this.cameraService.playVideo(video);
-      console.log('Video playing successfully');
-    } catch (error) {
-      console.error('Failed to play video:', error);
     }
   }
 
