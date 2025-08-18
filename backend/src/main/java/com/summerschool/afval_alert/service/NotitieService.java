@@ -14,7 +14,7 @@ public class NotitieService {
 
     public Notitie saveNotitie(String note) {
         Notitie notitie = new Notitie();
-        notitie.setNotitie(note);
+        notitie.setContent(note);
 
         return notitieRepository.save(notitie);
     }

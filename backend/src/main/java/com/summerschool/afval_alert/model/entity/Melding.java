@@ -1,4 +1,6 @@
 package com.summerschool.afval_alert.model.entity;
+import com.summerschool.afval_alert.model.enums.Status;
+import com.summerschool.afval_alert.model.enums.TrashType;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -12,8 +14,8 @@ public class Melding {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private double latitude;
-    private double longitude;
+    private double lat;
+    private double lon;
 
     @Column(length = 500)
     private String comment;
@@ -31,85 +33,30 @@ public class Melding {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    private enum status{
-        Nieuw(1),
-        MeldingVerwerkt(2),
-        WordtOpgehaald(3),
-        Opgehaald(4);
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
-        private final int code;
-
-        status(int code) {
-            this.code = code;
-        }
-
-        public int getCode() {
-            return code;
-        }
-
-        public static status fromCode(int code) {
-            for (status s : status.values()) {
-                if(s.getCode() == code) {
-                    return s;
-                }
-            }
-            throw new IllegalArgumentException("Invalid code for Status: " + code);
-        }
-    };
-
-    private enum trashType{
-        Kleinvuil(1),
-        Glas(2),
-        Grofvuil(3);
-
-        private final int code;
-
-        trashType(int code) {
-            this.code = code;
-        }
-
-        public int getCode() {
-            return code;
-        }
-
-        public static trashType fromCode(int code) {
-            for (trashType t : trashType.values()) {
-                if (t.getCode() == code) {
-                    return t;
-                }
-            }
-            throw new IllegalArgumentException("Invalid code for TrashType: " + code);
-        }
-    };
-
-    private status Status;
-
-    private trashType TrashType;
+    @Enumerated(EnumType.STRING)
+    private TrashType trashType;
 
     @OneToMany(mappedBy = "melding", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Notitie> notitie = new ArrayList<Notitie>();
+    private List<Notitie> notities = new ArrayList<Notitie>();
 
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
     }
 
-    public void setMelding(Float latitude,
-                           Float longitude,
-                           int trashType) {
-
-        this.latitude = latitude;
-        this.longitude = longitude;
+    public void setId(long id) {
+        this.id = id;
     }
 
-    public void setId(long id) { this.id = id; }
-
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
+    public void setLat(double lat) {
+        this.lat = lat;
     }
 
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
+    public void setLon(double lon) {
+        this.lon = lon;
     }
 
     public void setEmail(String email) {
@@ -152,16 +99,37 @@ public class Melding {
         this.createdAt = createdAt;
     }
 
-    public void setStatus(int status) {
-        this.Status = Melding.status.fromCode(status);
+    public double getLat() {
+        return lat;
     }
 
-    public void setTrashType(int trashType) {
-        this.TrashType = Melding.trashType.fromCode(trashType);
+    public double getLon() {
+        return lon;
     }
 
-    public void setNotitie(Notitie notitie) {
-        notitie.setMelding(this);
-        this.notitie.add(notitie);
+    public LocalDateTime getCreatedAt() { return createdAt; }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public TrashType getTrashType() {
+        return trashType;
+    }
+
+    public void setTrashType(TrashType trashType) {
+        this.trashType = trashType;
+    }
+
+    public List<Notitie> getNotities() {
+        return notities;
+    }
+
+    public void setNotities(List<Notitie> notities) {
+        this.notities = notities;
     }
 }

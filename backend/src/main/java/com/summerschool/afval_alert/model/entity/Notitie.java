@@ -2,14 +2,18 @@ package com.summerschool.afval_alert.model.entity;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 public class Notitie {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private  long id;
+    private Long id;
 
-    private String notitie;
+    private String content;
+
+    private LocalDateTime createdAt;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "melding_id", nullable = false)
@@ -19,15 +23,27 @@ public class Notitie {
         return id;
     }
 
-    public String getNotitie() {
-        return notitie;
+    public String getContent() {
+        return content;
     }
 
-    public void setNotitie(String notitie) {
-        this.notitie = notitie;
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public void setMelding(Melding melding) {
         this.melding = melding;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Melding getMelding() {
+        return melding;
     }
 }
