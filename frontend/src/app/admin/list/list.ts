@@ -1,10 +1,10 @@
 import { Component, computed, output, ViewChild, OnInit } from '@angular/core';
-import { ListNotification } from '../listnotification.interface';
+import { ListNotification } from '../interfaces/listnotification.interface';
 import { TableModule, Table } from 'primeng/table';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
-import { SelectionService } from '../core/id';
+import { IDService } from '../services/id/id';
 import { FormsModule } from '@angular/forms';
 
 const Test_Notification_Data: ListNotification[] = [
@@ -40,7 +40,7 @@ export class ListComponent {
       : null;
   });
 
-  constructor(private selection: SelectionService) {}
+  constructor(private selection: IDService) {}
 
   ngAfterViewInit() {
   // Enable PrimeNG session state for the table

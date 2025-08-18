@@ -1,6 +1,6 @@
 import { Component, input } from '@angular/core';
 import { DatePipe} from '@angular/common';
-import { TijdlijnElement } from '../tijdlijn-element.interface';
+import { TijdlijnElement } from '../interfaces/tijdlijn-element.interface';
 import { TimelineModule } from 'primeng/timeline';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';

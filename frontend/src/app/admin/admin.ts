@@ -1,7 +1,7 @@
 import { Component, computed } from '@angular/core';
 import { ListComponent } from './list/list';
 import { DetailComponent } from './detail/detail';
-import { SelectionService } from './core/id';
+import { IDService } from './services/id/id';
 
 @Component({
   selector: 'app-admin',
@@ -11,7 +11,7 @@ import { SelectionService } from './core/id';
   styleUrls: ['./admin.scss']
 })
 export class AdminComponent {
-  constructor(public selection: SelectionService) {}
+  constructor(public selection: IDService) {}
 
   showDetail = computed(() => this.selection.isDetailOpen());
 }
