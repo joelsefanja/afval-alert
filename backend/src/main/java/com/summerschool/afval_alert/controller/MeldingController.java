@@ -18,7 +18,8 @@ public class MeldingController {
     private final MeldingService meldingService;
     private final MeldingMapper meldingMapper;
 
-    public MeldingController(MeldingService meldingService,  MeldingMapper meldingMapper) {
+    public MeldingController(MeldingService meldingService,
+                             MeldingMapper meldingMapper) {
         this.meldingService = meldingService;
         this.meldingMapper = meldingMapper;
     }
@@ -27,7 +28,6 @@ public class MeldingController {
     public ResponseEntity<Melding> updateMelding(
             @PathVariable Long id,
             @RequestBody PutMeldingDTO putMeldingDTO) {
-
         Melding melding = meldingService.findMeldingById(id);
 
         melding.setLat(putMeldingDTO.getLat());
@@ -47,9 +47,7 @@ public class MeldingController {
     @PutMapping("/melding/status/{id}")
     public ResponseEntity<Melding> updateStatusMelding(
             @PathVariable Long id,
-            @RequestBody PutStatusMeldingDTO putStatusMeldingDTO
-    ) {
-
+            @RequestBody PutStatusMeldingDTO putStatusMeldingDTO) {
         Melding melding = meldingService.findMeldingById(id);
 
         melding.setStatus(putStatusMeldingDTO.getStatus());
@@ -61,8 +59,7 @@ public class MeldingController {
 
     @GetMapping("/meldingen")
     public ResponseEntity<List<AllMeldingenDTO>> getAllMeldingen() {
-        List<AllMeldingenDTO> meldingen = meldingService.getAllMeldingen();
-        return ResponseEntity.ok(meldingen);
+        return ResponseEntity.ok(meldingService.getAllMeldingen());
     }
 
     @GetMapping("/melding/{id}")

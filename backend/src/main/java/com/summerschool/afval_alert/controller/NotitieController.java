@@ -16,7 +16,8 @@ public class NotitieController {
     private final NotitieService notitieService;
     private final MeldingService meldingService;
 
-    public NotitieController(NotitieService notitieService, MeldingService meldingService) {
+    public NotitieController(NotitieService notitieService,
+                             MeldingService meldingService) {
         this.notitieService = notitieService;
         this.meldingService = meldingService;
     }
@@ -24,9 +25,7 @@ public class NotitieController {
     @PostMapping("/notitie/{id}")
     public ResponseEntity<Melding> postNotitie(
             @PathVariable Long id,
-            @RequestBody PostNotitieDTO postNotitieDTO
-    ) {
-
+            @RequestBody PostNotitieDTO postNotitieDTO) {
         Melding melding = meldingService.findMeldingById(id);
         notitieService.createNotitie(melding, postNotitieDTO.getNotitie());
 
@@ -37,10 +36,7 @@ public class NotitieController {
 
     @GetMapping("/notities/{id}")
     public ResponseEntity<List<NotitieDTO>> getNotities(
-            @PathVariable Long id
-    ) {
-        List<NotitieDTO> notities = notitieService.getNotities(id);
-
-        return ResponseEntity.ok().body(notities);
+            @PathVariable Long id) {
+        return ResponseEntity.ok().body(notitieService.getNotities(id));
     }
 }
