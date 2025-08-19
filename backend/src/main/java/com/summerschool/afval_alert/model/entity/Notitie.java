@@ -19,31 +19,24 @@ public class Notitie {
     @JoinColumn(name = "melding_id", nullable = false)
     private Melding melding;
 
-    public Long getId() {
-        return id;
+    public void setContent(String content) {
+        this.content = content;
+    }
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+    public void setMelding(Melding melding) {
+        this.melding = melding;
     }
 
     public String getContent() {
         return content;
     }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public void setMelding(Melding melding) {
-        this.melding = melding;
-    }
-
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
     public Melding getMelding() {
         return melding;
     }
+
 }
