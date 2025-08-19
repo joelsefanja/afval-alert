@@ -2,8 +2,6 @@ import { Injectable, inject, signal, computed } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, Subject, takeUntil, Observable } from 'rxjs';
 import { LocatieService } from './locatie.service';
-import { GeocodingOpenstreetmapService } from './geocoding-openstreetmap.service';
-import { MeldingsProcedureStatus } from '../melding/melding-state.service';
 
 export interface LocatieInfo {
   latitude: number;
@@ -26,8 +24,6 @@ export interface LocatieState {
 })
 export class LocatieFacadeService {
   private readonly locatieService = inject(LocatieService);
-  private readonly geocodingService = inject(GeocodingOpenstreetmapService);
-  private readonly state = inject(MeldingsProcedureStatus);
   private readonly destroy$ = new Subject<void>();
 
   private readonly _isLoading = signal(false);
@@ -55,12 +51,11 @@ export class LocatieFacadeService {
     
     try {
       const position = await this.locatieService.getCurrentPosition();
-      const { latitude, longitude } = position.coords;
+      const { lat, lng } = position;
       
-      const address = await this.locatieService.getAddressFromCoordinates(latitude, longitude);
-      const locatieInfo = { latitude, longitude, address };
-      
-      await this.validateAndSaveLocation(locatieInfo);
+      const address = await this.locatieService.reverseGeocode(lat, lng);
+      const locatieInfo = { latitude: lat, longitude: lng, address };
+
       return locatieInfo;
     } catch (error: any) {
       this.handleError(error.message || 'Fout bij ophalen van uw locatie');
@@ -71,7 +66,7 @@ export class LocatieFacadeService {
   }
 
   async searchAddress(query: string): Promise<LocatieInfo> {
-    if (!this.isValidQuery(query)) {
+    if (!this.locatieService.isValidQuery(query)) {
       throw new Error('Zoekterm is niet geldig');
     }
 
@@ -80,8 +75,7 @@ export class LocatieFacadeService {
     try {
       const { lat, lng } = await this.locatieService.getCoordinatesFromAddress(query);
       const locatieInfo = { latitude: lat, longitude: lng, address: query };
-      
-      await this.validateAndSaveLocation(locatieInfo);
+
       return locatieInfo;
     } catch (error: any) {
       this.handleError(error.message || 'Fout bij zoeken naar adres');
@@ -92,15 +86,14 @@ export class LocatieFacadeService {
   }
 
   async selectMapLocation(locatieInfo: LocatieInfo): Promise<LocatieInfo> {
-    if (!this.isValidLocationInfo(locatieInfo)) {
+    if (!this.locatieService.isValidLocationInfo(locatieInfo)) {
       throw new Error('Locatie informatie is niet geldig');
     }
 
     try {
-      const addressData = await this.getDetailedAddressData(locatieInfo);
-      const enrichedLocation = this.enrichLocationWithAddressData(locatieInfo, addressData);
-      
-      await this.validateAndSaveLocation(enrichedLocation);
+      const addressData = await this.locatieService.getDetailedAddressData(locatieInfo);
+      const enrichedLocation = this.locatieService.enrichLocationWithAddressData(locatieInfo, addressData);
+
       return enrichedLocation;
     } catch (error: any) {
       this.handleError(error.message || 'Fout bij verwerken van locatie');
@@ -121,61 +114,9 @@ export class LocatieFacadeService {
     this.destroy$.complete();
   }
 
-  private async validateAndSaveLocation(locatieInfo: LocatieInfo): Promise<void> {
-    const isValid = await this.locatieService.valideerLocatie(
-      locatieInfo.latitude, 
-      locatieInfo.longitude
-    );
-    
-    if (!isValid) {
-      throw new Error('Locatie valt buiten het toegestane gebied');
-    }
-    
-    this.saveLocationInfo(locatieInfo);
-  }
-
-  private saveLocationInfo(locatieInfo: LocatieInfo): void {
-    this._lastLocationInfo = locatieInfo;
-    this._selectedAddress.set(locatieInfo.address);
-    this.clearError();
-  }
-
-  private async getDetailedAddressData(locatieInfo: LocatieInfo): Promise<any> {
-    return this.geocodingService.getAddressFromCoordinates(
-      locatieInfo.latitude, 
-      locatieInfo.longitude
-    ).toPromise();
-  }
-
-  private enrichLocationWithAddressData(locatieInfo: LocatieInfo, addressData: any): LocatieInfo {
-    return {
-      ...locatieInfo,
-      address: this.formatDetailedAddress(addressData, locatieInfo.address),
-      wijk: addressData?.wijk,
-      buurt: addressData?.buurt,
-      gemeente: addressData?.gemeente
-    };
-  }
-
-  private formatDetailedAddress(addressData: any, fallback: string): string {
-    if (!addressData) return fallback;
-    
-    return `${addressData.straat} ${addressData.huisnummer}, ${addressData.postcode} ${addressData.plaats}`;
-  }
-
-  private isValidQuery(query: string): query is string {
-    return typeof query === 'string' && query.trim().length > 3;
-  }
-
-  private isValidLocationInfo(locatieInfo: LocatieInfo): boolean {
-    return !!(locatieInfo && 
-             typeof locatieInfo.latitude === 'number' && 
-             typeof locatieInfo.longitude === 'number');
-  }
 
   private startLoading(): void {
     this._isLoading.set(true);
-    this.clearError();
   }
 
   private stopLoading(): void {

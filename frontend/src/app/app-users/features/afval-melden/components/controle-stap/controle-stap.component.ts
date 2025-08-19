@@ -1,39 +1,37 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
-import { DividerModule } from 'primeng/divider';
-import { PanelModule } from 'primeng/panel';
-import { TooltipModule } from 'primeng/tooltip';
-import { MeldingsProcedureStatus } from '../../services/melding/melding-state.service';
+import { ControleStapService } from '../../services/procedure/controle-stap.service';
 
 @Component({
   selector: 'app-controle-stap',
   standalone: true,
-  imports: [CommonModule, ButtonModule, CardModule, DividerModule, PanelModule, TooltipModule],
-  templateUrl: './controle-stap.component.html',
-  styleUrls: ['./controle-stap.component.scss']
+  imports: [ButtonModule, CardModule],
+  templateUrl: './controle-stap.component.html'
 })
 export class ControleStapComponent {
-  protected state = inject(MeldingsProcedureStatus);
+  private controleService: ControleStapService = inject(ControleStapService);
 
-  terug() { 
-    this.state.gaTerugNaarVorige(); 
-  }
-  
-  verzendMelding() {
-    this.state.setHuidigeStap(6); // Ga naar verzend stap
-  }
+  readonly overzicht = this.controleService.overzicht;
+  readonly isComplete = this.controleService.isComplete;
 
-  wijzigFoto() {
-    this.state.setHuidigeStap(1); // Terug naar foto stap
+  prev() {
+    this.controleService.prev();
   }
 
-  wijzigLocatie() {
-    this.state.setHuidigeStap(3); // Terug naar locatie stap
+  submit() {
+    this.controleService.submit();
   }
 
-  wijzigContact() {
-    this.state.setHuidigeStap(4); // Terug naar contact stap
+  editFoto() {
+    this.controleService.editFoto();
+  }
+
+  editLocatie() {
+    this.controleService.editLocatie();
+  }
+
+  editContact() {
+    this.controleService.editContact();
   }
 }

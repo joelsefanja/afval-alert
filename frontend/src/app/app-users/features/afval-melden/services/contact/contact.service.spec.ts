@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { ContactService, ContactGegevens } from '@app/app-users/features/afval-melden/services/contact.service';
+import { ContactService, ContactGegevens } from './contact/contact.service';
 
 describe('ContactService', () => {
   let service: ContactService;

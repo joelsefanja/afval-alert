@@ -2,7 +2,7 @@ import { Component, AfterViewInit, inject, output, ViewChild } from '@angular/co
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { Kaart } from '../../../app-users/features/afval-melden/components/kaart';
+import { Kaart } from '../../../app-users/features/afval-melden/components/locatie-stap/kaart';
 import { HuidigeLocatie } from "./huidige-locatie/huidige-locatie";
 import { KaartService } from '../../../app-users/features/afval-melden/services/kaart';
 

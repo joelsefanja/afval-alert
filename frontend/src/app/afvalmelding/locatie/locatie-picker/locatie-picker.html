@@ -5,35 +5,51 @@
     class="h-full w-full">
   </app-kaart>
 
-  <div class="absolute bottom-0 left-0 right-0 z-[999] bg-white rounded-t-xl shadow-lg p-4 pb-6">
-    <div class="flex flex-col gap-3">
-      <div class="flex flex-col">
-        <h2 class="font-medium text-lg mb-1">Selecteer de locatie</h2>
-        <p class="text-sm">Vul een adres in of selecteer op de kaart</p>
-      </div>
+  <div class="absolute bottom-0 left-0 right-0 z-[999] bg-white rounded-t-2xl shadow-2xl border-t border-gray-200">
+    <div class="p-4 pb-6">
+      <!-- Drag handle -->
+      <div class="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-4"></div>
+      
+      <div class="flex flex-col gap-4">
+        <div class="text-center">
+          <h2 class="font-semibold text-lg text-gray-900 mb-1">Selecteer locatie</h2>
+          <p class="text-sm text-gray-600">Zoek een adres of klik op de kaart</p>
+        </div>
 
-      <div>
         <form class="flex flex-col gap-3" (ngSubmit)="onAddressSearch()">
-          <div class="w-full flex border rounded-md">
-            <div class="relative w-full p-2">
-              <div class="search-icon !h-full absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                <i class="pi pi-search" style="font-size: 1rem"></i>
+          <div class="flex border-2 border-gray-200 rounded-xl overflow-hidden focus-within:border-green-500 transition-colors">
+            <div class="relative flex-1">
+              <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <i class="pi pi-search text-gray-400"></i>
               </div>
               <input
-                class="ps-8 h-full w-full focus:outline-none focus:border-none hover:border-none text-sm"
-                placeholder="Zoek adres..."
+                class="w-full pl-9 pr-3 py-3 text-sm focus:outline-none bg-transparent placeholder-gray-500"
+                placeholder="Zoek adres, straat of postcode..."
                 type="text"
                 [(ngModel)]="searchQuery"
                 (input)="onInputChange($event)"
                 (keyup.enter)="onAddressSearch()"
                 name="searchQuery">
             </div>
-            <app-huidige-locatie (getCurrentLocationClicked)="onCurrentLocationSelected()"></app-huidige-locatie>
+            
+            <div class="border-l border-gray-200">
+              <app-huidige-locatie 
+                (getCurrentLocationClicked)="onCurrentLocationSelected()"
+                class="flex">
+              </app-huidige-locatie>
+            </div>
           </div>
 
-          <button type="submit" class="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg text-sm">
-            Bevestig locatie
-          </button>
+          @if (searchQuery.trim()) {
+            <button 
+              type="submit" 
+              class="w-full bg-green-500 hover:bg-green-600 active:bg-green-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg transition-all duration-200 transform active:scale-98">
+              <div class="flex items-center justify-center gap-2">
+                <i class="pi pi-search"></i>
+                <span>Zoek adres</span>
+              </div>
+            </button>
+          }
         </form>
       </div>
     </div>
