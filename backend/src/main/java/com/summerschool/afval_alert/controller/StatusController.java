@@ -1,6 +1,7 @@
 package com.summerschool.afval_alert.controller;
 
 import com.summerschool.afval_alert.model.enums.Status;
+import com.summerschool.afval_alert.service.StatusService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,13 +14,14 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api")
 public class StatusController {
+    private final StatusService statusService;
+
+    public StatusController(StatusService statusService) {
+        this.statusService = statusService;
+    }
 
     @GetMapping("/statusen")
     public ResponseEntity<List<String>> getStatusen() {
-        List<String> statusen = Arrays.stream(Status.values())
-                .map(Enum::name)
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok().body(statusen);
+        return ResponseEntity.ok().body(statusService.getStatusen());
     }
 }
