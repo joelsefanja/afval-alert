@@ -1,6 +1,14 @@
 import { Injectable, EventEmitter, Inject } from '@angular/core';
 import * as L from 'leaflet';
-import { LocatieConfigService } from '../../../../../services/locatie-config.service';
+import { LocatieConfigService } from '@app/services/locatie-config.service';
+
+// Fix voor Leaflet iconen in Angular
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+});
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +19,7 @@ export class KaartService {
   private config: any;
 
   addressSelected = new EventEmitter<string>();
+  locationSelected = new EventEmitter<{latitude: number, longitude: number, address: string}>();
 
   // Default locatie is Groningen
   private readonly defaultLocation = { lat: 53.2193835, lng: 6.5665017 } as const;
@@ -30,6 +39,7 @@ export class KaartService {
     // Laad de configuratie
     this.locatieConfigService.loadConfig().subscribe((config: any) => {
       this.config = config;
+      console.log('KaartService: config loaded', this.config);
     });
   }
 
@@ -69,11 +79,15 @@ export class KaartService {
     if (!navigator.geolocation) {
       throw new Error('Geolocatie wordt niet ondersteund door deze browser');
     }
-
+      
     try {
       const position = await this.getPosition();
       const latlng = L.latLng(position.coords.latitude, position.coords.longitude);
-      await this.addMarkerAtLocation(latlng);
+
+      this.locatieConfigService.loadConfig().subscribe((config: any) => {
+        this.config = config;
+        this.addMarkerAtLocation(latlng);
+      });
     } catch (error: any) {
       console.error('Fout bij ophalen locatie:', error);
       throw new Error(this.mapGeolocationError(error));
@@ -97,8 +111,14 @@ export class KaartService {
    * Voeg een marker toe op de opgegeven locatie
    */
   private async addMarkerAtLocation(latlng: L.LatLng): Promise<void> {
+    console.log('KaartService: addMarkerAtLocation called');
     if (!this.map) {
       throw new Error('Kaart is niet geïnitialiseerd');
+    }
+
+    if (!this.config) {
+      console.warn('Config not loaded yet, returning');
+      return;
     }
 
     // Verwijder bestaande marker
@@ -132,11 +152,18 @@ export class KaartService {
       };
       
       // Controleer of de locatie binnen het toegestane gebied ligt
-      if (this.config && !this.locatieConfigService.isToegestaanGebied(response.address)) {
+      if (this.config && !this.locatieConfigService.isToegestaanGebied(latlng.lat, latlng.lng)) {
         throw new Error(`Locatie valt niet binnen het toegestane gebied: ${this.config.gebied.naam}`);
       }
       
       this.addressSelected.emit(response.display_name);
+      
+      // Emit location selection with coordinates
+      this.locationSelected.emit({
+        latitude: latlng.lat,
+        longitude: latlng.lng,
+        address: response.display_name
+      });
       
       // Toon adres in een popup
       this.marker.bindPopup(response.display_name).openPopup();
@@ -152,8 +179,16 @@ export class KaartService {
    * Zoek een adres en voeg een marker toe
    */
   async searchAddress(address: string): Promise<void> {
+    console.log('KaartService: searchAddress called');
+    console.log('searchAddress: this.config', this.config);
+    console.log('searchAddress: this.config.gebied', this.config?.gebied);
     if (!this.map) {
       throw new Error('Kaart is niet geïnitialiseerd');
+    }
+
+    if (!this.config) {
+      console.warn('Config not loaded yet, returning');
+      return;
     }
 
     try {
@@ -174,13 +209,20 @@ export class KaartService {
       };
       
       // Controleer of de locatie binnen het toegestane gebied ligt
-      if (this.config && !this.locatieConfigService.isToegestaanGebied(result.address)) {
+      if (this.config && !this.locatieConfigService.isToegestaanGebied(parseFloat(result.lat), parseFloat(result.lon))) {
         throw new Error(`Locatie valt niet binnen het toegestane gebied: ${this.config.gebied.naam}`);
       }
       
       const latlng = L.latLng(parseFloat(result.lat), parseFloat(result.lon));
       await this.addMarkerAtLocation(latlng);
       this.addressSelected.emit(result.display_name);
+      
+      // Emit location selection with coordinates
+      this.locationSelected.emit({
+        latitude: latlng.lat,
+        longitude: latlng.lng,
+        address: result.display_name
+      });
     } catch (error: any) {
       console.error('Error searching address:', error);
       throw new Error(`Adres niet gevonden of valt buiten toegestaan gebied: ${error.message}`);

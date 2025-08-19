@@ -1,0 +1,39 @@
+<div class="flex flex-column gap-3">
+  @if (error()) {
+    <p-message severity="error" [text]="error()!" class="w-full"></p-message>
+  }
+
+  <div class="flex gap-2">
+    <input 
+      pInputText 
+      [value]="searchQuery()"
+      (input)="updateSearchQuery($any($event.target).value)"
+      placeholder="Zoek adres, straat of postcode..."
+      class="flex-1"
+      (keyup.enter)="onSearch()" />
+    
+    <p-button 
+      icon="pi pi-search" 
+      (onClick)="onSearch()"
+      [loading]="isLoading()"
+      [disabled]="!searchQuery().trim()"
+      severity="primary"
+      pTooltip="Zoek adres"
+      tooltipPosition="top">
+    </p-button>
+    
+    <app-huidige-locatie 
+      (locationFound)="onLocationFound($event)"
+      (locationError)="onLocationError($event)">
+    </app-huidige-locatie>
+  </div>
+
+  @if (selectedLocation()) {
+    <div class="p-3 border-round bg-green-50">
+      <p class="m-0 text-green-800">
+        <i class="pi pi-map-marker mr-2"></i>
+        {{ selectedLocation()!.address }}
+      </p>
+    </div>
+  }
+</div>

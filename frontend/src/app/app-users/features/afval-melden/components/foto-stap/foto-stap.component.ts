@@ -1,127 +1,59 @@
-import { Component, inject, input, output, OnDestroy, ViewChild, ElementRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { MessageModule } from 'primeng/message';
-import { ToastModule } from 'primeng/toast';
 import { ImageModule } from 'primeng/image';
-import { DividerModule } from 'primeng/divider';
-import { SpeedDialModule } from 'primeng/speeddial';
-import { ChipModule } from 'primeng/chip';
-import { MeldingsProcedureStatus } from '../../services/melding/melding-state.service';
-import { FotoFacadeService, FotoState } from '../../services/media/foto-facade.service';
-import { CameraService } from '../../services/media/camera.service';
+import { FotoStapService } from '../../services/media/foto-stap.service';
 
-/**
- * Presentational component voor foto maken/selecteren.
- * Alle business logica is verplaatst naar FotoFacadeService.
- */
 @Component({
   selector: 'app-foto-stap',
   standalone: true,
-  imports: [CommonModule, ButtonModule, CardModule, MessageModule, ToastModule, ImageModule, DividerModule, SpeedDialModule, ChipModule],
-  templateUrl: './foto-stap.component.html',
-  styleUrls: ['./foto-stap.component.scss']
+  imports: [ButtonModule, CardModule, MessageModule, ImageModule],
+  templateUrl: './foto-stap.component.html'
 })
 export class FotoStapComponent implements OnDestroy {
-  // Dependency injection
-  protected readonly state = inject(MeldingsProcedureStatus);
-  private readonly fotoFacade = inject(FotoFacadeService);
-  private readonly cameraService = inject(CameraService);
+  private fotoService: FotoStapService = inject(FotoStapService);
   
-  // Input properties
-  readonly disabled = input<boolean>(false);
-  
-  // Output events
-  readonly fotoGemaakt = output<string>();
-  readonly navigatieTerug = output<void>();
-  readonly navigatieVolgende = output<void>();
-  
-  // Facade state
-  protected readonly fotoState = this.fotoFacade.fotoState;
-  
-  // Video element reference
   @ViewChild('video') videoRef!: ElementRef<HTMLVideoElement>;
-  protected videoStream: MediaStream | null = null;
-
-  ngOnDestroy(): void {
-    this.fotoFacade.stopCamera();
-    this.cleanupVideoElement();
-  }
-
-  protected terug(): void {
-    this.fotoFacade.stopCamera();
-    this.navigatieTerug.emit();
-    this.state.gaTerugNaarVorige?.();
-  }
   
-  protected volgende(): void {
-    this.fotoFacade.stopCamera();
-    this.navigatieVolgende.emit();
-    this.state.gaNaarVolgende();
+  readonly cameraActive = this.fotoService.cameraActive;
+  readonly fotoUrl = this.fotoService.fotoUrl;
+
+  ngOnDestroy() {
+    this.fotoService.stopCamera();
   }
 
-  protected annuleerFoto(): void {
-    this.fotoFacade.cancelPhoto();
-  }
-
-  protected async startCamera(): Promise<void> {
-    if (this.disabled()) return;
-    
+  async startCamera() {
     try {
-      console.log('Starting camera from component');
-      this.videoStream = await this.fotoFacade.startCamera();
-
-      // Zorg dat het DOM-element al bestaat
-      await new Promise(resolve => setTimeout(resolve));
-
-      const video = this.videoRef?.nativeElement;
-      if (video && this.videoStream) {
-        await this.cameraService.attachStreamToVideo(video, this.videoStream);
-        console.log('Camera stream attached to video element');
-      }
+      const stream = await this.fotoService.startCamera();
+      setTimeout(() => {
+        if (this.videoRef?.nativeElement) {
+          this.videoRef.nativeElement.srcObject = stream;
+        }
+      });
     } catch (error) {
-      console.error('Camera start failed:', error);
+      console.error('Camera error:', error);
     }
   }
 
-  protected stopCamera(): void {
-    this.fotoFacade.stopCamera();
-    this.cleanupVideoElement();
+  async takeFoto() {
+    if (!this.videoRef?.nativeElement) return;
+    this.fotoService.takeFoto(this.videoRef.nativeElement);
   }
 
-  protected async maakFoto(): Promise<void> {
-    if (this.disabled() || !this.videoRef) return;
-
+  async selectFromGallery() {
     try {
-      const video = this.videoRef.nativeElement;
-      const photoUrl = await this.fotoFacade.capturePhoto(video);
-      this.fotoGemaakt.emit(photoUrl);
+      await this.fotoService.selectFromGallery();
     } catch (error) {
-      // Error handling is done by the facade
+      console.error('Gallery selection failed:', error);
     }
   }
 
-  protected async kiesFotoUitGalerij(): Promise<void> {
-    if (this.disabled()) return;
-    
-    try {
-      const photoUrl = await this.fotoFacade.selectFromGallery();
-      this.fotoGemaakt.emit(photoUrl);
-    } catch (error) {
-      // Error handling is done by the facade
-    }
+  reset() {
+    this.fotoService.reset();
   }
 
-  private cleanupVideoElement(): void {
-    if (!this.videoRef) return;
-    
-    const video = this.videoRef.nativeElement;
-    if (video.srcObject) {
-      this.cameraService.stopAllTracks(video.srcObject as MediaStream);
-      video.srcObject = null;
-    }
-    video.pause();
-    this.videoStream = null;
+  next() {
+    this.fotoService.next();
   }
 }

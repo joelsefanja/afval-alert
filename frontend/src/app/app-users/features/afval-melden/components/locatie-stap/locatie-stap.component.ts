@@ -1,114 +1,67 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
-import { FormControl, ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { BaseStapComponent } from '../base-stap.component';
-import { LocatiePicker } from '../../../../../afvalmelding/locatie/locatie-picker/locatie-picker';
-import { LocatieFacadeService, LocatieInfo, LocatieState } from '../../services/locatie/locatie-facade.service';
+import { Component, inject, signal } from '@angular/core';
+import { CardModule } from 'primeng/card';
+import { ButtonModule } from 'primeng/button';
+import { MessageModule } from 'primeng/message';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { StepBuilderService } from '../../services/steps/step-builder.service';
+import { LocatieStapService } from '../../services/locatie/locatie-stap.service';
+import { LocatiePickerComponent } from '../locatie-picker/locatie-picker.component';
+import { KaartComponent } from './kaart/kaart.component';
+import { LocatiePickerData } from '../../services/locatie/locatie-picker.service';
 
-/**
- * Presentational component voor locatie selectie.
- * Alle business logica is verplaatst naar LocatieFacadeService.
- */
 @Component({
   selector: 'app-locatie-stap',
-  templateUrl: './locatie-stap.component.html',
   standalone: true,
   imports: [
-    ReactiveFormsModule,
-    FormsModule,
-    LocatiePicker
-  ]
+    CardModule, 
+    ButtonModule, 
+    MessageModule, 
+    ProgressSpinnerModule,
+    LocatiePickerComponent,
+    KaartComponent
+  ],
+  templateUrl: './locatie-stap.component.html'
 })
-export class LocatieStapComponent extends BaseStapComponent implements OnInit, OnDestroy {
-  private readonly locatieFacade = inject(LocatieFacadeService);
-  
-  // Form control for search
-  readonly zoekQuery = new FormControl('');
-  
-  // Facade state
-  protected readonly locatieState = this.locatieFacade.locatieState;
+export class LocatieStapComponent {
+  private stepBuilder = inject(StepBuilderService) as any;
+  private locatieService = inject(LocatieStapService);
 
-  ngOnInit(): void {
-    this.setupSearchControl();
+  readonly huidigeLocatie = this.locatieService.huidigeLocatie;
+  readonly error = this.locatieService.error;
+  readonly isLoading = this.locatieService.isLoading;
+  readonly showMap = signal(false);
+  foutmelding: string = '';
+
+  onLocationSelected(location: LocatiePickerData) {
+    this.locatieService.setLocatie(location);
   }
 
-  ngOnDestroy(): void {
-    this.locatieFacade.destroy();
-  }
-
-  // Template getters for backward compatibility
-  get geselecteerdAdres() {
-    return this.locatieState().selectedAddress;
-  }
-
-  get isLoading() {
-    return this.locatieState().isLoading;
-  }
-
-  get foutmelding() {
-    return this.locatieState().errorMessage;
-  }
-
-  get magDoorgaan() {
-    return this.locatieState().canProceed;
-  }
-
-  // Template methods
-  protected gpsBezig(): boolean {
-    return this.locatieState().isLoading;
-  }
-
-  protected disabled(): boolean {
-    return false;
-  }
-
-  protected adresZoekenBezig(): boolean {
-    return this.locatieState().isLoading;
-  }
-
-  protected async getCurrentLocation(): Promise<void> {
-    try {
-      await this.locatieFacade.getCurrentLocation();
-    } catch (error) {
-      // Error handled by facade
-    }
-  }
-
-  protected async onAddressSearch(): Promise<void> {
-    const query = this.zoekQuery.value;
-    if (!query) return;
+  getSelectedLocationForMap() {
+    const loc = this.huidigeLocatie();
+    if (!loc) return null;
     
-    try {
-      await this.locatieFacade.searchAddress(query);
-    } catch (error) {
-      // Error handled by facade
+    return {
+      latitude: loc.lat,
+      longitude: loc.lng,
+      address: loc.address
+    };
+  }
+
+  onKaartOpenen() {
+    this.showMap.set(true);
+  }
+
+  onKaartSluiten() {
+    this.showMap.set(false);
+  }
+
+  onVolgende() {
+    if (this.huidigeLocatie()) {
+      this.stepBuilder.next();
     }
   }
 
-  protected async onKaartLocatieGeselecteerd(locatieInfo: LocatieInfo): Promise<void> {
-    try {
-      await this.locatieFacade.selectMapLocation(locatieInfo);
-    } catch (error) {
-      // Error handled by facade
-    }
-  }
-
-  protected onLocationSelected(location: any): void {
-    // Handle location selection from map
-    if (location && location.latitude && location.longitude) {
-      const locatieInfo: LocatieInfo = {
-        latitude: location.latitude,
-        longitude: location.longitude,
-        address: location.address || 'Geselecteerde locatie'
-      };
-      this.onKaartLocatieGeselecteerd(locatieInfo);
-    }
-  }
-
-  private setupSearchControl(): void {
-    this.locatieFacade.setupSearchControl(this.zoekQuery).subscribe(query => {
-      if (query && query.length > 3) {
-        console.log('Zoeken naar:', query);
-      }
-    });
+  onVorige() {
+    this.stepBuilder.prev();
   }
 }
