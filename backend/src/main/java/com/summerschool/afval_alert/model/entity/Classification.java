@@ -12,6 +12,9 @@ public class Classification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @OneToOne
+    private Melding melding;
+
     @OneToMany(mappedBy = "classification", cascade = CascadeType.ALL )
     private List<ClassificationLabel> classificationLabels = new ArrayList<ClassificationLabel>();
 

@@ -41,6 +41,9 @@ public class Melding {
     @OneToMany(mappedBy = "melding", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Notitie> notities = new ArrayList<Notitie>();
 
+    @OneToOne
+    private Classification classification;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
