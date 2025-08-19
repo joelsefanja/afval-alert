@@ -3,6 +3,6 @@ export interface ListNotification {
   location: number;
   type: string;
   status: string;
-  date: string;
+  date: Date;
   useremail?: string;
 }

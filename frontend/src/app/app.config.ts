@@ -3,6 +3,7 @@ import { provideRouter } from '@angular/router';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideHttpClient } from '@angular/common/http';
 import { providePrimeNG } from 'primeng/config';
+import { nl } from "primelocale/js/nl.js"
 
 import { routes } from './app.routes';
 import { AppInitService } from './app-init.service';
@@ -24,6 +25,7 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     providePrimeNG({
+      translation: nl,
       theme: {
         preset: Aura,
           options: {
