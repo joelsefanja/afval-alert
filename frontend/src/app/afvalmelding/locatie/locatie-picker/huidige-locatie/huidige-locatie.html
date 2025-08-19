@@ -1,4 +1,6 @@
-<div (click)="onGetCurrentLocation()" class="border-l aspect-square flex items-center justify-center px-2">
-  <!-- TODO: Check of dit correct wordt ingeladen -->
-  <i class="pi pi-map-marker" style="font-size: 2rem"></i>
-</div>
+<button 
+  (click)="onGetCurrentLocation()" 
+  type="button"
+  class="w-12 h-12 flex items-center justify-center text-green-600 hover:text-green-700 hover:bg-green-50 transition-all duration-200 rounded-r-xl">
+  <i class="pi pi-map-marker text-xl" title="Gebruik mijn locatie"></i>
+</button>

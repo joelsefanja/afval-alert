@@ -1,25 +1,29 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
-import { MeldingsProcedureStatus } from '../../services/melding/melding-state.service';
+import { SuccesStapService } from '../../services/procedure/succes-stap.service';
 
 @Component({
   selector: 'app-succes-stap',
   standalone: true,
-  imports: [CommonModule, ButtonModule, CardModule],
-  templateUrl: './succes-stap.component.html',
-  styleUrls: ['./succes-stap.component.scss']
+  imports: [ButtonModule, CardModule],
+  templateUrl: './succes-stap.component.html'
 })
 export class SuccesStapComponent {
-  protected state = inject(MeldingsProcedureStatus);
+  private succesService: SuccesStapService = inject(SuccesStapService);
 
-  nieuweMelding() {
-    this.state.resetState();
+  readonly canInstallPWA = this.succesService.canInstallPWA;
+  readonly isInstalled = this.succesService.isInstalled;
+
+  async downloadApp() {
+    await this.succesService.promptPWAInstall();
   }
 
-  sluitApp() {
-    // In een echte app zou dit de app sluiten of naar home navigeren
-    window.close();
+  newReport() {
+    this.succesService.resetAndStart();
+  }
+
+  closeApp() {
+    this.succesService.closeApp();
   }
 }

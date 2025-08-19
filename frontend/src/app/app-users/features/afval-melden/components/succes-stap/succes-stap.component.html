@@ -1,97 +1,40 @@
-<div class="max-w-2xl mx-auto p-4 space-y-8 motion-preset-fade-in">
-  <!-- Success hero -->
-  <div class="text-center space-y-6">
-    <div class="w-24 h-24 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mx-auto motion-preset-scale-in">
-      <i class="pi pi-check text-green-600 dark:text-green-400 text-4xl"></i>
-    </div>
+<p-card>
+  <div class="text-center">
+    <i class="pi pi-check-circle text-6xl text-green-500 mb-3"></i>
+    <h2 class="text-2xl font-bold mb-3">Melding verstuurd!</h2>
+    <p class="mb-4 text-600">Bedankt voor je melding. We nemen deze in behandeling.</p>
     
-    <div class="space-y-4">
-      <h1 class="text-3xl lg:text-4xl font-bold text-surface-900 dark:text-surface-0">
-        Bedankt voor je melding!
-      </h1>
-      <p class="text-lg text-surface-600 dark:text-surface-300 max-w-md mx-auto">
-        Je melding is succesvol ontvangen en wordt zo snel mogelijk behandeld door gemeente Groningen.
-      </p>
-    </div>
-  </div>
-
-  <!-- Informatie kaarten -->
-  <div class="space-y-4">
-    <!-- Wat gebeurt er nu -->
-    <p-card class="bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
-      <div class="flex items-start gap-3">
-        <i class="pi pi-info-circle text-blue-600 dark:text-blue-400 text-xl mt-0.5"></i>
-        <div>
-          <h3 class="font-semibold text-blue-800 dark:text-blue-200 mb-2">
-            Wat gebeurt er nu?
-          </h3>
-          <p class="text-sm text-blue-700 dark:text-blue-300 m-0">
-            De gemeente Groningen heeft je melding ontvangen en zal het afval zo snel mogelijk ophalen. 
-            Dit gebeurt meestal binnen 3-7 werkdagen.
+    <!-- PWA Download sectie -->
+    @if (canInstallPWA && !isInstalled) {
+      <div class="p-3 border-round bg-blue-50 mb-4">
+        <div class="flex flex-column align-items-center gap-2">
+          <i class="pi pi-mobile text-3xl text-blue-500"></i>
+          <h3 class="m-0 text-blue-800 font-semibold">Download Afval-Alert App</h3>
+          <p class="m-0 text-blue-700 text-sm text-center">
+            Samen houden we de buurt schoon
           </p>
+          <p-button 
+            label="Download App" 
+            icon="pi pi-download" 
+            (click)="downloadApp()" 
+            class="w-full mt-2"
+            severity="info" />
         </div>
       </div>
-    </p-card>
-
-    <!-- Contact informatie (alleen als email is ingevuld) -->
-    @if (state.contactInfo().email) {
-      <p-card class="bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800">
-        <div class="flex items-start gap-3">
-          <i class="pi pi-envelope text-green-600 dark:text-green-400 text-xl mt-0.5"></i>
-          <div>
-            <h3 class="font-semibold text-green-800 dark:text-green-200 mb-2">
-              We houden je op de hoogte
-            </h3>
-            <p class="text-sm text-green-700 dark:text-green-300 m-0">
-              Je ontvangt updates over de status van je melding op {{ state.contactInfo().email }}.
-            </p>
-          </div>
-        </div>
-      </p-card>
     }
-
-    <!-- Milieu impact -->
-    <p-card class="bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800">
-      <div class="flex items-start gap-3">
-        <i class="pi pi-heart text-emerald-600 dark:text-emerald-400 text-xl mt-0.5"></i>
-        <div>
-          <h3 class="font-semibold text-emerald-800 dark:text-emerald-200 mb-2">
-            Goed voor het milieu
-          </h3>
-          <p class="text-sm text-emerald-700 dark:text-emerald-300 m-0">
-            Door zwerfafval te melden help je mee aan een schonere stad en een beter milieu. 
-            Bedankt voor je bijdrage! 🌱
-          </p>
+    
+    @if (isInstalled) {
+      <div class="p-3 border-round bg-green-50 mb-4">
+        <div class="flex align-items-center justify-content-center gap-2">
+          <i class="pi pi-check text-green-600"></i>
+          <span class="text-green-800 font-medium">App geïnstalleerd!</span>
         </div>
       </div>
-    </p-card>
-  </div>
-
-  <!-- Acties -->
-  <div class="space-y-3 pt-4">
-    <p-button 
-      label="Nieuwe melding maken" 
-      icon="pi pi-plus"
-      size="large"
-      (onClick)="nieuweMelding()"
-      class="w-full"
-      [raised]="true"
-    />
+    }
     
-    <p-button 
-      label="Sluiten" 
-      variant="outlined"
-      size="large"
-      (onClick)="sluitApp()"
-      class="w-full"
-    />
+    <div class="flex flex-column gap-2">
+      <p-button label="Nieuwe melding" icon="pi pi-plus" (click)="newReport()" class="w-full" />
+      <p-button label="Sluiten" icon="pi pi-times" (click)="closeApp()" severity="secondary" class="w-full" />
+    </div>
   </div>
-
-  <!-- Footer info -->
-  <div class="text-center pt-4">
-    <p class="text-xs text-surface-500 dark:text-surface-400">
-      Heb je vragen over je melding? Neem contact op met gemeente Groningen via 
-      <a href="tel:14050" class="text-primary-600 dark:text-primary-400 hover:underline">14 050</a>
-    </p>
-  </div>
-</div>
+</p-card>

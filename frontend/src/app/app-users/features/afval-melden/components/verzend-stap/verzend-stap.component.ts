@@ -47,7 +47,7 @@ export class VerzendStapComponent implements OnInit, OnDestroy {
       meldingId: concept.id,
       locatie: {
         latitude: locatie.lat,
-        longitude: locatie.lng
+        longitude: locatie.long
       },
       contact: concept.contact
     };

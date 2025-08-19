@@ -1,6 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { delay } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 import { MeldingsProcedureStatus, AfvalMeldProcedureStap } from './melding-state.service';
 import { MeldingService } from './melding.service';
 
@@ -24,7 +23,10 @@ export class MeldingVerzendService {
     const melding = {
       fotoUrl: this.afvalMeldProcedureState.fotoUrl(),
       locatieAdres: this.afvalMeldProcedureState.locatieAdres(),
-      locatieCoordinaten: this.afvalMeldProcedureState.locatieCoordinaten()!,
+      locatieCoordinaten: {
+        lat: this.afvalMeldProcedureState.locatieCoordinaten()!.lat,
+        lng: this.afvalMeldProcedureState.locatieCoordinaten()!.long
+      },
       contactInfo: this.afvalMeldProcedureState.contactInfo()
     };
     
