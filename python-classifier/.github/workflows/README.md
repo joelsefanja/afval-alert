@@ -74,6 +74,48 @@ Deze workflow voert automatische tests uit op de Python backend code en wordt ge
 4. **Run tests**: Voert unit tests uit
 5. **Run linting**: Controleert code kwaliteit
 
+### 4. deploy-k8s.yml
+
+Deze workflow deployt de applicatie naar verschillende Kubernetes omgevingen (Minikube, AKS, GKE) en wordt getriggerd bij:
+
+1. Push naar de `main` branch
+2. Push naar de `develop` branch
+3. Handmatige trigger via GitHub UI (workflow_dispatch) met keuze van omgeving
+
+#### Workflow Stappen
+
+1. **Checkout**: Haalt de broncode op van de repository
+2. **Set up Python**: Installeert Python 3.12
+3. **Install dependencies**: Installeert de applicatie dependencies
+4. **Set up Kubernetes tools**: Installeert kubectl en Minikube indien nodig
+5. **Build Docker image**: Bouwt de Docker image
+6. **Create secrets**: Maakt Kubernetes secrets aan voor de Gemini API key
+7. **Deploy to Kubernetes**: Deployt de applicatie naar de gekozen Kubernetes omgeving
+8. **Run tests**: Voert automatische tests uit
+
+#### Ondersteunde Omgevingen
+
+- **Minikube**: Voor lokale testen en development
+- **AKS**: Voor Azure Kubernetes Service deployment
+- **GKE**: Voor Google Kubernetes Engine deployment
+
+#### Gebruikte Secrets
+
+De workflow gebruikt de volgende GitHub secrets (afhankelijk van de gekozen omgeving):
+
+- `GEMINI_API_KEY`: De Google Gemini API key (vereist voor alle omgevingen)
+- `AZURE_CLIENT_ID`: Azure client ID voor AKS authenticatie
+- `AZURE_TENANT_ID`: Azure tenant ID voor AKS authenticatie
+- `AZURE_SUBSCRIPTION_ID`: Azure subscription ID voor AKS
+- `ACR_NAME`: Azure Container Registry naam
+- `AKS_RESOURCE_GROUP`: Azure Kubernetes Service resource group
+- `AKS_CLUSTER_NAME`: Azure Kubernetes Service cluster naam
+- `GCP_PROJECT_ID`: Google Cloud project ID voor GKE
+- `GKE_CLUSTER`: GKE cluster naam
+- `GKE_ZONE`: GKE zone
+- `GCP_WIF_PROVIDER`: Google Workload Identity Federation provider
+- `GCP_DEPLOY_SA`: Google Cloud service account voor deployment
+
 ## Belangrijke Afkortingen Uitleg
 
 - **GKE**: Google Kubernetes Engine - Google's beheerde Kubernetes service
@@ -89,6 +131,6 @@ Voor ontwikkelaars zonder toegang tot de Google Cloud omgeving kunnen de volgend
 
 1. **GitHub Codespaces**: Gebruik de ingebouwde Codespaces functionaliteit
 2. **Lokale Docker**: Gebruik `make docker-dev` voor een lokale development setup
-3. **Minikube lokaal**: Volg de instructies in MINIKUBE_DEPLOYMENT.md
+3. **Minikube lokaal**: Volg de instructies in ../documentation/MINIKUBE_DEPLOYMENT.md
 
-Zie ook LOCAL_SETUP.md voor gedetailleerde instructies voor lokale setup zonder cloud toegang.
+Zie ook ../documentation/LOCAL_SETUP.md voor gedetailleerde instructies voor lokale setup zonder cloud toegang.

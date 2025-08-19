@@ -1,0 +1,212 @@
+name: Deploy AfvalAlert to Kubernetes
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'minikube'
+        type: choice
+        options:
+        - minikube
+        - aks
+        - gke
+
+env:
+  DEPLOYMENT_NAME: afval-alert
+  IMAGE: afval-alert
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Install dependencies
+      run: |
+        cd classifier
+        pip install --upgrade pip uv
+        uv pip install -e .
+
+    - name: Set up Minikube for local testing
+      if: github.event.inputs.environment == 'minikube' || github.event_name == 'push'
+      run: |
+        # Install minikube
+        curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+        sudo install minikube-linux-amd64 /usr/local/bin/minikube
+        
+        # Install kubectl
+        curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+        sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+
+    - name: Start Minikube
+      if: github.event.inputs.environment == 'minikube' || github.event_name == 'push'
+      run: |
+        minikube start --driver=docker
+        kubectl cluster-info
+
+    - name: Build Docker image in Minikube
+      if: github.event.inputs.environment == 'minikube' || github.event_name == 'push'
+      run: |
+        # Set Docker environment to Minikube's Docker daemon
+        eval $(minikube docker-env)
+        
+        # Build the Docker image
+        cd classifier
+        docker build -t afval-alert:latest .
+
+    - name: Create Kubernetes secret for Gemini API Key
+      if: github.event.inputs.environment == 'minikube' || github.event_name == 'push'
+      run: |
+        # Create a secret for the Gemini API key (in a real scenario, this would come from GitHub secrets)
+        kubectl create secret generic gemini-api-key \
+          --from-literal=GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY || 'dummy-key-for-testing' }}
+
+    - name: Deploy to Kubernetes
+      if: github.event.inputs.environment == 'minikube' || github.event_name == 'push'
+      run: |
+        # Update deployment.yaml with the correct image name
+        sed -i 's|YOUR_REGISTRY/afval-alert:latest|afval-alert:latest|g' k8s/deployment.yaml
+        
+        # Apply Kubernetes configurations
+        kubectl apply -f k8s/
+        
+        # Wait for deployment to be ready
+        kubectl rollout status deployment/afval-alert
+        
+        # Show deployment status
+        kubectl get pods
+        kubectl get services
+        kubectl get secrets
+
+    - name: Run tests
+      if: github.event.inputs.environment == 'minikube' || github.event_name == 'push'
+      run: |
+        cd classifier
+        python -m pytest tests/ -v
+
+    # For AKS deployment (when Azure credentials are available)
+    - name: Authenticate to Azure (AKS)
+      if: github.event.inputs.environment == 'aks' && secrets.AZURE_CLIENT_ID != ''
+      uses: azure/login@v1
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+    - name: Set up kubectl for AKS
+      if: github.event.inputs.environment == 'aks' && secrets.AZURE_CLIENT_ID != ''
+      run: |
+        # Install kubectl
+        curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+        sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+
+    - name: Build and push Docker image to ACR
+      if: github.event.inputs.environment == 'aks' && secrets.AZURE_CLIENT_ID != ''
+      run: |
+        # Login to ACR
+        az acr login --name ${{ secrets.ACR_NAME }}
+        
+        # Build the Docker image
+        cd classifier
+        docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/afval-alert:${{ github.sha }} .
+        docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/afval-alert:latest .
+        
+        # Push the images
+        docker push ${{ secrets.ACR_NAME }}.azurecr.io/afval-alert:${{ github.sha }}
+        docker push ${{ secrets.ACR_NAME }}.azurecr.io/afval-alert:latest
+
+    - name: Deploy to AKS
+      if: github.event.inputs.environment == 'aks' && secrets.AZURE_CLIENT_ID != ''
+      run: |
+        # Get AKS credentials
+        az aks get-credentials --resource-group ${{ secrets.AKS_RESOURCE_GROUP }} --name ${{ secrets.AKS_CLUSTER_NAME }}
+        
+        # Update deployment.yaml with the correct image name
+        sed -i 's|YOUR_REGISTRY/afval-alert:latest|${{ secrets.ACR_NAME }}.azurecr.io/afval-alert:latest|g' k8s/deployment.yaml
+        
+        # Create Kubernetes secret for Gemini API Key
+        kubectl create secret generic gemini-api-key \
+          --from-literal=GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} \
+          --dry-run=client -o yaml | kubectl apply -f -
+        
+        # Apply Kubernetes configurations
+        kubectl apply -f k8s/
+        
+        # Wait for deployment to be ready
+        kubectl rollout status deployment/afval-alert
+        
+        # Show deployment status
+        kubectl get pods
+        kubectl get services
+
+    # For GKE deployment (when GCP credentials are available)
+    - name: Authenticate to Google Cloud (GKE)
+      if: github.event.inputs.environment == 'gke' && secrets.GCP_PROJECT_ID != ''
+      uses: google-github-actions/auth@v1
+      with:
+        workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
+        service_account: ${{ secrets.GCP_DEPLOY_SA }}
+
+    - name: Set up Cloud SDK for GKE
+      if: github.event.inputs.environment == 'gke' && secrets.GCP_PROJECT_ID != ''
+      uses: google-github-actions/setup-gcloud@v2
+      with:
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+    - name: Configure Docker to use gcloud for GKE
+      if: github.event.inputs.environment == 'gke' && secrets.GCP_PROJECT_ID != ''
+      run: |
+        gcloud --quiet auth configure-docker
+
+    - name: Get GKE credentials
+      if: github.event.inputs.environment == 'gke' && secrets.GCP_PROJECT_ID != ''
+      run: |
+        gcloud container clusters get-credentials "${{ secrets.GKE_CLUSTER }}" --zone "${{ secrets.GKE_ZONE }}"
+
+    - name: Build and push Docker image to GCR
+      if: github.event.inputs.environment == 'gke' && secrets.GCP_PROJECT_ID != ''
+      run: |
+        cd classifier
+        docker build \
+          --tag "gcr.io/${{ secrets.GCP_PROJECT_ID }}/afval-alert:${{ github.sha }}" \
+          --tag "gcr.io/${{ secrets.GCP_PROJECT_ID }}/afval-alert:latest" \
+          .
+        
+        docker push "gcr.io/${{ secrets.GCP_PROJECT_ID }}/afval-alert:${{ github.sha }}"
+        docker push "gcr.io/${{ secrets.GCP_PROJECT_ID }}/afval-alert:latest"
+
+    - name: Deploy to GKE
+      if: github.event.inputs.environment == 'gke' && secrets.GCP_PROJECT_ID != ''
+      run: |
+        # Update deployment.yaml with the correct image name
+        sed -i 's|YOUR_REGISTRY/afval-alert:latest|gcr.io/${{ secrets.GCP_PROJECT_ID }}/afval-alert:latest|g' k8s/deployment.yaml
+        
+        # Create Kubernetes secret for Gemini API Key
+        kubectl create secret generic gemini-api-key \
+          --from-literal=GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} \
+          --dry-run=client -o yaml | kubectl apply -f -
+        
+        # Apply Kubernetes configurations
+        kubectl apply -f k8s/
+        
+        # Wait for deployment to be ready
+        kubectl rollout status deployment/afval-alert
+        
+        # Show deployment status
+        kubectl get pods
+        kubectl get services

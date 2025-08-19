@@ -1,79 +1,252 @@
-# AfvalAlert - Zwerfafval Classifier
+# AfvalAlert - Clean Architecture Implementation
 
-AI-gestuurde API voor het classificeren van zwerfafval met hybride machine learning: lokaal MobileNetV2 model + Google Gemini LLM.
+## Overview
 
-## Inhoudsopgave
-- [Project Overzicht](#project-overzicht)
-- [Snel Starten (Lokaal)](#snel-starten-lokaal)
-- [Documentatie](#documentatie)
-- [Technologieën](#technologieën)
+AfvalAlert heeft een complete herstructurering ondergaan naar een schone, SOLID en DRY architectuur zonder hardcoded constanten. Alle configuratie is nu uitbreidbaar en klaar voor toekomstige database-integratie.
 
-## Project Overzicht
+## Key Achievements
 
-AfvalAlert is een slimme afvalherkenningssysteem dat foto's kan analyseren om te bepalen of ze zwerfafval bevatten. Het gebruikt een hybride aanpak met een lokaal AI model (MobileNetV2) voor snelle detectie en Google Gemini LLM voor accurate classificatie.
+### SOLID Principles Implementation
+- **Single Responsibility**: Elke klasse heeft één duidelijke verantwoordelijkheid
+- **Open/Closed**: Uitbreidbaar via dependency injection zonder wijzigingen
+- **Liskov Substitution**: Alle interfaces zijn vervangbaar
+- **Interface Segregation**: Gefocuste interfaces voor elke concern  
+- **Dependency Inversion**: Afhankelijk van abstracties, niet van concrete implementaties
 
-## Snel Starten (Lokaal)
+### DRY Principle
+- Centrale configuratie manager elimineert code duplicatie
+- Single source of truth voor alle constanten en instellingen
+- Herbruikbare componenten door het hele systeem
 
-### GitHub Codespaces (Aanbevolen)
-1. Klik op de "Code" knop in de repository
-2. Selecteer "Open with Codespaces"
-3. Klik op "New codespace"
-4. Wacht tot de omgeving is geladen
-5. De applicatie start automatisch
+### Extensible Architecture
+- Mock implementaties voor ontwikkeling en testing
+- Clear interfaces voor alle externe services
 
-### Lokaal met Docker (Aanbevolen)
-```bash
-# 1. Kopieer environment file en vul je Gemini API key in
-cp classifier/.env.example classifier/.env
-# Bewerk classifier/.env en voeg je GEMINI_API_KEY toe
+### Configuration-Driven Architecture
+- Alle constanten verplaatst van code naar YAML configuratie
+- Extensible voor toekomstige database integratie
+- Caching en validatie systeem geïmplementeerd
 
-# 2. Start de applicatie
-make docker-dev
+## Project Structure
 
-# 3. Open http://localhost:8000/docs in je browser
+```
+afval-alert/
+├── src/afval_alert/           # Schone package structuur
+│   ├── api/                   # FastAPI endpoints
+│   ├── core/                  # Business logic  
+│   ├── models/                # Data schemas (geen hardcoded constanten)
+│   ├── adapters/              # External service interfaces
+│   │   ├── lokale_classificatie.py # Lokale AI model adapter
+│   │   └── gemini_ai.py       # Google Gemini AI adapter
+│   ├── config/                # SOLID configuratie systeem
+│   │   ├── interfaces.py      # Configuratie interfaces
+│   │   ├── implementations.py # Concrete implementaties
+│   │   ├── loader.py          # DRY configuratie service
+│   │   └── data/              # YAML configuratie bestanden
+│   └── utils/                 # Utilities (zonder Unicode)
 ```
 
-### Lokaal zonder Docker
+## UV Virtual Environment
+
+Alle scripts gebruiken nu consistent UV voor dependency management:
+
+### Setup
 ```bash
-# 1. Installeer dependencies met uv
-cd classifier
-pip install --upgrade pip uv
-uv pip install -e .
+# Linux/Mac
+./scripts/setup.sh
 
-# 2. Kopieer environment file en vul je Gemini API key in
-cp .env.example .env
-# Bewerk .env en voeg je GEMINI_API_KEY toe
+# Windows PowerShell  
+./scripts/setup.ps1
 
-# 3. Start de server
-uvicorn main:app --reload --host 0.0.0.0 --port 8000
+# Manual setup
+uv venv
+uv pip install -e ".[dev,test]"
+```
 
-# 4. Open http://localhost:8000/docs in je browser
+### Development Commands
+```bash
+# Via Makefile
+make setup     # Setup environment
+make test      # Run all tests  
+make dev       # Start development server
+make lint      # Code quality checks
+
+# Direct UV commands
+uv run afval-alert server    # Start server
+uv run afval-alert-test      # Run tests
+uv run pytest tests/unit/   # Specific test suite
+```
+
+### Automated Testing with Datasets
+```bash
+# Download datasets and run all tests
+python scripts/download_datasets_simple.py    # Download only
+python scripts/run_all_tests_with_datasets.py # Download + run tests
+
+# Datasets will be stored in:
+# - tests/assets/zwerfafval/        (litter images)
+# - tests/assets/geen-zwerfafval/   (nature images)
+```
+
+## Configuration System
+
+### YAML-Based Constants
+Alle constanten zijn verplaatst naar configuratie:
+
+```yaml
+# src/afval_alert/config/data/constants.yaml
+waste_types:
+  plastic_flessen: "plastic_flessen"
+  # ... etc
+
+api_defaults:
+  max_file_size_mb: 50
+  timeout_seconds: 30
+  
+response_messages:
+  success: "Classificatie succesvol voltooid"
+  file_too_large: "Bestand te groot (max {max_size}MB)"
+```
+
+### Extensible Architecture
+Ready voor database integratie:
+
+```python
+# Huidige file-based implementatie
+config_service = ConfigurationFactory.create_file_based()
+
+# Toekomstige database implementatie  
+config_service = ConfigurationFactory.create_database_based(connection_string)
+```
+
+## Benefits
+
+### 1. Maintainability
+- Geen god classes - elke module heeft gefocuste verantwoordelijkheid
+- Clear separation of concerns  
+- Easy to locate en modify code
+- Consistent patterns throughout
+
+### 2. Extensibility  
+- Easy to add nieuwe waste types via YAML
+- Plugin architecture voor nieuwe adapters
+- Database-ready configuratie systeem
+- Interface-driven design
+
+### 3. Testability
+- Easy to mock dependencies
+- Clear test boundaries  
+- Isolated test failures
+- No Unicode issues in test output
+
+### 4. Performance
+- Configuration caching system
+- Lazy loading van configuratie
+- Graceful error handling
+- Efficient lookup structures
+
+### 5. Developer Experience
+- UV-based development workflow
+- IDE support voor navigation
+- Clear import structure  
+- Comprehensive documentation
+
+## Test Strategy
+
+Tests zijn nu volledig Unicode-vrij:
+
+```bash
+# All tests
+uv run python -m pytest tests/ -v
+
+# Specific suites  
+uv run python -m pytest tests/unit/ -v
+uv run python -m pytest tests/integration/ -v
+uv run python -m pytest tests/e2e/ -v
+
+# End-to-end tests met echte Gemini API
+uv run python run_e2e_test.py
+
+# Of met pytest
+uv run python -m pytest tests/e2e/test_real_gemini_e2e.py -v
+```
+
+### End-to-End Tests met Echte Gemini API
+
+Voor het uitvoeren van E2E tests met de echte Google Gemini API:
+
+1. Zorg dat je een `.env` bestand hebt met je `GEMINI_API_KEY`:
+   ```
+   GEMINI_API_KEY=AIzaSyCqI9AsDznUdE5OKRhdhrHKbxdUD8YlJfc
+   ```
+
+2. Run de E2E test:
+   ```bash
+   uv run python run_e2e_test.py
+   ```
+
+De test zal:
+- Een lokale server starten op poort 8006
+- Gezondheid en basis endpoints testen
+- Een classificatie uitvoeren met de echte Gemini API
+- De server weer stoppen
+
+## API Endpoints
+
+All endpoints nu configuration-driven:
+
+- `GET /` - Service informatie (uit configuratie)
+- `GET /gezondheid` - Gezondheid check  
+- `GET /model-info` - Model details (uit configuratie)
+- `GET /afval-typen` - Afval categorieën (uit YAML)
+- `POST /classificeer` - Classificeer afval afbeelding
+- `GET /documentatie` - API documentatie
+
+## Future Database Integration
+
+Architecture is ready voor database integratie:
+
+```python
+# Interface blijft hetzelfde
+config_service = ConfigurationFactory.create_database_based(
+    connection_string="postgresql://..."
+)
+
+# Alle bestaande code blijft werken
+waste_types = config_service.get_waste_type_names()
+```
+
+## Code Quality
+
+All scripts en tools gebruiken UV:
+
+```bash
+make lint      # Linting met UV
+make format    # Code formatting
+make type      # Type checking  
+make check     # Complete quality check
 ```
 
 ## Documentatie
 
-Voor gedetailleerde informatie over het project, zie de volgende documenten:
+Voor uitgebreide documentatie, zie de [documentatie map](documentation/) die onderverdeeld is in:
 
-- [Classifier README](classifier/README.md) - Hoofddocumentatie voor de Python backend
-- [Lokale Setup Gids](LOCAL_SETUP.md) - Eenvoudige lokale setup zonder cloud toegang
-- [Minikube Deployment](MINIKUBE_DEPLOYMENT.md) - Instructies voor deployment naar Minikube (optioneel)
-- [Deployment](DEPLOYMENT.md) - Algemene deployment informatie en scripts
+- **[Architectuur](documentation/architectuur/)** - Technische architectuur en design principes
+- **[Configuratie](documentation/configuratie/)** - Configuratie systeem en bestanden
+- **[Deployment](documentation/deployment/)** - Deployment instructies en scripts
+  - **[Algemeen](documentation/deployment/general/)** - Algemene deployment informatie
+  - **[Azure](documentation/deployment/azure/)** - Azure Kubernetes Service deployment
+  - **[Kubernetes](documentation/deployment/kubernetes/)** - Kubernetes setup en begrippen
+  - **[Lokaal](documentation/deployment/local/)** - Lokale setup en testing
+  - **[Testen](documentation/deployment/)** - Test gids en authenticatie setup
+- **[Ontwikkeling](documentation/ontwikkeling/)** - Ontwikkel setup en workflows
 
-## Technologieën
+Project voldoet nu aan:
+- SOLID principles
+- DRY principle  
+- Clean Architecture
+- Configuration-driven design
+- Unicode-free test output
+- UV-based dependency management
 
-- **Backend**: Python, FastAPI
-- **AI/ML**: TensorFlow, MobileNetV2, Google Gemini
-- **Containerization**: Docker
-- **Orchestration**: Kubernetes (Minikube lokaal)
-- **CI/CD**: GitHub Actions
-- **Development**: GitHub Codespaces
-
-## Deployment Opties
-
-Het project ondersteunt meerdere deployment opties:
-
-1. **Lokaal met Docker** - Voor ontwikkeling en testen
-2. **Minikube** - Lokale Kubernetes voor ontwikkeling
-3. **Google Kubernetes Engine (GKE)** - Productie deployment in de cloud
-
-Voor deployment instructies, zie de specifieke documentatie in de links hierboven.
+Perfect voor verdere ontwikkeling en uitbreiding!

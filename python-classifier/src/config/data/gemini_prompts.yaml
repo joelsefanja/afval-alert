@@ -1,0 +1,60 @@
+# Common patterns
+common: &common_json_structure
+  output_format: &json_format |
+    Geef ALLEEN geldig JSON terug met deze structuur:
+    {{
+      "is_afval": true,
+      "afval_types": [{{
+        "afval_type": "plastic_flessen",
+        "zekerheid": 0.85
+      }}],
+      "kenmerken": ["beschrijving", "categorie"],
+      "bedank_boodschap": "Bericht aan melder"
+    }}
+  constraints: &json_constraints |
+    Gebruik alleen beschikbare afvaltype categorieën.
+    Geef geen extra tekst, alleen JSON.
+
+# Gemini prompts
+gemini_prompts:
+  image_analysis:
+    system_role: &expert_role "Je bent een expert in zwerfafval herkenning voor Nederlandse gemeenten."
+    task_description: |
+      Analyseer de afbeelding en bepaal:
+      1. Is dit zwerfafval? 2. Afvaltypes met zekerheid (0.0-1.0)
+      3. Kenmerken 4. Bericht voor de melder
+    <<: *common_json_structure
+  
+  text_validation:
+    system_role: "Je bent een expert validator voor zwerfafval classificatie van Nederlandse gemeenten."
+    task_description: |
+      Lokaal model resultaat:
+      - Beschrijving: {local_description}
+      - Voorspellingen: {local_predictions}
+      
+      Valideer en verbeter deze resultaten.
+    <<: *common_json_structure
+
+# Fallback responses
+fallbacks: &base_fallback
+  is_afval: false
+  afval_types: []
+  kenmerken: ["fout"]
+  bedank_boodschap: &error_msg "Sorry, er is een fout opgetreden."
+
+fallback_responses:
+  no_response:
+    <<: *base_fallback
+    kenmerken: ["analyse_gefaald"]
+    bedank_boodschap: "Sorry, kon geen analyse uitvoeren."
+  
+  error:
+    <<: *base_fallback
+    kenmerken: ["fout_opgetreden"]
+    bedank_boodschap: "Er is een fout opgetreden. Probeer het later nogmaals."
+  
+  validation_fallback:
+    is_afval: true
+    afval_types: [{afval_type: "niet_classificeerbaar", zekerheid: 0.5}]
+    kenmerken: ["lokaal_validatie"]
+    bedank_boodschap: "Bedankt - we hebben het gevalideerd."

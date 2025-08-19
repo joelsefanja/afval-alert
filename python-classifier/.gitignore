@@ -133,3 +133,6 @@ classifier/.env
 *.log
 .DOCKER_COMMIT
 .DOCKER_TAG
+
+# Deployment temporary files
+k8s/deployment-temp.yaml
