@@ -37,9 +37,11 @@ public class NotitieController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/notities")
-    public ResponseEntity<List<Notitie>> getNotities(@RequestParam("meldingId") Long meldingId) {
-        List<Notitie> notities = meldingService.getNotities(meldingId);
+    @GetMapping("/notities/{id}")
+    public ResponseEntity<List<Notitie>> getNotities(
+            @PathVariable Long id
+    ) {
+        List<Notitie> notities = meldingService.getNotities(id);
 
         return ResponseEntity.ok().body(notities);
     }
