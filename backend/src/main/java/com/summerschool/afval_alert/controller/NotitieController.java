@@ -3,14 +3,11 @@ package com.summerschool.afval_alert.controller;
 import com.summerschool.afval_alert.model.dto.NotitieDTO;
 import com.summerschool.afval_alert.model.dto.PostNotitieDTO;
 import com.summerschool.afval_alert.model.entity.Melding;
-import com.summerschool.afval_alert.model.entity.Notitie;
 import com.summerschool.afval_alert.service.MeldingService;
 import com.summerschool.afval_alert.service.NotitieService;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController

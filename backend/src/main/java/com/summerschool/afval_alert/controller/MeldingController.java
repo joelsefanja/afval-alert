@@ -6,8 +6,6 @@ import com.summerschool.afval_alert.model.dto.PutMeldingDTO;
 import com.summerschool.afval_alert.model.dto.PutStatusMeldingDTO;
 import com.summerschool.afval_alert.model.dto.ShowMeldingDTO;
 import com.summerschool.afval_alert.model.entity.Melding;
-import com.summerschool.afval_alert.model.enums.Status;
-import com.summerschool.afval_alert.model.enums.TrashType;
 import com.summerschool.afval_alert.service.MeldingService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

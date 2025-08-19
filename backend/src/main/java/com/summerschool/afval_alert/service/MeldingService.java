@@ -2,7 +2,6 @@ package com.summerschool.afval_alert.service;
 
 import com.summerschool.afval_alert.mapper.MeldingMapper;
 import com.summerschool.afval_alert.model.dto.AllMeldingenDTO;
-import com.summerschool.afval_alert.model.dto.ShowMeldingDTO;
 import com.summerschool.afval_alert.model.entity.Image;
 import com.summerschool.afval_alert.model.entity.Melding;
 import com.summerschool.afval_alert.model.entity.Notitie;
@@ -13,7 +12,6 @@ import com.summerschool.afval_alert.repository.MeldingRepository;
 import com.summerschool.afval_alert.repository.NotitieRepository;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 

@@ -1,7 +1,6 @@
 package com.summerschool.afval_alert.model.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 public class Image {
