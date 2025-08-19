@@ -1,131 +1,20 @@
-<div class="max-w-2xl mx-auto p-4 space-y-6 motion-preset-fade-in">
-  <!-- Terug knop -->
-  <p-button 
-    icon="pi pi-arrow-left" 
-    label="Terug" 
-    variant="text" 
-    size="small"
-    (onClick)="terug()"
-    class="!p-0"
-  />
-  
-  <!-- Header -->
-  <div class="text-center space-y-4">
-    <h1 class="text-2xl lg:text-3xl font-bold text-surface-900 dark:text-surface-0">
-      Contactgegevens (optioneel)
-    </h1>
-    <p-card class="bg-surface-50 dark:bg-surface-800">
-      <p class="text-sm text-surface-600 dark:text-surface-300 m-0">
-        Laat je contactgegevens achter als je op de hoogte wilt blijven van de afhandeling.
-      </p>
-    </p-card>
-  </div>
-
-  <!-- Error message -->
-  @if (state.emailError()) {
-    <p-message 
-      severity="error" 
-      [text]="state.emailError()"
-      class="motion-preset-shake"
-    />
-  }
-  
-  <!-- Contact formulier -->
-  <div class="space-y-4">
-    <p-card>
-      <div class="space-y-4">
-        <!-- Contact keuze opties -->
-        <div class="space-y-3">
-          <div class="flex items-center gap-3 p-3 bg-surface-100 dark:bg-surface-800 rounded-lg">
-            <p-radioButton 
-              [ngModel]="anoniem()" 
-              [value]="true"
-              inputId="anoniem"
-              (onChange)="updateAnoniem(true)"
-            />
-            <label for="anoniem" class="text-sm font-medium text-surface-700 dark:text-surface-200 cursor-pointer">
-              Meld zonder contactgegevens (blijf anoniem)
-            </label>
-          </div>
-          
-          <div class="flex items-center gap-3 p-3 bg-surface-100 dark:bg-surface-800 rounded-lg">
-            <p-radioButton 
-              [ngModel]="anoniem()" 
-              [value]="false"
-              inputId="contact"
-              (onChange)="updateAnoniem(false)"
-            />
-            <label for="contact" class="text-sm font-medium text-surface-700 dark:text-surface-200 cursor-pointer">
-              Deel contactgegevens voor updates
-            </label>
-          </div>
-        </div>
-        
-        <!-- Contact velden -->
-        @if (!anoniem()) {
-          <div class="space-y-4 motion-preset-fade-in">
-            <div>
-              <label for="email" class="block text-sm font-medium text-surface-700 dark:text-surface-200 mb-2">
-                E-mailadres *
-              </label>
-              <input 
-                type="email" 
-                pInputText 
-                id="email"
-                [ngModel]="email()"
-                (ngModelChange)="updateEmail($event)"
-                placeholder="je@email.com"
-                class="w-full"
-                [class.ng-invalid]="email() && !isEmailGeldig()"
-              />
-              @if (email() && !isEmailGeldig()) {
-                <small class="text-red-500 mt-1 block">Voer een geldig e-mailadres in</small>
-              }
-            </div>
-            
-            <div>
-              <label for="naam" class="block text-sm font-medium text-surface-700 dark:text-surface-200 mb-2">
-                Naam (optioneel)
-              </label>
-              <input 
-                type="text" 
-                pInputText 
-                id="naam"
-                [ngModel]="naam()"
-                (ngModelChange)="updateNaam($event)"
-                placeholder="Je naam"
-                class="w-full"
-              />
-            </div>
-            
-          </div>
-        }
-      </div>
-    </p-card>
+<p-card>
+  <div class="flex flex-column gap-3">
+    <h3 class="m-0">Contactgegevens (optioneel)</h3>
     
-    <!-- Privacy info -->
-    <p-card class="bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
-      <div class="flex items-start gap-3">
-        <i class="pi pi-info-circle text-blue-600 dark:text-blue-400 text-lg mt-0.5"></i>
-        <div class="text-sm text-blue-800 dark:text-blue-200">
-          <p class="font-medium mb-1">Privacy</p>
-          <p class="m-0">
-            Je contactgegevens worden alleen gebruikt voor communicatie over deze melding 
-            en worden niet gedeeld met derden.
-          </p>
-        </div>
-      </div>
-    </p-card>
+    <p-checkbox [ngModel]="anoniem()" (ngModelChange)="setAnoniem($event)" label="Anonieme melding" binary="true" />
+    
+    @if (!anoniem()) {
+      <input pInputText [ngModel]="naam()" (ngModelChange)="setNaam($event)" placeholder="Naam" class="w-full" />
+      <input pInputText [ngModel]="email()" (ngModelChange)="setEmail($event)" placeholder="E-mail" type="email" class="w-full" />
+      @if (!isEmailValid() && email()) {
+        <small class="text-red-500">Ongeldig e-mailadres</small>
+      }
+    }
+    
+    <div class="flex gap-2">
+      <p-button label="Vorige" icon="pi pi-arrow-left" (click)="prev()" severity="secondary" />
+      <p-button label="Volgende" icon="pi pi-arrow-right" (click)="next()" [disabled]="!isFormValid()" class="flex-1" />
+    </div>
   </div>
-  
-  <!-- Volgende knop -->
-  <p-button 
-    label="Volgende" 
-    icon="pi pi-arrow-right" 
-    iconPos="right"
-    size="large"
-    (onClick)="volgende()"
-    [disabled]="!isFormulierGeldig() || disabled()"
-    class="w-full"
-  />
-</div>
+</p-card>

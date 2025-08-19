@@ -11,23 +11,18 @@ public class PutMeldingDTO {
     public double getLat() {
         return lat;
     }
-
     public double getLon() {
         return lon;
     }
-
     public String getEmail() {
         return email;
     }
-
     public String getNaam() {
         return naam;
     }
-
     public String getComment() {
         return comment;
     }
-
     public Long getImageId() {
         return imageId;
     }

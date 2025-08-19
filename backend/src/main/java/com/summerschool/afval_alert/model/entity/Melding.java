@@ -23,7 +23,9 @@ public class Melding {
 
     private String name;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
     @JoinColumn(name = "image_id")
     private Image image;
 
@@ -38,7 +40,9 @@ public class Melding {
     @Enumerated(EnumType.STRING)
     private TrashType trashType;
 
-    @OneToMany(mappedBy = "melding", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "melding",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
     private List<Notitie> notities = new ArrayList<Notitie>();
 
     @PrePersist
@@ -49,90 +53,81 @@ public class Melding {
     public void setId(long id) {
         this.id = id;
     }
-
     public void setLat(double lat) {
         this.lat = lat;
     }
-
     public void setLon(double lon) {
         this.lon = lon;
     }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
     public void setComment(String comment) {
         this.comment = comment;
     }
-
-    public Image getImage() {
-        return image;
+    public void setEmail(String email) {
+        this.email = email;
     }
-
+    public void setName(String name) {
+        this.name = name;
+    }
     public void setImage(Image image) {
         this.image = image;
     }
-
-    public long getId() {
-        return id;
-    }
-
-    public Boolean getFinalized() {
-        return isFinalized;
-    }
-
     public void setFinalized(Boolean finalized) {
         isFinalized = finalized;
     }
-
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
-
-    public double getLat() {
-        return lat;
-    }
-
-    public double getLon() {
-        return lon;
-    }
-
-    public LocalDateTime getCreatedAt() { return createdAt; }
-
-    public Status getStatus() {
-        return status;
-    }
-
     public void setStatus(Status status) {
         this.status = status;
     }
-
-    public TrashType getTrashType() {
-        return trashType;
-    }
-
     public void setTrashType(TrashType trashType) {
         this.trashType = trashType;
-    }
-
-    public List<Notitie> getNotities() {
-        return notities;
     }
 
     public void setNotities(List<Notitie> notities) {
         this.notities = notities;
     }
-
     public void addNotitie(Notitie notitie) {
         this.notities.add(notitie);
     }
+
+
+    public long getId() {
+        return id;
+    }
+    public double getLat() {
+        return lat;
+    }
+    public double getLon() {
+        return lon;
+    }
+    public String getComment() {
+        return comment;
+    }
+    public String getEmail() {
+        return email;
+    }
+    public String getName() {
+        return name;
+    }
+    public Image getImage() {
+        return image;
+    }
+    public Boolean getFinalized() {
+        return isFinalized;
+    }
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+    public Status getStatus() {
+        return status;
+    }
+    public TrashType getTrashType() {
+        return trashType;
+    }
+    public List<Notitie> getNotities() {
+        return notities;
+    }
+
+
 }

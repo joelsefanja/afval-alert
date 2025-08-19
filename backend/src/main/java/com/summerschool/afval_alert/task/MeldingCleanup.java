@@ -11,7 +11,9 @@ import java.time.LocalDateTime;
 public class MeldingCleanup {
     private final MeldingService meldingService;
 
-    public MeldingCleanup(MeldingService meldingService) { this.meldingService = meldingService; }
+    public MeldingCleanup(MeldingService meldingService) {
+        this.meldingService = meldingService;
+    }
 
     @Scheduled(fixedRate = 10 * 60 * 1000) // Elke 10 minuten
     @Transactional

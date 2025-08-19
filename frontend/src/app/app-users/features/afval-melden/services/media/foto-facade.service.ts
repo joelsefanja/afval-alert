@@ -1,7 +1,7 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { FotoService } from './foto.service';
 import { CameraService } from './camera.service';
-import { MeldingsProcedureStatus } from '../melding/melding-state.service';
+import { MeldingsProcedureStatus } from '../melding';
 
 export interface FotoState {
   readonly cameraActive: boolean;
@@ -21,6 +21,7 @@ export class FotoFacadeService {
 
   private readonly _cameraActive = signal(false);
   private readonly _isLoading = signal(false);
+  private currentStream: MediaStream | null = null;
 
   readonly fotoState = computed<FotoState>(() => ({
     cameraActive: this._cameraActive(),
@@ -35,7 +36,8 @@ export class FotoFacadeService {
     this._isLoading.set(true);
     
     try {
-      const stream = await this.cameraService.requestUserMedia();
+      const stream = await this.cameraService.getUserMedia();
+      this.currentStream = stream;
       this._cameraActive.set(true);
       return stream;
     } catch (error) {
@@ -48,15 +50,18 @@ export class FotoFacadeService {
 
   stopCamera(): void {
     this._cameraActive.set(false);
-    this.cameraService.stopCurrentStream();
+    if (this.currentStream) {
+      this.cameraService.stopTracks(this.currentStream);
+      this.currentStream = null;
+    }
   }
 
   async capturePhoto(video: HTMLVideoElement): Promise<string> {
     this.validateVideoElement(video);
     this.clearError();
-    
+
     try {
-      const dataUrl = this.cameraService.capturePhotoFromVideo(video);
+      const dataUrl = this.cameraService.captureFrame(video);
       this.savePhoto(dataUrl);
       this.stopCamera();
       return dataUrl;

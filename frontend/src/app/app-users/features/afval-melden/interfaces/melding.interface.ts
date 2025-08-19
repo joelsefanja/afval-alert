@@ -31,3 +31,14 @@ export interface IMeldingService {
    */
   verwijderMeldingConcept(meldingId: string): Observable<boolean>;
 }
+
+export interface Contact {
+  email?: string;
+  anoniem?: boolean;
+}
+
+export interface MeldingData {
+  foto?: any; // TODO: Replace 'any' with the actual type of the photo
+  locatie?: any; // TODO: Replace 'any' with the actual type of the location
+  contact?: Contact;
+}

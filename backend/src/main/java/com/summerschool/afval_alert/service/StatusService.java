@@ -10,10 +10,8 @@ import java.util.stream.Collectors;
 @Service
 public class StatusService {
     public List<String> getStatusen() {
-        List<String> statusen = Arrays.stream(Status.values())
+        return Arrays.stream(Status.values())
                 .map(Enum::name)
                 .collect(Collectors.toList());
-
-        return statusen;
     }
 }

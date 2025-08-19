@@ -14,7 +14,7 @@
     "importHelpers": true,
     "target": "ES2022",
     "module": "ES2022",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "esModuleInterop": true
   },
   "angularCompilerOptions": {
@@ -30,7 +30,7 @@
       "path": "./tsconfig.app.json"
     },
     {
-      "path": "./tsconfig.spec.json"
+      "path": "./tests/config/tsconfig.spec.json"
     }
   ]
 }

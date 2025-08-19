@@ -1,132 +1,61 @@
-<!-- Locatie stap content -->
-<div class="h-full flex flex-col bg-green-50 rounded-2xl shadow-lg overflow-hidden motion-preset-fade-in">
-  
-  <!-- Header met terug knop -->
-  <div class="px-4 pt-4 pb-2">
-    <button 
-      (click)="terug()"
-      class="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors duration-200 group">
-      <div class="w-8 h-0.5 bg-gray-400 group-hover:bg-gray-600 transition-colors duration-200"></div>
-      <i class="pi pi-arrow-left text-lg"></i>
-      <span class="font-medium">Terug</span>
-    </button>
-  </div>
-
-  <!-- Main content area -->
-  <div class="flex-1 px-4 overflow-y-auto">
+<p-card>
+  <div class="p-3">
+    <h2 class="text-xl font-semibold mb-4">Waar is het afval?</h2>
     
-    <!-- Header section -->
-    <div class="text-center mb-4 motion-preset-slide-up">
-      <h1 class="text-xl font-bold text-gray-900 mb-2">
-        Waar ligt het afval?
-      </h1>
-      <p class="text-sm text-gray-600">
-        Geef de locatie aan waar je het afval hebt gezien.
-      </p>
-    </div>
-
-    <!-- Error message -->
-    @if (state.locatieError()) {
-      <div class="bg-red-50 border-l-4 border-red-400 p-3 rounded-r-xl mb-4 motion-preset-shake">
-        <div class="flex items-center gap-2">
-          <i class="pi pi-exclamation-triangle text-red-400"></i>
-          <span class="text-red-700 text-sm font-medium">{{ state.locatieError() }}</span>
-        </div>
-      </div>
+    @if (error()) {
+      <p-message severity="error" [text]="error()!" class="w-full mb-3"></p-message>
     }
-
-    <!-- Map section compact -->
-    <div class="bg-white bg-opacity-80 backdrop-blur-sm rounded-xl p-4 border border-gray-200 shadow-lg mb-4 motion-preset-slide-up motion-delay-200">
-      <h3 class="text-base font-semibold mb-3 text-gray-900 flex items-center gap-2">
-        <i class="pi pi-map-marker text-green-600"></i>
-        Selecteer op de kaart
-      </h3>
-      
-      <div class="border border-gray-200 rounded-lg overflow-hidden shadow-inner bg-gray-50">
-        <div style="height: 180px; position: relative;">
-          <app-locatie-picker
-            (locatieGeselecteerd)="onKaartLocatieGeselecteerd($any($event))"
-            (locationSelected)="onLocationSelected($any($event))"
-            class="h-full w-full">
-          </app-locatie-picker>
-        </div>
-      </div>
-    </div>
-
-    <!-- Selected location info -->
-    @if (locatieState().selectedAddress) {
-      <div class="bg-green-100 border border-green-200 rounded-xl p-4 mb-4 motion-preset-scale-in">
-        <div class="flex items-start gap-3">
-          <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-            <i class="pi pi-check text-white text-sm"></i>
-          </div>
-          <div class="flex-1">
-            <h3 class="font-semibold text-green-800 mb-1 text-sm">
-              Locatie geselecteerd
-            </h3>
-            <p class="text-green-700 text-sm">
-              {{ state.locatieAdres() }}
-            </p>
-          </div>
-        </div>
-      </div>
-    }
-  </div>
-
-  <!-- Bottom action area -->
-  <div class="px-4 pb-4 space-y-3 motion-preset-slide-up motion-delay-500">
     
-    <!-- GPS Button -->
-    <button 
-      (click)="getCurrentLocation()"
-      [disabled]="locatieState().isLoading || disabled()"
-      class="w-full bg-green-500 hover:bg-green-600 disabled:bg-gray-300 text-white font-semibold py-3 px-4 rounded-xl shadow-lg transform transition-all duration-300 ease-out hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-green-300">
-      
-      <div class="flex items-center justify-center gap-2">
-        @if (locatieState().isLoading) {
-          <i class="pi pi-spin pi-spinner"></i>
-          <span>Locatie ophalen...</span>
-        } @else {
-          <i class="pi pi-map-marker"></i>
-          <span>Haal mijn locatie op</span>
-        }
+    @if (huidigeLocatie()) {
+      <div class="mb-4 p-3 border-round bg-green-50">
+        <p class="m-0 text-green-800">
+          <i class="pi pi-map-marker mr-2"></i>
+          {{ huidigeLocatie()!.address }}
+        </p>
       </div>
-    </button>
-
-    <!-- Address search compact -->
-    <div class="flex gap-2">
-      <input 
-        type="text"
-        [(ngModel)]="zoekQuery"
-        placeholder="Zoek adres..."
-        [disabled]="disabled() || locatieState().isLoading"
-        (keyup.enter)="onAddressSearch()"
-        class="flex-1 px-3 py-2 rounded-lg border-2 border-gray-200 focus:border-green-500 focus:outline-none transition-colors duration-200 placeholder-gray-400" />
-      
-      <button 
-        (click)="onAddressSearch()"
-        [disabled]="!zoekQuery.value?.trim() || locatieState().isLoading || disabled()"
-        class="px-4 py-2 bg-gray-100 hover:bg-gray-200 disabled:bg-gray-50 text-gray-600 rounded-lg border-2 border-gray-200 transition-all duration-200">
-        
-        @if (locatieState().isLoading) {
-          <i class="pi pi-spin pi-spinner"></i>
-        } @else {
-          <i class="pi pi-search"></i>
-        }
-      </button>
-    </div>
-
-    <!-- Next button -->
-    @if (locatieState().selectedAddress) {
-      <button 
-        (click)="volgende()"
-        class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-4 rounded-xl shadow-lg transform transition-all duration-300 ease-out hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-green-300">
-        
-        <div class="flex items-center justify-center gap-2">
-          <span>Volgende stap</span>
-          <i class="pi pi-arrow-right transition-transform group-hover:translate-x-1"></i>
-        </div>
-      </button>
+    } @else {
+      <div class="mb-4">
+        <p class="text-600 mb-3">Zoek een adres of gebruik je huidige locatie</p>
+        <app-locatie-picker (locationSelected)="onLocationSelected($event)"></app-locatie-picker>
+      </div>
     }
+    
+    <div class="flex gap-2 mb-4">
+      <p-button 
+        label="Open kaart" 
+        icon="pi pi-map"
+        (onClick)="onKaartOpenen()"
+        severity="secondary"
+        outlined
+        class="flex-1">
+      </p-button>
+    </div>
+    
+    @if (showMap()) {
+      <div class="mb-4">
+        <app-kaart 
+          [selectedLocation]="getSelectedLocationForMap()"
+          (locationSelected)="onLocationSelected($event)"
+          (mapClosed)="onKaartSluiten()">
+        </app-kaart>
+      </div>
+    }
+    
+    <div class="flex justify-content-between">
+      <p-button 
+        label="Vorige" 
+        icon="pi pi-chevron-left" 
+        (onClick)="onVorige()"
+        severity="secondary">
+      </p-button>
+      
+      <p-button 
+        label="Volgende" 
+        icon="pi pi-chevron-right" 
+        iconPos="right"
+        (onClick)="onVolgende()"
+        [disabled]="!huidigeLocatie()">
+      </p-button>
+    </div>
   </div>
-</div>
+</p-card>

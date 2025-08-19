@@ -1,0 +1,153 @@
+.afval-melden-container {
+  height: 100vh;
+  background-color: #f0fdf4; // bg-green-50 equivalent
+  display: flex;
+  flex-direction: column;
+}
+
+.step-header {
+  background-color: white;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); // shadow-sm equivalent
+  border-bottom: 1px solid #e5e7eb; // border-surface-200 equivalent
+  padding: 1rem; // px-4 py-4 equivalent
+  
+  .step-header-content {
+    max-width: 64rem; // max-w-4xl equivalent
+    margin: 0 auto; // mx-auto equivalent
+  }
+}
+
+.step-progress {
+  margin-bottom: 1rem; // mb-4 equivalent
+  
+  .step-header-labels {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem; // mb-2 equivalent
+  }
+  
+  .step-title {
+    font-size: 1.25rem; // text-xl equivalent
+    font-weight: bold; // font-bold equivalent
+    color: #374151; // text-surface-900 equivalent
+  }
+  
+  .step-count {
+    font-size: 0.875rem; // text-sm equivalent
+    font-weight: 500; // font-medium equivalent
+    color: #6366f1; // text-primary-600 equivalent
+    background-color: #edf2ff; // bg-primary-50 equivalent
+    padding: 0.25rem 0.75rem; // px-3 py-1 equivalent
+    border-radius: 1.5rem; // rounded-full equivalent
+  }
+}
+
+.progress-container {
+  position: relative;
+  padding-top: 0.25rem; // pt-1 equivalent
+  
+  .progress-bar-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.25rem; // mb-1 equivalent
+  }
+  
+  .progress-bar {
+    width: 100%;
+    background-color: #e5e7eb; // bg-surface-200 equivalent
+    border-radius: 9999px; // rounded-full equivalent
+    height: 0.625rem; // h-2.5 equivalent
+    
+    .progress-bar {
+      background-image: linear-gradient(to right, #6366f1, #16a34a); // bg-gradient-to-r from-primary-500 to-green-500 equivalent
+      height: 0.625rem; // h-2.5 equivalent
+      border-radius: 9999px; // rounded-full equivalent
+    }
+  }
+}
+
+.step-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.75rem; // mt-3 equivalent
+  position: relative;
+  
+  .step-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+  
+  .step-circle {
+    width: 2rem; // w-8 equivalent
+    height: 2rem; // h-8 equivalent
+    border-radius: 50%; // rounded-full equivalent
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem; // text-xs equivalent
+    font-weight: bold; // font-bold equivalent
+    transition: all 0.3s; // transition-all duration-300 equivalent
+    
+    &.completed {
+      background-color: #16a34a; // bg-green-500 equivalent
+      border: 2px solid #16a34a; // border-green-500 equivalent
+      box-shadow: 0 0 0.5rem rgba(22, 163, 74, 0.3); // shadow-lg shadow-green-500/30 equivalent
+    }
+    
+    &.active {
+      background-color: #6366f1; // bg-primary-500 equivalent
+      border: 2px solid #6366f1; // border-primary-500 equivalent
+      box-shadow: 0 0 0.5rem rgba(99, 102, 241, 0.3); // shadow-lg shadow-primary-500/30 equivalent
+    }
+    
+    &:not(.completed):not(.active) {
+      background-color: white;
+      border: 2px solid #d1d5db; // border-surface-300 equivalent
+    }
+    
+    .step-id {
+      color: #6b7280; // text-surface-400 equivalent
+    }
+  }
+  
+  .step-label {
+    font-size: 0.75rem; // text-xs equivalent
+    margin-top: 0.25rem; // mt-1 equivalent
+    font-weight: 500; // font-medium equivalent
+    transition: color 0.3s; // transition-colors duration-300 equivalent
+    
+    &.completed {
+      color: #166534; // text-green-600 equivalent
+    }
+    
+    &.active {
+      color: #3730a3; // text-primary-600 equivalent
+      font-weight: 600; // font-semibold equivalent
+    }
+    
+    &:not(.completed):not(.active) {
+      color: #4b5563; // text-surface-500 equivalent
+    }
+  }
+}
+
+.connection-lines {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  padding-left: 1rem; // px-4 equivalent
+  padding-right: 1rem; // px-4 equivalent
+  margin-top: -0.25rem; // -mt-1 equivalent
+  margin-bottom: 0.5rem; // mb-2 equivalent
+  
+  .connection-line {
+    position: absolute;
+    top: 1rem; // top-4 equivalent
+    height: 0.125rem; // h-0.5 equivalent
+    transform: translateY(-50%); // -translate-y-1/2 equivalent
+  }
+}
