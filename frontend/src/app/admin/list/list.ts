@@ -1,4 +1,4 @@
-import { Component, computed, output, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, computed, output, ViewChild, AfterViewInit, OnInit, inject } from '@angular/core';
 import { ListNotification } from '../interfaces/listnotification.interface';
 import { TableModule, Table } from 'primeng/table';
 import { InputTextModule } from 'primeng/inputtext';
@@ -8,9 +8,10 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { FormsModule } from '@angular/forms';
 import { IDService } from '../services/id/id';
 import { SliderModule } from 'primeng/slider';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
+import { DashboardService } from '../services/dashboard/dashboard.service';
 
-const Test_Notification_Data: ListNotification[] = [
+/*const Test_Notification_Data: ListNotification[] = [
   { id: 1, location: 1, type: 'Grofvuil', status: 'Opgehaald', date: new Date(2025, 6, 3) },  // 03/07/2025
   { id: 2, location: 2, type: 'Aluminium', status: 'Gepland', date: new Date(2025, 6, 6) },  // 06/07/2025
   { id: 3, location: 3, type: 'Hout', status: 'In Behandeling', date: new Date(2025, 6, 20) }, // 20/07/2025
@@ -20,7 +21,7 @@ const Test_Notification_Data: ListNotification[] = [
   { id: 7, location: 7, type: 'Grofvuil', status: 'Opgehaald', date: new Date(2025, 6, 9) },  // 09/07/2025
   { id: 8, location: 8, type: 'Aluminium', status: 'Gepland', date: new Date(2025, 6, 8) },  // 08/07/2025
   { id: 9, location: 9, type: 'Hout', status: 'In Behandeling', date: new Date(2025, 6, 18) }, // 18/07/2025
-];
+];*/
 
 @Component({
   selector: 'app-list',
@@ -38,14 +39,19 @@ const Test_Notification_Data: ListNotification[] = [
   templateUrl: './list.html',
   styleUrl: './list.scss'
 })
-export class ListComponent implements AfterViewInit {
-  notifications = Test_Notification_Data;
+export class ListComponent implements AfterViewInit, OnInit {
   clicked = output<number>();
   @ViewChild('dt') dt!: Table;
+  dashboardService = inject(DashboardService);
+  notifications = this.dashboardService.notifications;
+
   selectedNotification = computed(() => {
-    const id = this.selection.selectedId();
-    return id !== null ? this.notifications.find(n => n.id === id) || null : null;
-  });
+  const id = this.selection.selectedId();
+  const list = this.notifications(); // <-- call the signal
+  if (id == null) return null;
+  return list.find(n => n.id === id) ?? null;
+});
+  
   // Options for p-multiSelect
   typeOptions = [
     { label: 'Grofvuil', value: 'Grofvuil' },
@@ -62,7 +68,14 @@ export class ListComponent implements AfterViewInit {
   ];
   stateTypes: string[] = [];
 
-  constructor(private selection: IDService) {}
+  constructor(
+    private selection: IDService,
+  ) {}
+
+
+  ngOnInit() {
+    this.dashboardService.fetchNotifications();
+  }
 
   ngAfterViewInit() {
     this.dt.stateKey = 'notificationTable';

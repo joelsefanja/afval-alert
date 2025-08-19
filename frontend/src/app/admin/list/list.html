@@ -1,7 +1,7 @@
 <div style="display: flex; flex-direction: column; min-height: 100%;">
   <p-table
     #dt
-    [value]="notifications"
+    [value]="notifications()"
     [selection]="selectedNotification()"
     [dataKey]="'id'"
     selectionMode="single"

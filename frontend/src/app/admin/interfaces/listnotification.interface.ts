@@ -1,6 +1,6 @@
 export interface ListNotification {
   id: number;
-  location: number;
+  location: string;
   type: string;
   status: string;
   date: Date;

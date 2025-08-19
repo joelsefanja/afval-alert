@@ -8,7 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { State } from '../interfaces/state.interface';
 import { ButtonModule } from 'primeng/button';
 import { KaartService } from '../../app-users/features/afval-melden/services/kaart';
-import { Kaart } from '../../app-users/features/afval-melden/components/kaart';
+import { Kaart } from '../../app-users/features/afval-melden/components/locatie-stap/kaart';
 
 import { ImageModule } from 'primeng/image';
   
