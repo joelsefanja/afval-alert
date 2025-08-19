@@ -263,17 +263,11 @@ Het ophalen van alle notities van een melding
 
 ---
 
-### `GET /api/image`
+### `GET /api/image/{id}`
 
 **Content-Type** `application/json`
 
 Het ophalen van de afbeelding van een melding.
-
-```json
-{
-  "meldingId": "Long"
-}
-```
 
 ---
 
