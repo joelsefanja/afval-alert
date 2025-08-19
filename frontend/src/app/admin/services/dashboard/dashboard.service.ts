@@ -12,7 +12,7 @@ export class DashboardService {
   constructor(private http: HttpClient) {}
 
   fetchNotifications() {
-    this.http.get<any[]>('/api/meldingen') 
+    this.http.get<any[]>('http://localhost:8080/api/meldingen') 
       .pipe(
         map(meldingen =>
           meldingen.map(m => ({

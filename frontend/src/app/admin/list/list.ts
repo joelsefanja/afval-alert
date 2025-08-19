@@ -54,19 +54,22 @@ export class ListComponent implements AfterViewInit, OnInit {
   
   // Options for p-multiSelect
   typeOptions = [
-    { label: 'Grofvuil', value: 'Grofvuil' },
-    { label: 'Hout', value: 'Hout' },
-    { label: 'Aluminium', value: 'Aluminium' },
-  ];
+  { label: 'Grofvuil', value: 'GROFVUIL' },
+  { label: 'Kleinvuil', value: 'KLEINVUIL' },
+  { label: 'Glas', value: 'GLAS' },
+  { label: 'Overig', value: 'OVERIG' },
+  { label: 'Hout', value: 'HOUT' },        
+  { label: 'Aluminium', value: 'ALUMINIUM' }, 
+];
   selectedTypes: string[] = [];
 
   stateOptions = [
-    { label: 'Nieuw', value: 'Nieuw' },
-    { label: 'In Behandeling', value: 'In Behandeling' },
-    { label: 'Gepland', value: 'Gepland' },
-    { label: 'Opgehaald', value: 'Opgehaald' },
-  ];
-  stateTypes: string[] = [];
+  { label: 'Nieuw', value: 'NIEUW' },
+  { label: 'Melding Verwerkt', value: 'MELDINGVERWERKT' },
+  { label: 'Opgehaald', value: 'OPGEHAALD' },
+  { label: 'Wordt Opgehaald', value: 'WORDTOPGEHAALD' },
+];
+  selectedStates: string[] = [];
 
   constructor(
     private selection: IDService,
@@ -95,10 +98,18 @@ export class ListComponent implements AfterViewInit, OnInit {
   }
 
   onTypeFilterChange() {
-    if (this.selectedTypes.length === 0) {
-      this.dt.filter(null, 'type', 'in');
-    } else {
-      this.dt.filter(this.selectedTypes, 'type', 'in');
-    }
-  }
+  // Apply type filter
+  this.dt.filter(
+    this.selectedTypes && this.selectedTypes.length ? this.selectedTypes : null,
+    'type',
+    'in'
+  );
+
+  // Apply status filter
+  this.dt.filter(
+    this.selectedStates && this.selectedStates.length ? this.selectedStates : null,
+    'status',
+    'in'
+  );
+}
 }
