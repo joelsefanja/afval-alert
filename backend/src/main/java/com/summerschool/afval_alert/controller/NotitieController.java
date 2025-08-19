@@ -1,5 +1,6 @@
 package com.summerschool.afval_alert.controller;
 
+import com.summerschool.afval_alert.model.dto.NotitieDTO;
 import com.summerschool.afval_alert.model.dto.PostNotitieDTO;
 import com.summerschool.afval_alert.model.entity.Melding;
 import com.summerschool.afval_alert.model.entity.Notitie;
@@ -38,10 +39,10 @@ public class NotitieController {
     }
 
     @GetMapping("/notities/{id}")
-    public ResponseEntity<List<Notitie>> getNotities(
+    public ResponseEntity<List<NotitieDTO>> getNotities(
             @PathVariable Long id
     ) {
-        List<Notitie> notities = meldingService.getNotities(id);
+        List<NotitieDTO> notities = notitieService.getNotities(id);
 
         return ResponseEntity.ok().body(notities);
     }
