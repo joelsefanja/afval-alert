@@ -1,4 +1,6 @@
 package com.summerschool.afval_alert.model.entity;
+import com.summerschool.afval_alert.model.enums.Status;
+import com.summerschool.afval_alert.model.enums.TrashType;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -11,8 +13,8 @@ public class Melding {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private double latitude;
-    private double longitude;
+    private double lat;
+    private double lon;
 
     @Column(length = 500)
     private String comment;
@@ -30,38 +32,30 @@ public class Melding {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
+    @Enumerated(EnumType.STRING)
+    private TrashType trashType;
+
+    @OneToMany(mappedBy = "melding", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Notitie> notities = new ArrayList<Notitie>();
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
     }
 
-    private String trashType;
-
-    @OneToMany(mappedBy = "melding", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<StatusUpdate> statusUpdate = new ArrayList<StatusUpdate>();
-
-    public void setMelding(Float latitude,
-                           Float longitude,
-                           String trashType) {
-
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.trashType = trashType;
+    public void setId(long id) {
+        this.id = id;
     }
 
-    public void addStatusUpdate(StatusUpdate statusUpdate) {
-        statusUpdate.setMelding(this);
-        this.statusUpdate.add(statusUpdate);
+    public void setLat(double lat) {
+        this.lat = lat;
     }
 
-    public void setId(long id) { this.id = id; }
-
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
+    public void setLon(double lon) {
+        this.lon = lon;
     }
 
     public void setEmail(String email) {
@@ -102,5 +96,43 @@ public class Melding {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public double getLat() {
+        return lat;
+    }
+
+    public double getLon() {
+        return lon;
+    }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public TrashType getTrashType() {
+        return trashType;
+    }
+
+    public void setTrashType(TrashType trashType) {
+        this.trashType = trashType;
+    }
+
+    public List<Notitie> getNotities() {
+        return notities;
+    }
+
+    public void setNotities(List<Notitie> notities) {
+        this.notities = notities;
+    }
+
+    public void addNotitie(Notitie notitie) {
+        this.notities.add(notitie);
     }
 }
