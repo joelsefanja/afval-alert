@@ -77,13 +77,4 @@ public class MeldingService {
 
         meldingRepository.save(melding);
     }
-
-    public List<Notitie> getNotities(long meldingId) {
-        Melding melding = meldingRepository.findById(meldingId)
-                .orElseThrow(() -> new RuntimeException("Melding not found with ID: " + meldingId));
-
-        List<Notitie> notities = notitieRepository.findByMeldingId(meldingId);
-
-        return notities;
-    }
 }

@@ -194,7 +194,7 @@ Het uploaden van een foto. Hiermee wordt ook een lege, bijbehorende melding aang
 
 ---
 
-### `PUT /api/melding`
+### `PUT /api/melding{id}`
 
 **Content-Type** `application/json`
 
@@ -211,7 +211,7 @@ Het afmaken van een eerder aangemaakte melding.
 
 ---
 
-### `PUT /api/melding/status`
+### `PUT /api/melding/status/{id}`
 
 **Content-Type** `application/json`
 
@@ -219,14 +219,13 @@ Het updaten van de status van een melding.
 
 ```json
 {
-  "meldingId": "Long",
   "status": "String"
 }
 ```
 
 ---
 
-### `POST /api/notitie`
+### `POST /api/notitie/{id}`
 
 **Content-Type** `application/json`
 
@@ -234,7 +233,6 @@ Het toevoegen van een notitie aan een melding.
 
 ```json
 {
-  "meldingId": "Long",
   "notitie": "String"
 }
 ```
@@ -249,45 +247,27 @@ Het ophalen van alle meldingen.
 
 ---
 
-### `GET /api/melding`
+### `GET /api/melding/{id}`
 
 **Content-Type** `application/json`
 
 Het ophalen van een specifieke melding.
 
-```json
-{
-  "meldingId": "Long"
-}
-```
-
 ---
 
-### `GET /api/notities`
+### `GET /api/notities/{id}`
 
 **Content-Type** `application/json`
 
 Het ophalen van alle notities van een melding
 
-```json
-{
-  "meldingId": "Long"
-}
-```
-
 ---
 
-### `GET /api/image`
+### `GET /api/image/{id}`
 
 **Content-Type** `application/json`
 
 Het ophalen van de afbeelding van een melding.
-
-```json
-{
-  "meldingId": "Long"
-}
-```
 
 ---
 
