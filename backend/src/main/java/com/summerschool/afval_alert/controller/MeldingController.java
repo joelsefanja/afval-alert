@@ -63,7 +63,8 @@ public class MeldingController {
     }
 
     @GetMapping("/melding/{id}")
-    public ResponseEntity<ShowMeldingDTO> getMelding(@PathVariable Long id) {
+    public ResponseEntity<ShowMeldingDTO> getMelding(
+            @PathVariable Long id) {
         Melding melding = meldingService.findMeldingById(id);
         ShowMeldingDTO dto = meldingMapper.toShowDto(melding);
         return ResponseEntity.ok(dto);
