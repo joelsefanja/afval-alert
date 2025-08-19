@@ -7,9 +7,7 @@ import com.summerschool.afval_alert.model.entity.Melding;
 import com.summerschool.afval_alert.model.entity.Notitie;
 import com.summerschool.afval_alert.model.enums.Status;
 import com.summerschool.afval_alert.model.enums.TrashType;
-import com.summerschool.afval_alert.repository.ImageRepository;
 import com.summerschool.afval_alert.repository.MeldingRepository;
-import com.summerschool.afval_alert.repository.NotitieRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,14 +16,11 @@ import java.util.List;
 @Service
 public class MeldingService {
     private final MeldingRepository meldingRepository;
-    private final ImageRepository imageRepository;
-    private final NotitieRepository notitieRepository;
     private final MeldingMapper meldingMapper;
 
-    public MeldingService(MeldingRepository meldingRepository, ImageRepository imageRepository, NotitieRepository notitieRepository, MeldingMapper meldingMapper) {
+    public MeldingService(MeldingRepository meldingRepository,
+                          MeldingMapper meldingMapper) {
         this.meldingRepository = meldingRepository;
-        this.imageRepository = imageRepository;
-        this.notitieRepository = notitieRepository;
         this.meldingMapper = meldingMapper;
     }
 

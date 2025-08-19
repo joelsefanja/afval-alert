@@ -15,12 +15,14 @@ public class NotitieService {
     private final NotitieRepository notitieRepository;
     private final NotitieMapper notitieMapper;
 
-    public NotitieService(NotitieRepository notitieRepository, NotitieMapper notitieMapper) {
+    public NotitieService(NotitieRepository notitieRepository,
+                          NotitieMapper notitieMapper) {
         this.notitieRepository = notitieRepository;
         this.notitieMapper = notitieMapper;
     }
 
-    public Notitie createNotitie(Melding melding, String note) {
+    public Notitie createNotitie(Melding melding,
+                                 String note) {
         Notitie notitie = new Notitie();
         notitie.setContent(note);
         notitie.setMelding(melding);
@@ -33,8 +35,8 @@ public class NotitieService {
     public List<NotitieDTO> getNotities(long meldingId) {
         List<Notitie> notities = notitieRepository.findByMeldingId(meldingId);
 
-        List<NotitieDTO> notitiesDTO = notities.stream().map(notitieMapper::toDto).toList();
-
-        return notitiesDTO;
+        return notities.stream()
+                .map(notitieMapper::toDto)
+                .toList();
     }
 }
