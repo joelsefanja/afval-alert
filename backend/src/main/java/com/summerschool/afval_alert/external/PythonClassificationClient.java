@@ -10,6 +10,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class PythonClassificationClient {
@@ -18,18 +19,24 @@ public class PythonClassificationClient {
 
     public PythonClassificationClient() {}
 
-    public List<ClassificationLabel> classifyImage(byte[] imageBytes) {
-        String url = "http://localhost:8000/classificatie";
+    public List<Map<String, Object>> classifyImage(byte[] imageBytes) {
+        String url = "http://localhost:8000/classificeer";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
         MultiValueMap<String, Object> requestBody = new LinkedMultiValueMap<>();
-        requestBody.add("image", new ByteArrayResource(imageBytes));
+        requestBody.add("afbeelding", new ByteArrayResource(imageBytes) {
+            // ByteArrayResource serialized zonder naam als string ipv multipart file
+            @Override
+            public String getFilename() {
+                return "afbeelding.jpg";
+            }
+        });
 
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
 
-        ResponseEntity<List<ClassificationLabel>> response =
+        ResponseEntity<List<Map<String, Object>>> response =
                 restTemplate.exchange(
                     url,
                     HttpMethod.POST,

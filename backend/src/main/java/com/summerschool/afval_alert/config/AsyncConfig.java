@@ -11,9 +11,9 @@ public class AsyncConfig {
     @Bean("classificationTaskExecutor")
     public TaskExecutor taskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(2);
-        executor.setMaxPoolSize(5);
-        executor.setQueueCapacity(10);
+        executor.setCorePoolSize(1);
+        executor.setMaxPoolSize(1);
+        executor.setQueueCapacity(1);
         executor.setThreadNamePrefix("classification-");
         executor.initialize();
         return executor;
