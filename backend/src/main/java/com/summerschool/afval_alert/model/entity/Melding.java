@@ -1,6 +1,4 @@
 package com.summerschool.afval_alert.model.entity;
-import com.summerschool.afval_alert.model.enums.Status;
-import com.summerschool.afval_alert.model.enums.TrashType;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -37,13 +35,11 @@ public class Melding {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @Enumerated(EnumType.STRING)
-    private TrashType trashType;
-
-    @OneToMany(mappedBy = "melding",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true)
+    @OneToMany(mappedBy = "melding", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Notitie> notities = new ArrayList<Notitie>();
+
+    @OneToOne
+    private Classification classification;
 
     @PrePersist
     protected void onCreate() {
@@ -122,12 +118,23 @@ public class Melding {
     public Status getStatus() {
         return status;
     }
-    public TrashType getTrashType() {
-        return trashType;
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
+
     public List<Notitie> getNotities() {
         return notities;
     }
 
+    public void addNotitie(Notitie notitie) {
+        this.notities.add(notitie);
+    }
 
+    public enum Status {
+        NIEUW,
+        MELDINGVERWERKT,
+        WORDTOPGEHAALD,
+        OPGEHAALD;
+    }
 }

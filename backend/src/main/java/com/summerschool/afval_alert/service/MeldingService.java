@@ -5,8 +5,7 @@ import com.summerschool.afval_alert.model.dto.AllMeldingenDTO;
 import com.summerschool.afval_alert.model.entity.Image;
 import com.summerschool.afval_alert.model.entity.Melding;
 import com.summerschool.afval_alert.model.entity.Notitie;
-import com.summerschool.afval_alert.model.enums.Status;
-import com.summerschool.afval_alert.model.enums.TrashType;
+import com.summerschool.afval_alert.repository.ImageRepository;
 import com.summerschool.afval_alert.repository.MeldingRepository;
 import org.springframework.stereotype.Service;
 
@@ -28,8 +27,7 @@ public class MeldingService {
         Melding melding = new Melding();
         melding.setImage(image);
 
-        melding.setTrashType(TrashType.PENDING_AI);
-        melding.setStatus(Status.NIEUW);
+        melding.setStatus(Melding.Status.NIEUW);
 
         return meldingRepository.save(melding);
     }
