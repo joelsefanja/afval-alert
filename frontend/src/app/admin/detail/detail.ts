@@ -9,7 +9,8 @@ import { State } from '../features/dashboard/interfaces/state.interface';
 import { ButtonModule } from 'primeng/button';
 import { KaartService } from '../../app-users/features/afval-melden/services/kaart';
 import { Kaart } from '../../app-users/features/afval-melden/components/locatie-stap/kaart';
-import { NotificationStore } from '../features/dashboard/stores/notificatie.store';
+import { NotificationStore as NotificatieStore }  from '../features/dashboard/stores/notificatie.store';
+import { NotificationStore as ImageStore} from '../features/dashboard/stores/image.store';
 
 import { ImageModule } from 'primeng/image';
 
@@ -38,7 +39,8 @@ export class DetailComponent {
 
   lastSelected : number | null = null;
 
-  store = inject(NotificationStore);
+  notificatieStore = inject(NotificatieStore);
+  imageStore = inject(ImageStore);
 
   ngOnInit() {
         this.states = [
@@ -49,6 +51,7 @@ export class DetailComponent {
         ];
 
         this.setNotificaties();
+        this.setImage();
     }
 
   constructor(public selection: IDService) {}
@@ -62,10 +65,17 @@ export class DetailComponent {
       this.lastSelected = this.selection.selectedId();
 
       this.setNotificaties();
+      this.setImage();
     }
   }
 
   setNotificaties() {
-    this.store.fetch(this.selection.selectedId());
+    this.notificatieStore.fetch(this.selection.selectedId());
+  }
+
+  setImage() {
+    this.imageStore.fetch(this.selection.selectedId());
+
+    console.log(this.imageStore.image);
   }
 }
