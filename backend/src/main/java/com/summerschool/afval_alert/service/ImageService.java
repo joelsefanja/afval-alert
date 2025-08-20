@@ -2,7 +2,6 @@ package com.summerschool.afval_alert.service;
 
 import com.summerschool.afval_alert.model.entity.Image;
 import com.summerschool.afval_alert.repository.ImageRepository;
-import org.apache.juli.logging.Log;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 

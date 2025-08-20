@@ -18,20 +18,23 @@ public class ImageController {
     private final ImageService imageService;
     private final MeldingService meldingService;
 
-    public ImageController(ImageService imageService, MeldingService meldingService) {
+    public ImageController(ImageService imageService,
+                           MeldingService meldingService) {
         this.imageService = imageService;
         this.meldingService = meldingService;
     }
 
     @PostMapping("/image")
-    public ResponseEntity<Long> addImage(@RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity<Long> addImage(
+            @RequestParam("file") MultipartFile file) throws IOException {
         Image savedImage = imageService.saveImage(file);
         Melding draft = meldingService.createMelding(savedImage);
         return ResponseEntity.ok(draft.getId());
     }
 
     @GetMapping("/image/{id}")
-    public ResponseEntity<byte[]> getImage(@PathVariable Long id) {
+    public ResponseEntity<byte[]> getImage(
+            @PathVariable Long id) {
         Image image = imageService.getImage(id);
         return ResponseEntity.ok()
                 .contentType(MediaType.IMAGE_PNG)

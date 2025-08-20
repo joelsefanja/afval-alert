@@ -11,11 +11,6 @@ public class AllMeldingenDTO {
     private LocalDateTime created_at;
     private Melding.Status status;
 
-    public Long getId() { return id; }
-    public double getLat() { return lat; }
-    public double getLon() { return lon; }
-    public LocalDateTime getCreated_at() { return created_at; }
-
     public void setId(Long id) { this.id = id; }
     public void setLat(double lat) { this.lat = lat; }
     public void setLon(double lon) { this.lon = lon; }
