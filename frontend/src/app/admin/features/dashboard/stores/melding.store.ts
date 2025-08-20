@@ -2,16 +2,17 @@ import { Injectable, computed, inject } from '@angular/core';
 import { DashboardService } from '../services/dashboard.service';
 import { IDService } from '../../../services/id/id';
 import { STATUS_ORDER, TYPE_ORDER, getReadableStatus, getReadableType } from '../utilities/melding-mappings';
+import { LocatieService } from '@services/locatie/locatie.service';
 
 @Injectable({ providedIn: 'root' })
 export class NotificationStore {
   private readonly dashboardService = inject(DashboardService);
+  private readonly locatieService = inject(LocatieService);
   private readonly selection = inject(IDService);
 
-  readonly visibleNotifications = computed(() =>
-    // NOTE: filter by status, not type
+  readonly visibleNotifications = computed(() => 
     this.dashboardService.notifications().filter(n => n.type !== 'PENDING_AI')
-  );
+);
 
   readonly typeOptions = computed(() => {
     const types = Array.from(new Set(this.visibleNotifications().map(n => n.type)));

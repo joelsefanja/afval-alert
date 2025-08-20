@@ -35,6 +35,8 @@ export class ListComponent implements AfterViewInit, OnInit {
   clicked = output<number>();
   @ViewChild('dt') dt!: Table;
 
+  
+
   private selection = inject(IDService);
   store = inject(NotificationStore);
 

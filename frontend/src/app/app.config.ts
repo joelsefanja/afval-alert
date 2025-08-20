@@ -8,6 +8,7 @@ import { routes } from './app.routes';
 import { AFVAL_ALERT_TOKENS } from './app-users/features/afval-melden/tokens/afval-alert.tokens';
 import { AFVAL_ALERT_TOKENS_PROVIDER, MOCK_AFVAL_CLASSIFICATIE_PROVIDER } from './app-users/features/afval-melden/tokens/providers';
 import { definePreset } from '@primeuix/themes';
+import { nl } from "primelocale/js/nl.js"
 import Aura from '@primeuix/themes/aura';
 
 // ✅ Gemeente kleuren + accessibility
@@ -174,6 +175,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideAnimations(),
     providePrimeNG({
+      translation: nl,
       theme: {
         preset: AfvalAlertPreset,
         options: {
