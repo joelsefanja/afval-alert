@@ -13,6 +13,13 @@ export interface FotoVerwerkingMetadata {
 export interface FotoVerwerkingResultaat {
   afvalTypes: AfvalType[];
   weetje: string;
+}
+
+import { AfvalTypeDetectie } from './gemini-response.interface';
+
+export interface FotoHerkenningResultaat {
+  afvalTypes: AfvalTypeDetectie[];
+  weetje: string;
   isAfval?: boolean;
   kenmerken?: string[];
   zekerheidsScores?: number[];

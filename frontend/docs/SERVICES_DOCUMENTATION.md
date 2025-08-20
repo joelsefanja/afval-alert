@@ -13,18 +13,28 @@ Deze documentatie beschrijft alle services die gebruikt worden in de Afval Melde
 ## Service Architectuur
 
 ```
-StepBuilderService (Core)
-├── FotoStapService
-├── LocatieStapService  
-├── ContactStapService
-├── ControleStapService
-└── SuccesStapService
+Step Navigation Services
+├── StepBuilderService - Main step flow management
+├── StepNavigatorService - Smart navigation logic
+└── StepFlowService - Step navigation facade
+
+Step Handler Services
+├── PhotoStepService - Camera and photo operations
+├── LocationStepService - Location selection and management
+├── ContactStepService - Contact information handling
+├── ReviewStepService - Report review and submission
+└── SuccessStepService - Completion and reset functionality
+
+Domain Services
+├── CameraService - Low-level camera API wrapper
+├── LocationService - Geolocation and geocoding API wrapper
+└── MeldingStateService - Central state management
 ```
 
-## Core Services
+## Step Navigation Services
 
 ### StepBuilderService
-**Bestand:** `services/step-builder.service.ts`
+**Bestand:** `services/step-navigation/step-builder.service.ts`
 
 **Doel:** Centraal beheer van de multi-step flow met builder pattern
 
@@ -53,12 +63,56 @@ this.stepBuilder.prev(); // Vorige stap
 this.stepBuilder.goto(2); // Spring naar stap 2
 ```
 
+### StepNavigatorService
+**Bestand:** `services/step-navigation/step-navigator.service.ts`
+
+**Doel:** Smart navigation logic with step validation
+
+**Methoden:**
+- `next()` - Ga naar volgende stap met validatie
+- `prev()` - Ga naar vorige stap
+- `goto(index)` - Spring naar specifieke stap
+- `reset()` - Reset naar eerste stap
+
+**Signals:**
+- `currentStep` - Huidige stap index
+- `isFirst` - Eerste stap indicator
+- `isLast` - Laatste stap indicator
+- `canProceedFromCurrentStep` - Validatie status
+
+**Voorbeeld:**
+```typescript
+// Smart navigation
+if (this.nav.canProceedFromCurrentStep()) {
+  this.nav.next();
+}
+```
+
+### StepFlowService
+**Bestand:** `services/step-navigation/step-flow.service.ts`
+
+**Doel:** Facade voor stap navigatie functionaliteit
+
+**Methoden:**
+- `volgende()` - Ga naar volgende stap
+- `vorige()` - Ga naar vorige stap
+- `gaNaar(index)` - Spring naar specifieke stap
+- `reset()` - Reset naar eerste stap
+- `canGoBack()` - Check of terugnavigatie mogelijk is
+
+**Voorbeeld:**
+```typescript
+// Eenvoudige navigatie
+this.proces.volgende();
+this.proces.vorige();
+```
+
 ---
 
-## Step Services
+## Step Handler Services
 
-### FotoStapService
-**Bestand:** `services/foto-stap.service.ts`
+### PhotoStepService
+**Bestand:** `services/step-handlers/photo-step.service.ts`
 
 **Doel:** Camera beheer en foto functionaliteit
 
@@ -86,8 +140,8 @@ if (this.fotoService.fotoUrl()) {
 }
 ```
 
-### LocatieStapService  
-**Bestand:** `services/locatie-stap.service.ts`
+### LocationStepService  
+**Bestand:** `services/step-handlers/location-step.service.ts`
 
 **Doel:** Locatie bepaling en adres beheer
 
@@ -95,19 +149,23 @@ if (this.fotoService.fotoUrl()) {
 - `getCurrentLocation()` - Verkrijg GPS locatie
 - `searchAddress(query)` - Zoek adressen
 - `selectLocation(location)` - Selecteer locatie
-- `next()` - Ga naar volgende stap
+- `nextStep()` - Ga naar volgende stap
 
 **Signals:**
-- `loading` - Laden status
-- `location` - Geselecteerde locatie
+- `isLoading` - Laden status
+- `currentLocatie` - Geselecteerde locatie
 - `searchResults` - Zoekresultaten
+- `errorMessage` - Foutmeldingen
 
 **Interfaces:**
 ```typescript
-interface LocatieData {
+interface LocatieResultaat {
   address: string;
   lat: number;
   lng: number;
+  wijk?: string;
+  buurt?: string;
+  gemeente?: string;
 }
 ```
 
@@ -123,8 +181,8 @@ await this.locatieService.searchAddress('Groningen');
 this.locatieService.selectLocation(searchResult);
 ```
 
-### ContactStapService
-**Bestand:** `services/contact-stap.service.ts`
+### ContactStepService
+**Bestand:** `services/step-handlers/contact-step.service.ts`
 
 **Doel:** Contactgegevens validatie en beheer
 
@@ -162,8 +220,8 @@ if (this.contactService.isFormValid()) {
 }
 ```
 
-### ControleStapService
-**Bestand:** `services/controle-stap.service.ts`
+### ReviewStepService
+**Bestand:** `services/step-handlers/review-step.service.ts`
 
 **Doel:** Melding overzicht en verzending
 
@@ -199,8 +257,8 @@ if (this.controleService.isComplete()) {
 this.controleService.editFoto(); // Ga naar foto stap
 ```
 
-### SuccesStapService
-**Bestand:** `services/succes-stap.service.ts`
+### SuccessStepService
+**Bestand:** `services/step-handlers/success-step.service.ts`
 
 **Doel:** Afronding en reset functionaliteit
 
@@ -219,10 +277,10 @@ this.succesService.closeApp();
 
 ---
 
-## Utility Services
+## Domain Services
 
 ### CameraService
-**Bestand:** `services/camera.service.ts`
+**Bestand:** `services/media-handlers/camera.service.ts`
 
 **Doel:** Low-level camera API wrapper
 
@@ -233,7 +291,7 @@ this.succesService.closeApp();
 - `selectFromDevice()` - File picker voor galerij
 
 ### LocationService  
-**Bestand:** `services/location.service.ts`
+**Bestand:** `services/locatie/orchestrator/locatie.service.ts`
 
 **Doel:** Geolocation en geocoding API wrapper
 
@@ -243,7 +301,7 @@ this.succesService.closeApp();
 - `searchAddress(query)` - Adres zoeken
 
 ### MeldingStateService
-**Bestand:** `services/melding-state.service.ts`
+**Bestand:** `services/melding/core/melding-state.service.ts`
 
 **Doel:** Centrale state management voor melding data
 

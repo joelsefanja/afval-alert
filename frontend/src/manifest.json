@@ -12,51 +12,51 @@
   "lang": "nl",
   "icons": [
     {
-      "src": "assets/icons/icon-72x72.png",
+      "src": "https://picsum.photos/72/72?random=1",
       "sizes": "72x72",
-      "type": "image/png",
+      "type": "image/jpeg",
       "purpose": "maskable any"
     },
     {
-      "src": "assets/icons/icon-96x96.png",
+      "src": "https://picsum.photos/96/96?random=1",
       "sizes": "96x96",
-      "type": "image/png",
+      "type": "image/jpeg",
       "purpose": "maskable any"
     },
     {
-      "src": "assets/icons/icon-128x128.png",
+      "src": "https://picsum.photos/128/128?random=1",
       "sizes": "128x128",
-      "type": "image/png",
+      "type": "image/jpeg",
       "purpose": "maskable any"
     },
     {
-      "src": "assets/icons/icon-144x144.png",
+      "src": "https://picsum.photos/144/144?random=1",
       "sizes": "144x144",
-      "type": "image/png",
+      "type": "image/jpeg",
       "purpose": "maskable any"
     },
     {
-      "src": "assets/icons/icon-152x152.png",
+      "src": "https://picsum.photos/152/152?random=1",
       "sizes": "152x152",
-      "type": "image/png",
+      "type": "image/jpeg",
       "purpose": "maskable any"
     },
     {
-      "src": "assets/icons/icon-192x192.png",
+      "src": "https://picsum.photos/192/192?random=1",
       "sizes": "192x192",
-      "type": "image/png",
+      "type": "image/jpeg",
       "purpose": "maskable any"
     },
     {
-      "src": "assets/icons/icon-384x384.png",
+      "src": "https://picsum.photos/384/384?random=1",
       "sizes": "384x384",
-      "type": "image/png",
+      "type": "image/jpeg",
       "purpose": "maskable any"
     },
     {
-      "src": "assets/icons/icon-512x512.png",
+      "src": "https://picsum.photos/512/512?random=1",
       "sizes": "512x512",
-      "type": "image/png",
+      "type": "image/jpeg",
       "purpose": "maskable any"
     }
   ],
@@ -68,7 +68,7 @@
       "url": "/",
       "icons": [
         {
-          "src": "assets/icons/icon-192x192.png",
+          "src": "https://picsum.photos/192/192?random=1",
           "sizes": "192x192"
         }
       ]
@@ -76,8 +76,8 @@
   ],
   "screenshots": [
     {
-      "src": "assets/screenshots/mobile-1.png",
-      "type": "image/png",
+      "src": "https://picsum.photos/540/720?random=2",
+      "type": "image/jpeg",
       "sizes": "540x720",
       "form_factor": "narrow"
     }

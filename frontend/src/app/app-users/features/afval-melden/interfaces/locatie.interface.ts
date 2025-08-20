@@ -1,31 +1,37 @@
-export interface AddressDetails {
-  road?: string;
-  house_number?: string;
-  postcode?: string;
-  city?: string;
-  town?: string;
-  village?: string;
-  municipality?: string;
-  county?: string;
-  state?: string;
-  country?: string;
-  neighbourhood?: string;
-  quarter?: string;
-  suburb?: string;
-  [key: string]: any;
-}
-
-export interface FormattedAddress {
-  straat: string;
-  huisnummer: string;
-  postcode: string;
-  plaats: string;
-  latitude?: number;
-  longitude?: number;
-  land: string;
+export interface Locatie {
+  latitude: number;
+  longitude: number;
+  address: string;
   wijk?: string;
   buurt?: string;
   gemeente?: string;
-  provincie?: string;
-  rawAddress: AddressDetails;
+}
+
+export interface FormattedAddress {
+  street: string;
+  houseNumber: string;
+  postalCode: string;
+  city: string;
+  country: string;
+  wijk?: string;
+  buurt?: string;
+  gemeente?: string;
+}
+
+export interface GeocodingResult {
+  lat: number;
+  lng: number;
+  address: string;
+  formattedAddress?: FormattedAddress;
+}
+
+export interface SearchResult {
+  address: string;
+  lat: number;
+  lng: number;
+}
+
+export interface Position {
+  lat: number;
+  lng: number;
 }

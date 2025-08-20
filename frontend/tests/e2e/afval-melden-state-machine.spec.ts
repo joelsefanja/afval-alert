@@ -103,7 +103,7 @@ test.describe('Afval Melden State Machine', () => {
     await page.reload();
     
     // Controleer of de offline notificatie zichtbaar is
-    const offlineNotificatie = page.locator('ui-offline-notificatie');
+    const offlineNotificatie = page.locator('div.bg-orange-100');
     await expect(offlineNotificatie).toBeVisible();
     
     // Zet browser weer online

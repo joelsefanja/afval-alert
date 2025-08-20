@@ -1,0 +1,58 @@
+<div class="flex flex-col h-full p-4">
+  <div class="flex-grow space-y-4">
+    <h2 class="text-xl font-semibold text-primary-800">Maak een foto</h2>
+    <p class="text-surface-600">Zorg voor goed licht en houd het object in beeld.</p>
+
+    <div class="relative aspect-[4/3] rounded-xl overflow-hidden bg-surface-200">
+      <video
+        #videoElement
+        class="w-full h-full object-cover"
+        autoplay
+        playsinline
+        muted
+        [class.hidden]="!showVideo()"
+      ></video>
+      <img
+        #photoElement
+        class="w-full h-full object-cover"
+        [src]="photoUrl()"
+        [class.hidden]="!photoUrl()"
+      />
+      <div
+        class="absolute inset-0 flex flex-col items-center justify-center text-surface-400"
+        [class.hidden]="showVideo() || photoUrl()"
+      >
+        <i class="pi pi-camera text-4xl mb-2"></i>
+        <p>Camera starten of foto kiezen</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-3">
+      <p-button
+        label="Camera openen"
+        icon="pi pi-video"
+        (click)="startCamera()"
+        [disabled]="isProcessing()"
+        styleClass="w-full h-12"
+      ></p-button>
+      <p-button
+        label="Kies uit galerij"
+        icon="pi pi-images"
+        severity="secondary"
+        (click)="selecteerVanGalerij()"
+        styleClass="w-full h-12"
+      ></p-button>
+    </div>
+  </div>
+
+  <div class="w-full max-w-sm mx-auto mt-4">
+    <p-button
+      label="Volgende"
+      icon="pi pi-arrow-right"
+      iconPos="right"
+      (click)="volgendeStap()"
+      [disabled]="!photoUrl()"
+      styleClass="w-full h-12"
+    ></p-button>
+  </div>
+</div>
