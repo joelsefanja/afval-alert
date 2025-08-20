@@ -76,9 +76,6 @@ public class Melding {
     public void setStatus(Status status) {
         this.status = status;
     }
-    public void setTrashType(TrashType trashType) {
-        this.trashType = trashType;
-    }
 
     public void setNotities(List<Notitie> notities) {
         this.notities = notities;
@@ -119,16 +116,8 @@ public class Melding {
         return status;
     }
 
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
     public List<Notitie> getNotities() {
         return notities;
-    }
-
-    public void addNotitie(Notitie notitie) {
-        this.notities.add(notitie);
     }
 
     public enum Status {

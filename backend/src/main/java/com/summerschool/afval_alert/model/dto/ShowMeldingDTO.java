@@ -32,16 +32,8 @@ public class ShowMeldingDTO {
         this.imageUrl = imageUrl;
     }
 
-    public Melding.Status getStatus() {
-        return status;
-    }
-
     public void setStatus(Melding.Status status) {
         this.status = status;
-    }
-
-    public List<NotitieDTO> getNotities() {
-        return notities;
     }
 
     public void setNotitie(List<NotitieDTO> notities) {
@@ -66,11 +58,8 @@ public class ShowMeldingDTO {
     public String getImageUrl() {
         return imageUrl;
     }
-    public Status getStatus() {
+    public Melding.Status getStatus() {
         return status;
-    }
-    public TrashType getTrashType() {
-        return trashType;
     }
     public List<NotitieDTO> getNotities() {
         return notities;
