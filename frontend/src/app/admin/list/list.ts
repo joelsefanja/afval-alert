@@ -45,39 +45,79 @@ export class ListComponent implements AfterViewInit, OnInit {
   dashboardService = inject(DashboardService);
   notifications = this.dashboardService.notifications;
 
+  public visibleNotifications = computed(() =>
+  this.notifications().filter(n => n.status !== 'PENDING_AI')
+  );
+
   selectedNotification = computed(() => {
   const id = this.selection.selectedId();
   const list = this.notifications(); // <-- call the signal
   if (id == null) return null;
   return list.find(n => n.id === id) ?? null;
-});
+  });
   
-  // Options for p-multiSelect
-  typeOptions = [
-  { label: 'Grofvuil', value: 'GROFVUIL' },
-  { label: 'Kleinvuil', value: 'KLEINVUIL' },
-  { label: 'Glas', value: 'GLAS' },
-  { label: 'Overig', value: 'OVERIG' },
-  { label: 'Hout', value: 'HOUT' },        
-  { label: 'Aluminium', value: 'ALUMINIUM' }, 
-];
+
+  //Mapping voor afvaltype
+  typeLabels: { [key: string]: string } = {
+    KLEINVUIL: 'Kleinvuil',
+    GLAS: 'Glas',
+    GROFVUIL: 'Grofvuil',
+    OVERIG: 'Overig',
+  };
+
+  //Returned leesbare labels voor afvaltype
+  getReadableType(type: string): string {
+    return this.typeLabels[type] || type; 
+  }
+
+  //Mapping voor status
+  statusLabels: { [key: string]: string } = {
+      NIEUW: 'Nieuw',
+      MELDINGVERWERKT: 'Melding verwerkt',
+      WORDTOPGEHAALD: 'Wordt opgehaald',
+      OPGEHAALD: 'Opgehaald',
+  };
+
+  //Returned leesbare labels voor status
+  getReadableStatus(status: string): string {
+    return this.statusLabels[status] || status; 
+  }
+
+  // Opties voor het afvaltype filter
+  typeOptions = computed(() => {
+    const types = Array.from(
+      new Set(this.notifications().map(n => n.type))
+    );
+    return types.map(t => ({
+      label: this.getReadableType(t),
+      value: t
+    }));
+  });
+
+  //Opslaan van geselecteerde types in het filter
   selectedTypes: string[] = [];
 
-  stateOptions = [
-  { label: 'Nieuw', value: 'NIEUW' },
-  { label: 'Melding Verwerkt', value: 'MELDINGVERWERKT' },
-  { label: 'Opgehaald', value: 'OPGEHAALD' },
-  { label: 'Wordt Opgehaald', value: 'WORDTOPGEHAALD' },
-];
+  //Opties voor het status filter
+  stateOptions = computed(() => {
+    const statuses = Array.from(
+      new Set(this.notifications().map(n => n.status))
+    );
+    return statuses.map(s => ({
+      label: this.getReadableStatus(s),
+      value: s
+    }));
+  });
+
+  //Opslaan van geselecteerde status in het filter
   selectedStates: string[] = [];
 
   constructor(
     private selection: IDService,
   ) {}
 
-
+  //Ophalen van meldingen bij
   ngOnInit() {
-    this.dashboardService.fetchNotifications();
+    this.dashboardService.fetchMeldingen();
   }
 
   ngAfterViewInit() {
@@ -97,19 +137,20 @@ export class ListComponent implements AfterViewInit, OnInit {
     this.clicked.emit(item.id);
   }
 
+  //Toepassen van filters na input
   onTypeFilterChange() {
-  // Apply type filter
-  this.dt.filter(
-    this.selectedTypes && this.selectedTypes.length ? this.selectedTypes : null,
-    'type',
-    'in'
-  );
+    // Type filter
+    this.dt.filter(
+      this.selectedTypes && this.selectedTypes.length ? this.selectedTypes : null,
+      'type',
+      'in'
+    );
 
-  // Apply status filter
-  this.dt.filter(
-    this.selectedStates && this.selectedStates.length ? this.selectedStates : null,
-    'status',
-    'in'
-  );
-}
+    // Status filter
+    this.dt.filter(
+      this.selectedStates && this.selectedStates.length ? this.selectedStates : null,
+      'status',
+      'in'
+    );
+  }
 }

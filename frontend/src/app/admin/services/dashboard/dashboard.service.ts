@@ -11,7 +11,7 @@ export class DashboardService {
 
   constructor(private http: HttpClient) {}
 
-  fetchNotifications() {
+  fetchMeldingen() {
     this.http.get<any[]>('http://localhost:8080/api/meldingen') 
       .pipe(
         map(meldingen =>
