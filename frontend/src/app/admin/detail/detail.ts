@@ -5,7 +5,7 @@ import { TijdlijnElement } from '../interfaces/tijdlijn-element.interface';
 import { IDService } from '../services/id/id';
 import { TextareaModule } from 'primeng/textarea';
 import { FormsModule } from '@angular/forms';
-import { State } from '../interfaces/state.interface';
+import { State } from '../features/dashboard/interfaces/state.interface';
 import { ButtonModule } from 'primeng/button';
 import { KaartService } from '../../app-users/features/afval-melden/services/kaart';
 import { Kaart } from '../../app-users/features/afval-melden/components/locatie-stap/kaart';

@@ -1,8 +1,8 @@
 <div style="display: flex; flex-direction: column; min-height: 100%;">
   <p-table
     #dt
-    [value]="visibleNotifications()"
-    [selection]="selectedNotification()"
+    [value]="store.visibleNotifications()"
+    [selection]="store.selectedNotification()"
     [dataKey]="'id'"
     selectionMode="single"
     [paginator]="true"
@@ -32,7 +32,7 @@
         </th>
         <th>
           <p-multiSelect
-            [options]="typeOptions()"
+            [options]="store.typeOptions()"
             [(ngModel)]="selectedTypes"
             optionLabel="label"
             optionValue="value"
@@ -45,7 +45,7 @@
         </th>
         <th>
           <p-multiSelect
-            [options]="stateOptions()"
+            [options]="store.stateOptions()"
             [(ngModel)]="selectedStates"
             optionLabel="label"
             optionValue="value"
