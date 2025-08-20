@@ -55,13 +55,13 @@ public class Classification {
         return startedAt;
     }
 
-    public void setStartedAt(LocalDateTime startedAt) {}
+    public void setStartedAt(LocalDateTime startedAt) { this.startedAt = startedAt; }
 
     public LocalDateTime getClassifiedAt() {
         return startedAt;
     }
 
-    public void setClassifiedAt(LocalDateTime classifiedAt) {}
+    public void setClassifiedAt(LocalDateTime classifiedAt) { this.classifiedAt = classifiedAt; }
 
     public enum Status {
         PENDING,

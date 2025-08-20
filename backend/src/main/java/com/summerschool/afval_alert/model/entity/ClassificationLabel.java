@@ -17,4 +17,28 @@ public class ClassificationLabel {
     private WasteType wasteType;
 
     private Double confidence;
+
+    public WasteType getWasteType() {
+        return wasteType;
+    }
+
+    public void setWasteType(WasteType wasteType) {
+        this.wasteType = wasteType;
+    }
+
+    public Classification getClassification() {
+        return classification;
+    }
+
+    public void setClassification(Classification classification) {
+        this.classification = classification;
+    }
+
+    public Double getConfidence() {
+        return confidence;
+    }
+
+    public void setConfidence(Double confidence) {
+        this.confidence = confidence;
+    }
 }

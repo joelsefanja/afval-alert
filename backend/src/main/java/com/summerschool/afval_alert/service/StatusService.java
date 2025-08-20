@@ -13,7 +13,7 @@ public class StatusService {
         List<String> statusen = Arrays.stream(Melding.Status.values())
                 .map(Enum::name)
                 .collect(Collectors.toList());
-
-        return statusen;
+      
+      return statusen;
     }
 }
