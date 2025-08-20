@@ -116,7 +116,7 @@ docker logs container_name
 ### Port conflicts
 ```bash
 # Check wat draait op poorten
-netstat -an | findstr "8001\|8002"
+netstat -an | findstr "8000"
 
 # Stop conflicting containers
 docker ps

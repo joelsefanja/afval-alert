@@ -10,8 +10,8 @@ from pathlib import Path
 # Voeg src directory toe aan path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 
-from afval_alert.config.loader import get_configuration_service
-from afval_alert.models.schemas import ClassificationResult, LocalClassification, GeminiClassification
+from src.config.loader import get_configuration_service
+from src.models.schemas import ClassificationResult, LocalClassification, GeminiClassification
 
 
 class TestIntegration:
@@ -51,7 +51,7 @@ class TestIntegration:
         assert local_classification.max_confidence == 0.9
         
         # Test GeminiClassification
-        from afval_alert.models.schemas import AfvalTypeZekerheid
+        from src.models.schemas import AfvalTypeZekerheid
         gemini = GeminiClassification(
             is_afval=True,
             afval_types=[AfvalTypeZekerheid("plastic_flessen", 0.8)],

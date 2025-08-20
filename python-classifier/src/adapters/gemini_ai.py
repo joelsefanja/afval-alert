@@ -1,11 +1,18 @@
 from src.models.schemas import GeminiClassification
-from google import genai
-from google.genai import types
 import logging
 import json
 import yaml
 from typing import List, Dict, Any
 from pathlib import Path
+
+GOOGLE_AI_AVAILABLE = True
+try:
+    import google.generativeai as genai
+    from google.generativeai import types
+except ImportError:
+    GOOGLE_AI_AVAILABLE = False
+    logger = logging.getLogger(__name__)
+    logger.warning("Google Generative AI package niet geïnstalleerd. Functionaliteit wordt uitgeschakeld.")
 
 logger = logging.getLogger(__name__)
 
@@ -35,11 +42,11 @@ class GeminiAIAdapter:
         """Analyseer afbeelding met Gemini Vision API"""
         try:
             image_data = self._prepare_image_data(afbeelding_bytes, mime_type)
-            logger.info(f"MIME type: {mime_type}")
-            logger.info(f"Image data size: {len(afbeelding_bytes)}")
+            logger.info(f"MIME type: {image_data['mime_type']}")
+            logger.info(f"Image data size: {len(image_data['data'])}")
             prompt = self._build_image_analysis_prompt()
             logger.info(f"Gemini API prompt: {prompt}")
-            response = self.model.generate_content([prompt, image_data])
+            response = self.model.generate_content([prompt, image_data['data']])
             logger.info(f"Raw Gemini API response: {response}")
             return self._process_image_response(response)
         except Exception as e:
@@ -49,7 +56,10 @@ class GeminiAIAdapter:
     
     def _prepare_image_data(self, afbeelding_bytes: bytes, mime_type: str = "image/jpeg"):
         """Prepareer afbeelding data voor Gemini Vision"""
-        return types.Part.from_bytes(data=afbeelding_bytes, mime_type=mime_type)
+        return {
+            "mime_type": mime_type,
+            "data": afbeelding_bytes
+        }
     
     def _build_image_analysis_prompt(self) -> str:
         """Bouw image analysis prompt uit YAML configuratie"""

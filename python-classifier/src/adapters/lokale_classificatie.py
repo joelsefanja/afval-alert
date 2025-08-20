@@ -143,10 +143,17 @@ class SwinConvNeXtClassifier(LokaleClassificatieAdapter):
         for i, other_type in enumerate(random.sample(others, num_secondary)):
             # Verdeel resterende probability
             if i == num_secondary - 1:
-                secondary_prob = remaining_prob
+                secondary_prob = max(0.0, remaining_prob)  # Ensure non-negative
             else:
-                secondary_prob = random.uniform(0.05, remaining_prob * 0.6)
+                max_secondary = min(remaining_prob * 0.6, remaining_prob - 0.01)  # Reserve small amount for last
+                if max_secondary < 0.05:
+                    secondary_prob = max(0.0, remaining_prob / (num_secondary - i))
+                else:
+                    secondary_prob = random.uniform(0.05, max_secondary)
                 remaining_prob -= secondary_prob
+            
+            # Ensure probability is within valid range
+            secondary_prob = max(0.0, min(1.0, secondary_prob))
             
             predictions.append(ClassificationResult(
                 class_name=other_type["type"],

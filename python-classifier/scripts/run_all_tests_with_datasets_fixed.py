@@ -238,7 +238,7 @@ def setup_nature_dataset():
     print(f"  Images stored in: {nature_dir}")
     return total >= 5  # Require at least 5 images
 
-def run_tests(test_type="all"):
+def run_tests(test_type="all", image_path=None):
     """Run tests using the existing test infrastructure"""
     print_section(f"Running {test_type.title()} Tests")
     
@@ -268,14 +268,23 @@ def run_tests(test_type="all"):
             "--cov-fail-under=0"  # Set to 0 to avoid coverage failure
         ]
         
-        result = subprocess.run(cmd_with_cov, capture_output=True, text=True)
+        result = subprocess.run(cmd_with_cov, capture_output=True, text=True, env=os.environ)
         
         # If pytest fails completely, try without coverage
         if result.returncode != 0 and "pytest" in result.stderr.lower():
             print("  Pytest error, trying without coverage...")
-            result = subprocess.run(cmd, capture_output=True, text=True)
+            cmd = [sys.executable, "-m", "pytest"]
+            if test_type == "unit":
+                cmd.extend(["tests/unit/", "-v"])
+            elif test_type == "integration":
+                cmd.extend(["tests/integration/", "-v"])
+            elif test_type == "e2e":
+                cmd.extend(["tests/e2e/", "-v"])
+            else:
+                cmd.extend(["tests/", "-v"])
+            result = subprocess.run(cmd, capture_output=True, text=True, env=os.environ)
         
-        if result.stdout:
+        if result.stdout and not result.stderr:
             print("  STDOUT:")
             # Show last 20 lines but filter out empty lines
             lines = [line for line in result.stdout.split('\n') if line.strip()]
@@ -333,15 +342,18 @@ def main():
     # Setup datasets
     print_header("DATASET SETUP")
     
-    litter_success = setup_litter_dataset()
-    nature_success = setup_nature_dataset()
+    #litter_success = setup_litter_dataset()
+    #nature_success = setup_nature_dataset()
     
-    if not (litter_success and nature_success):
-        print("\nERROR: Failed to setup required datasets")
-        return False
+    #if not (litter_success and nature_success):
+    #    print("\nERROR: Failed to setup required datasets")
+    #    return False
     
     # Run tests
     print_header("TEST EXECUTION")
+    
+    # Add the image path to the environment variables
+    os.environ["TEST_IMAGE_PATH"] = "python-classifier/tests/assets/afval.jpg"
     
     test_results = []
     

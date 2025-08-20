@@ -49,7 +49,7 @@ test-e2e:
 
 # Run all tests with automatic dataset download
 test-all:
-	uv run python scripts/run_all_tests_with_datasets.py
+	uv run python scripts/run_all_tests_with_datasets_fixed.py
 
 # Lint code
 lint:
@@ -68,11 +68,11 @@ type:
 
 # Run development server
 run:
-	PYTHONPATH=src:. uv run python -m src.api.main --host 0.0.0.0 --port 8001
+	PYTHONPATH=src:. uv run python -m src.api.main --host 0.0.0.0 --port 8000
 
 # Run with uvicorn for development
 develop:
-	cd src && uv run uvicorn api.main:app --reload --host 0.0.0.0 --port 8001
+	cd src && PYTHONPATH=.. uv run uvicorn api.main:app --reload --host 0.0.0.0 --port 8000
 
 # Alias for develop
 dev: develop

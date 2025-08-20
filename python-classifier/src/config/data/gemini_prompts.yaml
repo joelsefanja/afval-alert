@@ -2,31 +2,41 @@
 common: &common_json_structure
   output_format: &json_format |
     Geef ALLEEN geldig JSON terug met deze structuur:
-    {{
+    {
       "is_afval": true,
-      "afval_types": [{{
-        "afval_type": "plastic_flessen",
+      "afval_types": [{
+        "afval_type": "Grofvuil",
         "zekerheid": 0.85
-      }}],
-      "kenmerken": ["beschrijving", "categorie"],
-      "bedank_boodschap": "Bericht aan melder"
-    }}
+      }]
+    }
   constraints: &json_constraints |
-    Gebruik alleen beschikbare afvaltype categorieën.
+    Gebruik alleen de volgende afvaltype categorieën:
+    - Grofvuil
+    - Restafval
+    - Glas
+    - Papier en karton
+    - Organisch
+    - Textiel
+    - Elektronisch afval
+    - Bouw- en sloopafval
+    - Chemisch afval
+    - Overig
+    - Geen afval
     Geef geen extra tekst, alleen JSON.
 
 # Gemini prompts
 gemini_prompts:
   image_analysis:
-    system_role: &expert_role "Je bent een expert in zwerfafval herkenning voor Nederlandse gemeenten."
+    system_role: &expert_role "Je bent een expert in afval herkenning voor Nederlandse gemeenten."
     task_description: |
       Analyseer de afbeelding en bepaal:
-      1. Is dit zwerfafval? 2. Afvaltypes met zekerheid (0.0-1.0)
-      3. Kenmerken 4. Bericht voor de melder
+      1. Is dit afval?
+      2. Zo ja, welk type afval is het?
+      3. Als het geen afval is, wat is het dan?
     <<: *common_json_structure
   
   text_validation:
-    system_role: "Je bent een expert validator voor zwerfafval classificatie van Nederlandse gemeenten."
+    system_role: "Je bent een expert validator voor afval classificatie van Nederlandse gemeenten."
     task_description: |
       Lokaal model resultaat:
       - Beschrijving: {local_description}
@@ -39,22 +49,16 @@ gemini_prompts:
 fallbacks: &base_fallback
   is_afval: false
   afval_types: []
-  kenmerken: ["fout"]
-  bedank_boodschap: &error_msg "Sorry, er is een fout opgetreden."
+  kenmerken: []
+  bedank_boodschap: "Bedankt voor je melding!"
 
 fallback_responses:
   no_response:
     <<: *base_fallback
-    kenmerken: ["analyse_gefaald"]
-    bedank_boodschap: "Sorry, kon geen analyse uitvoeren."
-  
   error:
     <<: *base_fallback
-    kenmerken: ["fout_opgetreden"]
-    bedank_boodschap: "Er is een fout opgetreden. Probeer het later nogmaals."
-  
   validation_fallback:
     is_afval: true
-    afval_types: [{afval_type: "niet_classificeerbaar", zekerheid: 0.5}]
-    kenmerken: ["lokaal_validatie"]
-    bedank_boodschap: "Bedankt - we hebben het gevalideerd."
+    afval_types: [{afval_type: "Overig", zekerheid: 0.5}]
+    kenmerken: ["geen specifieke kenmerken gedetecteerd"]
+    bedank_boodschap: "Bedankt voor je melding! Dit afval is geclassificeerd als overig."

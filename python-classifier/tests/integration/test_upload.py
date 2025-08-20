@@ -46,7 +46,7 @@ def test_upload(image_path=None, image_type="jpeg"):
             files = {'afbeelding': ('test.png', test_img, 'image/png')}
         else:
             test_img = create_test_image()
-            files = {'afbeelding': ('test.jpg', test_img, 'image/jpeg')}
+            files = {'afbeelding': ('afval.jpg', test_img, 'image/jpeg')}
         response = requests.post(url, files=files, timeout=30)
 
     print(f"Status: {response.status_code}")

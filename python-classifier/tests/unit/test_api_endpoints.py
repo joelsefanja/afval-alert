@@ -42,17 +42,22 @@ class TestAPIEndpoints:
         response = client.get("/model-info")
         assert response.status_code == 200
         data = response.json()
-        assert "categorieën" in data
-        assert "totaal_categorieën" in data
+        assert "afval_typen" in data
+        assert "totaal_afval_typen" in data
     
-    def test_waste_types_endpoint(self):
-        """Test waste types endpoint"""
+    def test_afval_typen_endpoint(self):
+        """Test afval typen endpoint"""
         response = client.get("/afval-typen")
         assert response.status_code == 200
         data = response.json()
-        assert data["status"] == "success"
-        assert "data" in data
-        assert "afval_typen" in data["data"]
+        assert "afval_typen" in data
+        # Check that we have the expected categories
+        expected_categories = [
+            "Grofvuil", "Restafval", "Glas", "Papier en karton",
+            "Organisch", "Textiel", "Elektronisch afval", 
+            "Bouw- en sloopafval", "Chemisch afval", "Overig", "Geen afval"
+        ]
+        assert set(expected_categories).issubset(set(data["afval_typen"]))
     
     @patch('src.adapters.lokale_classificatie.SwinConvNeXtClassifier.classificeer_afbeelding')
     @patch('src.adapters.lokale_classificatie.SwinConvNeXtClassifier.krijg_tekst_beschrijving')
@@ -63,18 +68,16 @@ class TestAPIEndpoints:
         mock_local_result = Mock()
         mock_local_result.success = True
         mock_local_result.max_confidence = 0.95
-        mock_local_result.predictions = [Mock(class_name="plastic_flessen", probability=0.95)]
+        mock_local_result.predictions = [Mock(class_name="Glas", probability=0.95)]
         mock_local_result.processing_time = 0.1
         mock_local_classify.return_value = mock_local_result
         
         # Mock the text description
-        mock_get_description.return_value = "Gedetecteerd: plastic_flessen (95.0%)"
+        mock_get_description.return_value = "Gedetecteerd: Glas (95.0%)"
         
         # Mock the Gemini validation response
         mock_gemini_result = Mock()
-        mock_gemini_result.afval_types = [{"afval_type": "plastic_flessen", "zekerheid": 0.9}]
-        mock_gemini_result.kenmerken = ["plastic", "transparant"]
-        mock_gemini_result.bedank_boodschap = "Bedankt voor je melding!"
+        mock_gemini_result.afval_types = [{"afval_type": "Glas", "zekerheid": 0.9}]
         mock_gemini_validate.return_value = mock_gemini_result
         
         # Create a mock image file
@@ -82,14 +85,19 @@ class TestAPIEndpoints:
         
         response = client.post(
             "/classificeer",
-            files={"afbeelding": ("test.jpg", test_image, "image/jpeg")}
+            files={"afbeelding": ("afval.jpg", test_image, "image/jpeg")}
         )
         
         assert response.status_code == 200
         data = response.json()
-        assert data["status"] == "success"
-        assert "data" in data
-        assert "primary_classification" in data["data"]
+        assert "afval_typen" in data
+        # Check that we have results with confidence scores
+        assert len(data["afval_typen"]) > 0
+        # Check that Glas is in the results
+        glas_result = next((item for item in data["afval_typen"] if item["afval_type"] == "Glas"), None)
+        assert glas_result is not None
+        # The confidence should be at least 0.9 (the higher of local 0.95 and Gemini 0.9)
+        assert glas_result["confidence"] >= 0.9
     
     @patch('src.adapters.gemini_ai.GeminiAIAdapter.analyseer_afbeelding')
     def test_classify_waste_with_gemini_success(self, mock_gemini_analyze):
@@ -97,9 +105,7 @@ class TestAPIEndpoints:
         # Mock the Gemini analysis response
         mock_gemini_result = Mock()
         mock_gemini_result.is_afval = True
-        mock_gemini_result.afval_types = [{"afval_type": "plastic_flessen", "zekerheid": 0.85}]
-        mock_gemini_result.kenmerken = ["plastic", "transparant"]
-        mock_gemini_result.bedank_boodschap = "Bedankt voor je melding!"
+        mock_gemini_result.afval_types = [{"afval_type": "Glas", "zekerheid": 0.85}]
         mock_gemini_analyze.return_value = mock_gemini_result
         
         # Create a mock image file
@@ -107,14 +113,19 @@ class TestAPIEndpoints:
         
         response = client.post(
             "/classificeer_met_gemini",
-            files={"afbeelding": ("test.jpg", test_image, "image/jpeg")}
+            files={"afbeelding": ("afval.jpg", test_image, "image/jpeg")}
         )
         
         assert response.status_code == 200
         data = response.json()
-        assert data["status"] == "success"
-        assert "data" in data
-        assert "gemini_classificatie" in data["data"]
+        assert "afval_typen" in data
+        # Check that we have results with confidence scores
+        assert len(data["afval_typen"]) > 0
+        # Check that Glas is in the results
+        glas_result = next((item for item in data["afval_typen"] if item["afval_type"] == "Glas"), None)
+        assert glas_result is not None
+        # The confidence should be at least 0.85
+        assert glas_result["confidence"] >= 0.85
     
     def test_classify_waste_invalid_file_type(self):
         """Test classification with invalid file type"""

@@ -17,7 +17,7 @@ class GeminiClassifier(ClassificationInterface):
         self.waste_categories = [
             "Grofvuil", "Restafval", "Glas", "Papier en karton",
             "Organisch", "Textiel", "Elektronisch afval", 
-            "Bouw- en sloopafval", "Chemisch afval", "Overig"
+            "Bouw- en sloopafval", "Chemisch afval", "Overig", "Geen afval"
         ]
     
     def classify_waste(self, image_data: bytes) -> List[ClassificationResult]:

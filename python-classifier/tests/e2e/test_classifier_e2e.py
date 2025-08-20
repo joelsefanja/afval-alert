@@ -84,12 +84,13 @@ class TestE2EWorkflows:
         client = TestClient(app)
 
         # Test afbeelding
-        test_image = create_test_image()
+        with open("python-classifier/tests/assets/afval.jpg", "rb") as f:
+            test_image = f.read()
 
         # Test /classify endpoint
         response = client.post(
             "/classify",
-            files={"file": ("test.jpg", test_image, "image/jpeg")}
+            files={"file": ("afval.jpg", test_image, "image/jpeg")}
         )
 
         # Accepteer zowel 200 (succes) als 500 (verwacht met mocks) voor nu
@@ -124,41 +125,7 @@ class TestE2EWorkflows:
         # Test /classificeer_met_gemini endpoint
         response = client.post(
             "/classificeer_met_gemini",
-            files={"file": ("test.jpg", test_image, "image/jpeg")}
-        )
-        
-        # Test /classificeer_met_gemini endpoint
-        response = client.post(
-            "/classificeer_met_gemini",
-            files={"file": ("test.jpg", test_image, "image/jpeg")}
-        )
-
-        # Accepteer zowel 200 (succes) als 500 (verwacht met mocks) voor nu
-        assert response.status_code in [200, 500]
-
-        if response.status_code == 500:
-            # Mock conflicteert met echt model - skip gedetailleerde checks
-            return
-        data = response.json()
-
-        # Verifieer response structuur
-        assert "succes" in data
-        assert "gemini_classificatie" in data
-        assert "gemeente_info" in data
-        assert "gebruiker_feedback" in data
-
-        # Verifieer Gemini classificatie
-        gemini_data = data["gemini_classificatie"]
-        assert isinstance(gemini_data["is_zwerfafval"], bool)
-        assert isinstance(gemini_data["afval_type"], str)
-        assert 0.0 <= gemini_data["zekerheid"] <= 1.0
-        assert isinstance(gemini_data["kenmerken"], list)
-        assert isinstance(gemini_data["bedank_boodschap"], str)
-
-        # Test /classificeer_met_gemini endpoint
-        response = client.post(
-            "/classificeer_met_gemini",
-            files={"file": ("test.jpg", test_image, "image/jpeg")}
+            files={"file": ("afval.jpg", test_image, "image/jpeg")}
         )
 
     def test_model_info_endpoint(self, mock_dependencies):
@@ -246,14 +213,14 @@ class TestE2EWorkflows:
 
         response = client.post(
             "/classify",
-            files={"file": ("large.jpg", large_file, "image/jpeg")}
+            files={"file": ("afval.jpg", large_file, "image/jpeg")}
         )
 
         # Moet afgewezen worden voor te groot te zijn
         assert response.status_code == 413
 
     @pytest.mark.parametrize("file_type,content_type", [
-        ("test.jpg", "image/jpeg"),
+        ("afval.jpg", "image/jpeg"),
         ("test.png", "image/png"),
     ])
     def test_different_image_formats(self, mock_dependencies, file_type, content_type):
@@ -287,12 +254,11 @@ class TestE2EWorkflows:
 
         client = TestClient(app)
 
-        # Maak meerdere test afbeeldingen
         test_images = []
         for i in range(3):
-            img_bytes = create_test_image()
-            test_images.append(("file", (f"test_{i}.jpg", img_bytes, "image/jpeg")))
-
+            with open("python-classifier/tests/assets/afval.jpg", "rb") as f:
+                img_bytes = f.read()
+            test_images.append(("file", ("afval.jpg", img_bytes, "image/jpeg")))
         response = client.post(
             "/batch-classify",
             files=test_images

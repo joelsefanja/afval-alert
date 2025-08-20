@@ -1,74 +1,103 @@
-model_categorieen:
-  - "glas"
-  - "papier"
-  - "plastic"
-  - "metaal"
-  - "organisch"
-  - "textiel"
+# Afval categorieën zoals gespecificeerd
+afval_categorieen:
+  - "Grofvuil"
+  - "Restafval"
+  - "Glas"
+  - "Papier en karton"
+  - "Organisch"
+  - "Textiel"
+  - "Elektronisch afval"
+  - "Bouw- en sloopafval"
+  - "Chemisch afval"
+  - "Overig"
 
 afval_details:
-  glas:
+  Grofvuil:
+    aliases: ["grof", "vuil", "groot_afval"]
+    materiaal_type: "gemengd"
+    recyclable: true
+    gevaarlijk: false
+
+  Restafval:
+    aliases: ["rest", "huishoudelijk", "residu"]
+    materiaal_type: "gemengd"
+    recyclable: false
+    gevaarlijk: false
+
+  Glas:
     aliases: ["fles", "glas", "glaswerk", "glasscherven"]
     materiaal_type: "anorganisch"
     recyclable: true
     gevaarlijk: true
 
-  papier:
+  Papier en karton:
     aliases: ["papier", "karton", "krant", "tijdschrift", "doos"]
     materiaal_type: "organisch"
     recyclable: true
     gevaarlijk: false
 
-  plastic:
-    aliases: ["plastic", "zak", "fles", "verpakking", "piepschuim"]
-    materiaal_type: "synthetisch"
-    recyclable: true
-    gevaarlijk: false
-
-  metaal:
-    aliases: ["blik", "aluminium", "ijzer", "metaal", "bus"]
-    materiaal_type: "anorganisch"
-    recyclable: true
-    gevaarlijk: false
-
-  organisch:
+  Organisch:
     aliases: ["etensresten", "fruit", "groente", "organisch", "biomassa"]
     materiaal_type: "organisch"
     recyclable: true
     gevaarlijk: false
 
-  textiel:
+  Textiel:
     aliases: ["kleding", "stof", "textiel", "schoenen", "tas"]
     materiaal_type: "organisch"
     recyclable: true
     gevaarlijk: false
 
+  Elektronisch afval:
+    aliases: ["elektronica", "e-waste", "apparatuur"]
+    materiaal_type: "gemengd"
+    recyclable: true
+    gevaarlijk: true
+
+  Bouw- en sloopafval:
+    aliases: ["bouw", "sloop", "materialen"]
+    materiaal_type: "anorganisch"
+    recyclable: true
+    gevaarlijk: false
+
+  Chemisch afval:
+    aliases: ["chemisch", "chemicalien", "verf", "oplosmiddelen"]
+    materiaal_type: "chemisch"
+    recyclable: false
+    gevaarlijk: true
+
+  Overig:
+    aliases: ["divers", "overige", "andere"]
+    materiaal_type: "gemengd"
+    recyclable: false
+    gevaarlijk: false
+
 zwerfafval_typen:
-  plastic_flessen:
-    service_type: handmatig_opruimen
+  Grofvuil:
+    service_type: speciale_inzameling
     urgentie: gemiddeld
-    beschrijving: "PET flessen, drankflessen, shampooflessen"
-    recycling_potentieel: "Hoog - recycleerbaar plastic"
-    opruim_methode: "Handmatig oppakken en naar plastic container"
-    gebruikers_bericht: "Wist je dat plastic flessen tot 10 keer gerecycled kunnen worden?"
+    beschrijving: "Groot afval dat niet in normale containers past"
+    recycling_potentieel: "Variabel - afhankelijk van materiaal"
+    opruim_methode: "Speciale container of containerwagen"
+    gebruikers_bericht: "Grofvuil wordt apart opgehaald voor verwerking."
 
-  blikjes:
+  Restafval:
     service_type: handmatig_opruimen
-    urgentie: gemiddeld
-    beschrijving: "Drankblikjes, conservenblikken, metalen verpakkingen"
-    recycling_potentieel: "Zeer hoog - oneindig recycleerbaar"
-    opruim_methode: "Handmatig oppakken naar metaal container"
-    gebruikers_bericht: "Wist je dat aluminium blikjes oneindig gerecycled kunnen worden?"
+    urgentie: laag
+    beschrijving: "Algemeen huishoudelijk afval dat niet recycleerbaar is"
+    recycling_potentieel: "Laag - energiewinning"
+    opruim_methode: "Naar restafval container"
+    gebruikers_bericht: "Restafval wordt verwerkt tot energie of grondstoffen."
 
-  glazen_flessen:
+  Glas:
     service_type: handmatig_opruimen
     urgentie: hoog
-    beschrijving: "Drankflessen, parfumflessen, glazen potten"
+    beschrijving: "Gebroken glas, flessen, glaswerk"
     recycling_potentieel: "Zeer hoog - oneindig recycleerbaar"
     opruim_methode: "Voorzichtig oppakken naar glascontainer"
     gebruikers_bericht: "Glas kan oneindig gerecycled worden zonder kwaliteitsverlies!"
 
-  papier_karton:
+  Papier en karton:
     service_type: handmatig_opruimen
     urgentie: laag
     beschrijving: "Kranten, tijdschriften, kartonnen dozen, boeken"
@@ -76,64 +105,61 @@ zwerfafval_typen:
     opruim_methode: "Oppakken naar papiercontainer"
     gebruikers_bericht: "Papier en karton kunnen tot 7 keer gerecycled worden."
 
-  batterijen:
-    service_type: gevaarlijk_afval_team
+  Organisch:
+    service_type: groenservice
     urgentie: hoog
-    beschrijving: "Alle soorten batterijen en accu's"
-    recycling_potentieel: "Hoog - waardevolle metalen"
-    opruim_methode: "Naar batterij inzamelpunt"
-    gebruikers_bericht: "Batterijen bevatten giftige stoffen maar ook waardevolle metalen voor recycling."
+    beschrijving: "Etensresten, fruit- en groenteschillen, tuinafval"
+    recycling_potentieel: "Hoog - compostering of biogas"
+    opruim_methode: "Naar organisch afval container"
+    gebruikers_bericht: "Organisch afval wordt compost voor nieuwe groei."
 
-  gevaarlijk_afval:
+  Textiel:
+    service_type: handmatig_opruimen
+    urgentie: laag
+    beschrijving: "Kleding, schoenen, stoffen, textiel"
+    recycling_potentieel: "Variabel - hergebruik of recycling"
+    opruim_methode: "Verzamelen naar textielcontainer"
+    gebruikers_bericht: "Textiel krijgt een tweede leven via hergebruik of recycling."
+
+  Elektronisch afval:
+    service_type: speciale_inzameling
+    urgentie: gemiddeld
+    beschrijving: "Elektronica, apparaten, kleine elektronica"
+    recycling_potentieel: "Hoog - waardevolle metalen en componenten"
+    opruim_methode: "Speciale elektronische afval container"
+    gebruikers_bericht: "Elektronica bevat waardevolle materialen die herbruikt worden."
+
+  Bouw- en sloopafval:
+    service_type: speciale_inzameling
+    urgentie: laag
+    beschrijving: "Bouwmaterialen, sloopafval, hout, steen"
+    recycling_potentieel: "Hoog - afhankelijk van materiaal"
+    opruim_methode: "Speciale container voor bouwafval"
+    gebruikers_bericht: "Bouw- en sloopafval wordt gescheiden verwerkt voor hergebruik."
+
+  Chemisch afval:
     service_type: gevaarlijk_afval_team
     urgentie: urgent
-    beschrijving: "Asbest, medisch afval, giftige stoffen"
-    recycling_potentieel: "Geen - speciale vernietiging"
+    beschrijving: "Verf, chemicalien, oplosmiddelen, gevaarlijke stoffen"
+    recycling_potentieel: "Variabel - speciale verwerking"
     opruim_methode: "Professionele afhandeling vereist"
-    gebruikers_bericht: "Gevaarlijk afval vraagt professionele afhandeling - bedankt voor de melding!"
+    gebruikers_bericht: "Chemisch afval vraagt professionele afhandeling - bedankt voor de melding!"
 
-  geen_zwerfafval:
+  Overig:
+    service_type: handmatig_opruimen
+    urgentie: gemiddeld
+    beschrijving: "Andere soorten afval die niet in bovenstaande categorieën passen"
+    recycling_potentieel: "Variabel - afhankelijk van type"
+    opruim_methode: "Handmatige inspectie en sortering"
+    gebruikers_bericht: "We onderzoeken dit afval om de juiste verwerking te bepalen."
+
+  Geen afval:
     service_type: niet_van_toepassing
     urgentie: laag
     beschrijving: "Geen zwerfafval gedetecteerd"
     recycling_potentieel: "N.v.t."
     opruim_methode: "Geen actie vereist"
-    gebruikers_bericht: "Geen zwerfafval gedetecteerd - misschien is het al opgeruimd?"
-
-gemini_prompt: |
-  Je bent een expert in zwerfafval herkenning voor gemeentelijke afvalverwerking.
-
-  Analyseer de TensorFlow classificatie resultaten hieronder en bepaal:
-  1. Is dit werkelijk zwerfafval dat gemeente moet opruimen?
-  2. Zo ja, welk type afval en welke service moet het ophalen?
-  3. Zo nee, wat is het dan wel (mensen, gebouwen, natuur, etc.)?
-
-  LET OP: Wees kritisch! Mensen sturen soms willekeurige foto's die geen afval zijn.
-
-  ZWERFAFVAL TYPEN (voor gemeente opruim services):
-  - plastic_flessen: Drankflessen, shampooflessen dumped op straat/park
-  - blikjes: Bier/frisdrank blikjes weggegooid in publieke ruimte
-  - glazen_flessen: Bierflesjes, wijnflessen gebroken/gedumpt
-  - papier_karton: Kranten, fastfood verpakking, sigarettenpeuken
-  - batterijen: Weggegoide batterijen (gevaarlijk)
-  - gevaarlijk_afval: Asbest, medisch afval, chemicalien
-  - geen_zwerfafval: Schone straten, mensen, gebouwen, natuur, voertuigen
-
-  VALIDATIE REGELS:
-  - TensorFlow ziet soms "barbell" → kan crushed blikje zijn in afval context
-  - TensorFlow ziet "ashcan" → zeer waarschijnlijk afvalcontainer/afval
-  - TensorFlow ziet "plastic_bag" → kan afval zijn als gedumpt
-  - TensorFlow ziet "seashore", "valley", "building" → waarschijnlijk GEEN afval
-  - TensorFlow ziet "person", "suit", "car" → waarschijnlijk GEEN afval
-
-  Antwoord altijd in JSON:
-  {
-      "is_afval": boolean,
-      "afval_type": "type_uit_lijst_hierboven",
-      "zekerheid": float_0_tot_1,
-      "gedetecteerde_items": ["specifieke_items_gevonden"],
-      "bedank_boodschap": "passende_bedankboodschap_voor_melder"
-  }
+    gebruikers_bericht: "Geen zwerfafval gedetecteerd - bedankt voor je waakzaamheid!"
 
 categories:
   plastic_flessen:

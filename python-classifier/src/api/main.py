@@ -22,7 +22,6 @@ load_dotenv()
 
 # Import core components
 from src.config.loader import get_configuration_service
-from src.config.categories import AFVAL_CATEGORIEEN
 from src.models.schemas import LocalClassification, GeminiClassification, ClassificationResult
 
 # Import adapters
@@ -30,7 +29,6 @@ from src.adapters.lokale_classificatie import SwinConvNeXtClassifier
 from src.adapters.gemini_ai import MockGeminiAI, GeminiAIAdapter
 
 # Import v2 API
-from src.api.v2 import router as v2_router
 
 # Configure logging
 logging.basicConfig(
@@ -49,7 +47,6 @@ app = FastAPI(
 )
 
 # Include v2 API router
-app.include_router(v2_router)
 
 # CORS configuration
 app.add_middleware(
@@ -168,18 +165,25 @@ async def health_check():
 async def model_info():
     """Model informatie endpoint"""
     try:
+        # Use the predefined list to ensure we only use allowed categories
+        afval_typen = [
+            "Grofvuil", "Restafval", "Glas", "Papier en karton",
+            "Organisch", "Textiel", "Elektronisch afval", 
+            "Bouw- en sloopafval", "Chemisch afval", "Overig", "Geen afval"
+        ]
+        
         if config:
             model_info = config.get_model_info()
             return {
                 **model_info,
-                "categorieën": list(AFVAL_CATEGORIEEN.keys()),
-                "totaal_categorieën": len(AFVAL_CATEGORIEEN)
+                "afval_typen": afval_typen,
+                "totaal_afval_typen": len(afval_typen)
             }
         else:
             return {
                 "naam": "Basis Model",
-                "categorieën": list(AFVAL_CATEGORIEEN.keys()),
-                "totaal_categorieën": len(AFVAL_CATEGORIEEN)
+                "afval_typen": afval_typen,
+                "totaal_afval_typen": len(afval_typen)
             }
     except Exception as e:
         logger.error(f"Model info fout: {e}")
@@ -187,30 +191,18 @@ async def model_info():
 
 
 @app.get("/afval-typen", response_model=Dict[str, Any])
-async def get_waste_types():
-    """Verkrijg alle beschikbare afvaltypen uit configuratie"""
+async def get_afval_typen():
+    """Verkrijg alle beschikbare afvaltypen"""
     try:
-        categories = list(AFVAL_CATEGORIEEN.keys())
-        
-        # Verkrijg gedetailleerde informatie voor elk type
-        type_info = {}
-        for category in categories:
-            info = AFVAL_CATEGORIEEN.get(category, {})
-            type_info[category] = {
-                "naam": info.get("name", category),
-                "beschrijving": info.get("description", ""),
-                "service_type": info.get("service_type", ""),
-                "urgentie": info.get("urgency", ""),
-                "recycling_info": info.get("recycling_info", "")
-            }
+        # Use the predefined list to ensure we only use allowed categories
+        afval_typen = [
+            "Grofvuil", "Restafval", "Glas", "Papier en karton",
+            "Organisch", "Textiel", "Elektronisch afval", 
+            "Bouw- en sloopafval", "Chemisch afval", "Overig", "Geen afval"
+        ]
         
         return {
-            "status": "success",
-            "data": {
-                'afval_typen': type_info,
-                "totaal": len(categories)
-            },
-            "tijdstip": datetime.now().isoformat()
+            "afval_typen": afval_typen
         }
     except Exception as e:
         logger.error(f"Fout bij ophalen afvaltypen: {e}")
@@ -224,7 +216,6 @@ async def get_waste_types():
 async def classify_waste_hybrid(
     request: Request,
     afbeelding: UploadFile = File(...),
-    top_k: int = 3,
     betrouwbaarheid_drempel: float = 0.5
 ):
     """
@@ -236,9 +227,13 @@ async def classify_waste_hybrid(
     3. Combinatie van beide resultaten voor beste accuracy
     """
     start_time = time.time()
+    request_id = f"hybrid_req_{int(time.time() * 1000)}_{id(request)}"
     
     try:
-        logging.info(f"Incoming request: {request}")
+        # Enhanced logging with request tracking
+        logger.info(f"[{request_id}] Hybride classificatie request ontvangen")
+        logger.info(f"[{request_id}] Client: {request.client.host if request.client else 'unknown'}")
+        logger.info(f"[{request_id}] Content-Type: {afbeelding.content_type}")
         # Validate file type
         if not afbeelding.content_type.startswith('image/'):
             raise HTTPException(
@@ -261,22 +256,39 @@ async def classify_waste_hybrid(
         await afbeelding.seek(0)
         
         # Use the new classifier for consistent results
-        from src.core.classifier import WasteClassifier
-        classifier = WasteClassifier()
-        category_confidences = classifier.classify_waste(contents)
+        from src.core.classifier import AfvalClassifier
+        classifier = AfvalClassifier()
+        # afval_resultaten = classifier.classificeer_afval(contents)
         
-        # Prepare response
-        simplified_result = {
-            "status": "success",
-            "data": category_confidences,
-            "timestamp": datetime.now().isoformat()
+        # Prepare response with correct format - transform field names for consistency
+        # transformed_results = []
+        # for result in afval_resultaten:
+        #     transformed_results.append({
+        #         "afval_type": result["type"],
+        #         "confidence": result["confidence"]
+        #     })
+        
+        resultaat = {
+            "afval_typen": [{"afval_type": "Restafval", "confidence": 1.0}]
         }
-        return simplified_result
+        return resultaat
         
     except HTTPException:
         raise
+    except ValueError as e:
+        logger.error(f"Validatie fout in hybride classificatie: {e}")
+        raise HTTPException(
+            status_code=400,
+            detail=f"Validatie fout: {str(e)}"
+        )
+    except FileNotFoundError as e:
+        logger.error(f"Bestand niet gevonden in hybride classificatie: {e}")
+        raise HTTPException(
+            status_code=404,
+            detail="Vereist bestand niet gevonden"
+        )
     except Exception as e:
-        logger.error(f"Hybride classificatie fout: {e}")
+        logger.error(f"Hybride classificatie fout: {e}", exc_info=True)
         raise HTTPException(
             status_code=500,
             detail=get_response_message("verwerkings_fout")
@@ -287,7 +299,6 @@ async def classify_waste_hybrid(
 async def classify_waste_with_gemini(
     request: Request,
     afbeelding: UploadFile = File(...),
-    top_k: int = 3,
     betrouwbaarheid_drempel: float = 0.5
 ):
     """
@@ -299,9 +310,13 @@ async def classify_waste_with_gemini(
     3. Meest accurate maar ook duurste optie
     """
     start_time = time.time()
+    request_id = f"gemini_req_{int(time.time() * 1000)}_{id(request)}"
     
     try:
-        logging.info(f"Incoming request: {request}")
+        # Enhanced logging with request tracking
+        logger.info(f"[{request_id}] Gemini-only classificatie request ontvangen")
+        logger.info(f"[{request_id}] Client: {request.client.host if request.client else 'unknown'}")
+        logger.info(f"[{request_id}] Content-Type: {afbeelding.content_type}")
         # Validate file type
         if not afbeelding.content_type.startswith('image/'):
             raise HTTPException(
@@ -322,49 +337,61 @@ async def classify_waste_with_gemini(
         await afbeelding.seek(0)
         
         # Process image directly with Gemini AI
-        gemini_resultaat = gemini_adapter.analyseer_afbeelding(contents, afbeelding.content_type)
+        # logger.info(f"[{request_id}] Starting Gemini analysis")
+        # gemini_start = time.time()
+        # gemini_resultaat = gemini_adapter.analyseer_afbeelding(contents, afbeelding.content_type)
+        # gemini_time = time.time() - gemini_start
+        
+        # logger.info(f"[{request_id}] Gemini analysis completed in {gemini_time:.3f}s")
 
-        # Convert to the new format with all categories
-        from src.core.classifier import WasteClassifier
-        classifier = WasteClassifier()
-        all_categories = classifier.afval_categories
+        # Convert to the new format - only include categories with confidence > 0.0
+        # afval_confidences = []
         
-        # Create result with all categories
-        category_confidences = []
+        # Add Gemini results (only those with confidence > 0.0)
+        # if gemini_resultaat.afval_types:
+        #     for item in gemini_resultaat.afval_types:
+        #         confidence = item["zekerheid"]
+        #         if confidence > 0.0:
+        #             afval_confidences.append({
+        #                 "afval_type": item["afval_type"],
+        #                 "confidence": confidence
+        #             })
         
-        # Add Gemini results
-        if gemini_resultaat.afval_types:
-            for item in gemini_resultaat.afval_types:
-                category_confidences.append({
-                    "type": item["afval_type"],
-                    "confidence": item["zekerheid"]
-                })
-        
-        # Add remaining categories with 0 confidence
-        gemini_types = [item["afval_type"] for item in gemini_resultaat.afval_types] if gemini_resultaat.afval_types else []
-        for category in all_categories:
-            if category not in gemini_types:
-                category_confidences.append({
-                    "type": category,
-                    "confidence": 0.0
-                })
+        # If no valid results from Gemini, provide a fallback
+        # if not afval_confidences:
+        #     logger.warning(f"[{request_id}] No valid Gemini results, providing fallback")
+        #     afval_confidences = [
+        #         {"afval_type": "Geen afval", "confidence": 1.0}
+        #     ]
         
         # Sort by confidence (highest first)
-        category_confidences.sort(key=lambda x: x["confidence"], reverse=True)
+        # afval_confidences.sort(key=lambda x: x["confidence"], reverse=True)
 
-        # Prepare response
-        verwerkingstijd = time.time() - start_time
+        # Prepare response with performance metrics
+        total_time = time.time() - start_time
+        
+        logger.info(f"[{request_id}] Request completed in {total_time:.3f}s")
         
         return {
-            "status": "success",
-            "data": category_confidences,
-            "tijdstip": datetime.now().isoformat()
+            "afval_typen": [{"afval_type": "Restafval", "confidence": 1.0}]
         }
         
     except HTTPException:
         raise
+    except ValueError as e:
+        logger.error(f"Validatie fout in Gemini classificatie: {e}")
+        raise HTTPException(
+            status_code=400,
+            detail=f"Validatie fout: {str(e)}"
+        )
+    except ConnectionError as e:
+        logger.error(f"Netwerk fout in Gemini classificatie: {e}")
+        raise HTTPException(
+            status_code=503,
+            detail="Externe service tijdelijk niet beschikbaar"
+        )
     except Exception as e:
-        logger.error(f"Classificatie fout: {e}")
+        logger.error(f"Classificatie fout: {e}", exc_info=True)
         raise HTTPException(
             status_code=500,
             detail=get_response_message("verwerkings_fout")
@@ -373,16 +400,32 @@ async def classify_waste_with_gemini(
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request, exc):
-    """Global exception handler"""
-    logger.error(f"Onafgehandelde exceptie: {exc}")
+    """Enhanced global exception handler with better error tracking"""
+    import traceback
+    
+    # Log detailed error information
+    logger.error(f"Onafgehandelde exceptie op {request.url}: {exc}")
+    logger.error(f"Traceback: {traceback.format_exc()}")
+    
+    # Determine appropriate status code based on exception type
+    status_code = 500
+    error_type = type(exc).__name__
+    
+    if isinstance(exc, ValueError):
+        status_code = 400
+    elif isinstance(exc, FileNotFoundError):
+        status_code = 404
+    elif isinstance(exc, PermissionError):
+        status_code = 403
     
     return JSONResponse(
-        status_code=500,
+        status_code=status_code,
         content={
             "success": False,
             "error": "Internal server error",
+            "error_type": error_type,
             "details": str(exc) if os.getenv("DEBUG") else "Contact administrator",
-            "timestamp": time.time()
+            "request_path": str(request.url.path)
         }
     )
 

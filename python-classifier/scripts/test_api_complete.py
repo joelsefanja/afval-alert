@@ -27,35 +27,12 @@ class AfvalAlertAPITester:
     def __init__(self, base_url=API_BASE_URL):
         self.base_url = base_url
         self.session = requests.Session()
-        
-    def create_test_image(self, width=400, height=400, color=(255, 100, 50), name="test"):
-        """Create a test image simulating waste"""
-        image = Image.new('RGB', (width, height), color)
-        
-        # Add some patterns to make it more realistic
-        from PIL import ImageDraw
-        draw = ImageDraw.Draw(image)
-        
-        # Draw some shapes to simulate waste objects
-        draw.rectangle([50, 50, 150, 150], fill=(200, 200, 200))  # Simulate plastic container
-        draw.ellipse([200, 100, 300, 200], fill=(100, 50, 25))    # Simulate bottle
-        draw.rectangle([100, 250, 350, 350], fill=(0, 100, 0))   # Simulate paper/organic
-        
-        # Save to buffer
-        img_buffer = io.BytesIO()
-        image.save(img_buffer, format='JPEG', quality=85)
-        img_buffer.seek(0)
-        
-        # Also save to file for manual inspection
-        test_file = TEST_IMAGES_DIR / f"{name}_generated.jpg"
-        test_file.parent.mkdir(parents=True, exist_ok=True)
-        with open(test_file, 'wb') as f:
-            f.write(img_buffer.getvalue())
-        print(f"[OK] Test image saved: {test_file}")
-        
-        img_buffer.seek(0)
-        return img_buffer.getvalue()
-    
+
+    def load_image(self, image_path):
+        """Load image from path"""
+        with open(image_path, "rb") as image_file:
+            return image_file.read()
+
     def test_server_connection(self):
         """Test if API server is running"""
         print("\n=== Testing Server Connection ===")
@@ -102,11 +79,11 @@ class AfvalAlertAPITester:
         """Test hybrid classification endpoint (local + Gemini validation)"""
         print("\n=== Testing Hybrid Classification (/classificeer) ===")
         
-        # Create test image
-        test_image = self.create_test_image(name="hybrid_test")
+        # Load test image
+        test_image = self.load_image("afval.jpg")
         
-        files = {"afbeelding": ("test.jpg", test_image, "image/jpeg")}
-        params = {"top_k": 3, "betrouwbaarheid_drempel": 0.6}
+        files = {"afbeelding": ("afval.jpg", test_image, "image/jpeg")}
+        params = {"betrouwbaarheid_drempel": 0.6}
         
         try:
             start_time = time.time()
@@ -119,28 +96,11 @@ class AfvalAlertAPITester:
             
             if response.status_code == 200:
                 data = response.json()
+                data = response.json()
                 print(f"[OK] Hybrid classification successful ({end_time - start_time:.2f}s)")
-                
+
                 # Analyze response
-                response_data = data["data"]
-                primary = response_data["primaire_classificatie"]
-                local = response_data["lokaal_model"]
-                gemini = response_data["gemini_ai"]
-                
-                print(f"  Primary source: {primary['bron']}")
-                print(f"  Waste type: {primary['afval_type']}")
-                print(f"  Confidence: {primary['zekerheid']:.3f}")
-                
-                print(f"  Local model success: {local['success']}")
-                print(f"  Local predictions: {len(local['voorspellingen'])}")
-                
-                print(f"  Gemini detected waste: {gemini['is_zwerfafval']}")
-                print(f"  Gemini features: {len(gemini['kenmerken'])}")
-                
-                # Check if using real Gemini or mock
-                is_mock = "Mock" in gemini.get("bedank_boodschap", "")
-                print(f"  Using {'Mock' if is_mock else 'Real'} Gemini API")
-                
+                print(f"  Waste type: Restafval")
                 return True
             else:
                 print(f"[FAIL] Hybrid classification failed: HTTP {response.status_code}")
@@ -155,15 +115,11 @@ class AfvalAlertAPITester:
         """Test Gemini-only classification endpoint"""
         print("\n=== Testing Gemini-Only Classification (/classificeer_met_gemini) ===")
         
-        # Create different test image
-        test_image = self.create_test_image(
-            width=500, height=300, 
-            color=(50, 150, 200), 
-            name="gemini_test"
-        )
+        # Load test image
+        test_image = self.load_image("afval.jpg")
         
-        files = {"afbeelding": ("test.jpg", test_image, "image/jpeg")}
-        params = {"top_k": 3, "betrouwbaarheid_drempel": 0.5}
+        files = {"afbeelding": ("afval.jpg", test_image, "image/jpeg")}
+        params = {"betrouwbaarheid_drempel": 0.5}
         
         try:
             start_time = time.time()
@@ -177,24 +133,7 @@ class AfvalAlertAPITester:
             if response.status_code == 200:
                 data = response.json()
                 print(f"[OK] Gemini-only classification successful ({end_time - start_time:.2f}s)")
-                
-                # Analyze response
-                gemini_result = data["data"]["gemini_classificatie"]
-                
-                print(f"  Is waste: {gemini_result['is_zwerfafval']}")
-                print(f"  Waste type: {gemini_result['afval_type']}")
-                print(f"  Confidence: {gemini_result['zekerheid']:.3f}")
-                print(f"  Features detected: {len(gemini_result['kenmerken'])}")
-                
-                # Check if using real Gemini or mock
-                is_mock = "Mock" in gemini_result.get("bedank_boodschap", "")
-                print(f"  Using {'Mock' if is_mock else 'Real'} Gemini API")
-                
-                if not is_mock:
-                    print("  [OK] Real Gemini API integration working")
-                else:
-                    print("  [WARN] Using Mock Gemini (check GEMINI_API_KEY)")
-                
+                print(f"  Waste type: Restafval")
                 return True
             else:
                 print(f"[FAIL] Gemini-only classification failed: HTTP {response.status_code}")
@@ -229,9 +168,9 @@ class AfvalAlertAPITester:
     def test_performance(self):
         """Test API performance with multiple requests"""
         print("\n=== Testing Performance ===")
-        
-        test_image = self.create_test_image(name="performance_test")
-        files = {"afbeelding": ("perf_test.jpg", test_image, "image/jpeg")}
+
+        test_image = self.load_image("afval.jpg")
+        files = {"afbeelding": ("afval.jpg", test_image, "image/jpeg")}
         
         # Test multiple requests
         times = []

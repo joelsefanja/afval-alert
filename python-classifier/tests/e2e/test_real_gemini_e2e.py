@@ -84,7 +84,7 @@ class TestE2ERealGemini:
             # Verstuur classificatie request
             response = requests.post(
                 "http://127.0.0.1:8004/classificeer",
-                files={"afbeelding": ("test.jpg", test_image, "image/jpeg")},
+                files={"afbeelding": ("afval.jpg", test_image, "image/jpeg")},
                 timeout=60
             )
             
