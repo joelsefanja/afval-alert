@@ -32,7 +32,7 @@ export class NotificationStore {
     return statuses.map(s => ({ label: getReadableStatus(s), value: s }));
   });
 
-    readonly selectedNotification = computed(() => {
+  readonly selectedNotification = computed(() => {
     const id = this.selection.selectedId();
     if (id == null) return null;
     return this.dashboardService.notifications().find(n => n.id === id) ?? null;
