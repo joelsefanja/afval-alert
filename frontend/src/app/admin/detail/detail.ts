@@ -11,15 +11,22 @@ import { KaartService } from '../../app-users/features/afval-melden/services/kaa
 import { Kaart } from '../../app-users/features/afval-melden/components/locatie-stap/kaart';
 
 import { ImageModule } from 'primeng/image';
-  
+
 
 import { SelectModule } from 'primeng/select';
 
+// const tijdlijnElementen: TijdlijnElement[] = [
+//   { status: "Nieuw", notes: ["Hier komt een eventuele opmerking te staan en als deze veel langer is dan gebeurd het volgende dus"], date: new Date(2020, 1, 1) },
+//   { status: "Gecontroleerd", notes: ['Of hier', 'Verplaatst naar 20/03', "Weer verplaatst"], date: new Date(2020, 1, 2) },
+//   { status: "Ingepland", notes: [], date: new Date(2020, 1, 4) },
+//   { status: "Opgehaald", notes: ["Afgehandeld"], date: new Date(2020, 1, 5) },
+// ];
+
 const tijdlijnElementen: TijdlijnElement[] = [
-  { status: "Nieuw", notes: ["Hier komt een eventuele opmerking te staan en als deze veel langer is dan gebeurd het volgende dus"], date: new Date(2020, 1, 1) },
-  { status: "Gecontroleerd", notes: ['Of hier', 'Verplaatst naar 20/03', "Weer verplaatst"], date: new Date(2020, 1, 2) },
-  { status: "Ingepland", notes: [], date: new Date(2020, 1, 4) },
-  { status: "Opgehaald", notes: ["Afgehandeld"], date: new Date(2020, 1, 5) },
+  { note: "Hier komt een eventuele opmerking te staan en als deze veel langer is dan gebeurd het volgende dus", date: new Date(2020, 1, 1) },
+  { note: 'Status verranderd van x naar y', date: new Date(2020, 1, 2) },
+  { note: "Status verranderd van y naar z Opletten met het ophalen, gebroken glas", date: new Date(2020, 1, 4) },
+  { note: "Afgehandeld", date: new Date(2020, 1, 5) },
 ];
 
 @Component({
@@ -32,7 +39,7 @@ const tijdlijnElementen: TijdlijnElement[] = [
 export class DetailComponent {
   private kaartService = inject(KaartService);
   @ViewChild(Kaart) kaartComponent!: Kaart;
-  TEST = tijdlijnElementen;
+  preSetTijdlijnElementen = tijdlijnElementen;
   value: string = ''; // Initialize with a default value
   states!: State[];
 
