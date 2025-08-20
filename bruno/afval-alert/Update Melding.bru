@@ -1,0 +1,27 @@
+meta {
+  name: Update Melding
+  type: http
+  seq: 2
+}
+
+put {
+  url: http://localhost:8080/api/melding/1
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "lat": 53.2194,
+    "lon": 53.2194,
+    "email": "john@doe.com",
+    "naam": "John Doe",
+    "comment": "Er is afval naast de prullenbak gegooid omdat de prullenbak vol zit.",
+    "imageId": 1
+  }
+  
+}
+
+settings {
+  encodeUrl: true
+}
