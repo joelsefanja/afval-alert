@@ -260,6 +260,10 @@ async def classify_waste_hybrid(
         classifier = AfvalClassifier()
         afval_resultaten = classifier.classificeer_afval(contents)
         
+        # Log what we're returning to the caller
+        logger.info(f"[{request_id}] Returning to caller: {afval_resultaten}")
+        logger.info(f"[{request_id}] Return type: {type(afval_resultaten)}")
+        
         # Return direct list format as requested: [{"type": "...", "confidence": ...}]
         return afval_resultaten
         
@@ -361,6 +365,10 @@ async def classify_waste_with_gemini(
         total_time = time.time() - start_time
         
         logger.info(f"[{request_id}] Request completed in {total_time:.3f}s")
+        
+        # Log what we're returning to the caller
+        logger.info(f"[{request_id}] Returning to caller: {afval_confidences}")
+        logger.info(f"[{request_id}] Return type: {type(afval_confidences)}")
         
         # Return direct list format as requested
         return afval_confidences

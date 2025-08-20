@@ -152,6 +152,10 @@ class AfvalClassifier:
             logger.warning("No classification results generated, using fallback")
             return self._get_fallback_results()
         
+        # Log what we're returning
+        logger.info(f"AfvalClassifier returning: {result}")
+        logger.info(f"Return type: {type(result)}")
+        
         return result
     
     def _get_fallback_results(self) -> List[Dict[str, float]]:
