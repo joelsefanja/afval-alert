@@ -1,11 +1,11 @@
 package com.summerschool.afval_alert.model.dto;
 
-import com.summerschool.afval_alert.model.enums.Status;
+import com.summerschool.afval_alert.model.entity.Melding;
 
 public class PutStatusMeldingDTO {
-    private Status status;
+    private Melding.Status status;
 
-    public Status getStatus() {
+    public Melding.Status getStatus() {
         return status;
     }
 }

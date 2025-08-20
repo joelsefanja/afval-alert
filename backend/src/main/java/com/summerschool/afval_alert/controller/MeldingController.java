@@ -6,8 +6,7 @@ import com.summerschool.afval_alert.model.dto.PutMeldingDTO;
 import com.summerschool.afval_alert.model.dto.PutStatusMeldingDTO;
 import com.summerschool.afval_alert.model.dto.ShowMeldingDTO;
 import com.summerschool.afval_alert.model.entity.Melding;
-import com.summerschool.afval_alert.model.enums.Status;
-import com.summerschool.afval_alert.model.enums.TrashType;
+import com.summerschool.afval_alert.service.ClassificationService;
 import com.summerschool.afval_alert.service.MeldingService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,10 +18,12 @@ import java.util.List;
 public class MeldingController {
     private final MeldingService meldingService;
     private final MeldingMapper meldingMapper;
+    private final ClassificationService classificationService;
 
-    public MeldingController(MeldingService meldingService,  MeldingMapper meldingMapper) {
+    public MeldingController(MeldingService meldingService, MeldingMapper meldingMapper, ClassificationService classificationService) {
         this.meldingService = meldingService;
         this.meldingMapper = meldingMapper;
+        this.classificationService = classificationService;
     }
 
     @PutMapping("/melding/{id}")
@@ -40,6 +41,9 @@ public class MeldingController {
 
         // Markeer als finalized om opschoning te voorkomen
         melding.setFinalized(true);
+
+        // Maak een classificatie aan
+        classificationService.createClassification(melding.getId());
 
         meldingService.updateMelding(melding);
 

@@ -1,7 +1,6 @@
 package com.summerschool.afval_alert.model.dto;
 
-import com.summerschool.afval_alert.model.enums.Status;
-import com.summerschool.afval_alert.model.enums.TrashType;
+import com.summerschool.afval_alert.model.entity.Melding;
 
 import java.time.LocalDateTime;
 
@@ -10,8 +9,7 @@ public class AllMeldingenDTO {
     private double lat;
     private double lon;
     private LocalDateTime created_at;
-    private TrashType trashType;
-    private Status status;
+    private Melding.Status status;
 
     public Long getId() { return id; }
     public double getLat() { return lat; }
@@ -23,19 +21,11 @@ public class AllMeldingenDTO {
     public void setLon(double lon) { this.lon = lon; }
     public void setCreated_at(LocalDateTime created_at) { this.created_at = created_at; }
 
-    public TrashType getTrashType() {
-        return trashType;
-    }
-
-    public void setTrashType(TrashType trashType) {
-        this.trashType = trashType;
-    }
-
-    public Status getStatus() {
+    public Melding.Status getStatus() {
         return status;
     }
 
-    public void setStatus(Status status) {
+    public void setStatus(Melding.Status status) {
         this.status = status;
     }
 }

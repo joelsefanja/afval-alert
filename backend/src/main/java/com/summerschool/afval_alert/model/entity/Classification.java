@@ -16,7 +16,57 @@ public class Classification {
     private Melding melding;
 
     @OneToMany(mappedBy = "classification", cascade = CascadeType.ALL )
-    private List<ClassificationLabel> classificationLabels = new ArrayList<ClassificationLabel>();
+    private List<ClassificationLabel> classificationLabels = new ArrayList<>();
+
+    @Enumerated(EnumType.STRING)
+    private Status status = Status.PENDING;
+
+    public LocalDateTime createdAt = LocalDateTime.now();
+
+    public LocalDateTime startedAt;
 
     public LocalDateTime classifiedAt;
+
+    public Melding getMelding() {
+        return melding;
+    }
+
+    public void setMelding(Melding melding) {
+        this.melding = melding;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public LocalDateTime getStartedAt() {
+        return startedAt;
+    }
+
+    public void setStartedAt(LocalDateTime startedAt) {}
+
+    public LocalDateTime getClassifiedAt() {
+        return startedAt;
+    }
+
+    public void setClassifiedAt(LocalDateTime classifiedAt) {}
+
+    public enum Status {
+        PENDING,
+        RUNNING,
+        COMPLETED,
+        FAILED
+    }
 }
