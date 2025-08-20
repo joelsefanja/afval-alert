@@ -19,6 +19,12 @@ export interface MeldingConcept {
   aanmaakDatum: Date;
 }
 
+import { FotoHerkenningResultaat } from '@app/app-users/features/afval-melden/interfaces/foto-verwerking.interface';
+
+export interface MeldingConcept {
+  fotoHerkenningResultaat?: FotoHerkenningResultaat;
+}
+
 export enum MeldingConceptStatus {
   CONCEPT = 'CONCEPT',
   AFBEELDING_VERWERKT = 'AFBEELDING_VERWERKT',

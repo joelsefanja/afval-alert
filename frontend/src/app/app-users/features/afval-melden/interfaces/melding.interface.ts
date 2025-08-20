@@ -34,11 +34,6 @@ export interface IMeldingService {
 
 export interface Contact {
   email?: string;
+  naam?: string;
   anoniem?: boolean;
-}
-
-export interface MeldingData {
-  foto?: any; // TODO: Replace 'any' with the actual type of the photo
-  locatie?: any; // TODO: Replace 'any' with the actual type of the location
-  contact?: Contact;
 }

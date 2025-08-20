@@ -1,0 +1,23 @@
+<div class="flex flex-col h-full p-4 text-center justify-between">
+  <div class="flex-grow flex flex-col justify-center">
+    <div class="mb-6">
+      <i class="pi pi-trash text-7xl text-primary-500 mb-4"></i>
+      <h1 class="text-3xl font-bold text-primary-800 mb-2">
+        Zie je zwerfafval?
+      </h1>
+      <p class="text-lg text-surface-600">
+        Maak een foto, wij herkennen het type automatisch en maken het schoon.
+      </p>
+    </div>
+  </div>
+
+  <div class="w-full max-w-sm mx-auto">
+    <p-button
+      label="Start met foto"
+      icon="pi pi-camera"
+      size="large"
+      (click)="start()"
+      styleClass="w-full h-12 text-lg"
+    ></p-button>
+  </div>
+</div>

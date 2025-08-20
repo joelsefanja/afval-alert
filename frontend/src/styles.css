@@ -1,124 +1,60 @@
-@import "primeicons/primeicons.css";
+/* Application Styles */
 
-@import "tailwindcss";
-@plugin "tailwindcss-primeui";
+/* TailwindCSS base styles */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/* Custom Animations for Step Progress */
-@keyframes pulse-grow {
-  0% {
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.4);
-  }
-  70% {
-    transform: scale(1.05);
-    box-shadow: 0 0 0 10px rgba(52, 211, 153, 0);
-  }
-  100% {
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0);
-  }
+/* PrimeNG theme will be injected here */
+
+/* Global styles */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  background-color: var(--p-surface-ground);
+  color: var(--p-text-color);
 }
 
-@keyframes bounce-smooth {
-  0%, 20%, 50%, 80%, 100% {
-    transform: translateY(0);
-  }
-  40% {
-    transform: translateY(-5px);
-  }
-  60% {
-    transform: translateY(-3px);
-  }
+/* Mobile-first responsive design */
+* {
+  box-sizing: border-box;
 }
 
-@keyframes slide-in-right {
-  0% {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-  100% {
-    transform: translateX(0);
-    opacity: 1;
-  }
+/* Ensure touch targets are at least 44px */
+button, 
+[role="button"], 
+input, 
+select, 
+textarea {
+  min-height: 44px;
+  min-width: 44px;
 }
 
-@keyframes fill-progress {
-  0% {
-    width: 0%;
-  }
-  100% {
-    width: var(--target-width, 0%);
+/* Focus styles for accessibility */
+:focus-visible {
+  outline: 3px solid var(--p-focus-ring);
+  outline-offset: 2px;
+}
+
+/* High contrast for better readability */
+@media (prefers-contrast: high) {
+  :root {
+    --p-text-color: #000000;
+    --p-surface-ground: #ffffff;
   }
 }
 
-@keyframes fade-in {
-  0% {
-    opacity: 0;
-    transform: scale(0.8);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
+/* Reduced motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 
-/* Custom Classes */
-.pulse-grow-animation {
-  animation: pulse-grow 2s infinite;
-}
-
-.bounce-smooth-animation {
-  animation: bounce-smooth 2s infinite;
-}
-
-.slide-in-right-animation {
-  animation: slide-in-right 0.5s ease-out forwards;
-}
-
-.progress-fill-animation {
-  animation: fill-progress 0.5s ease-out forwards;
-}
-
-.animate-fade-in {
-  animation: fade-in 0.3s ease-out forwards;
-}
-
-/* Enhanced Step Styles */
-.step-circle {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.step-circle-active {
-  transform: scale(1.1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.step-label {
-  transition: all 0.3s ease;
-}
-
-.step-progress-bar {
-  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Map container style */
-#map {
-  height: 400px;
-  width: 100%;
-  border-radius: var(--radius);
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .step-label {
-    font-size: 0.65rem;
-    width: 12px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  
-  .step-circle {
-    width: 6px;
-    height: 6px;
-  }
+/* Custom styles for p-steps */
+.steps-accessible .p-steps-list {
+  gap: 1rem;
 }
