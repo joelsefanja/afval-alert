@@ -1,4 +1,4 @@
-import { Component, inject, ViewChild, output} from '@angular/core';
+import { Component, inject, ViewChild, output, input, SimpleChange} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TijdlijnElementen } from '../tijdlijn-element/tijdlijn-element';
 import { TijdlijnElement } from '../interfaces/tijdlijn-element.interface';
@@ -9,6 +9,7 @@ import { State } from '../features/dashboard/interfaces/state.interface';
 import { ButtonModule } from 'primeng/button';
 import { KaartService } from '../../app-users/features/afval-melden/services/kaart';
 import { Kaart } from '../../app-users/features/afval-melden/components/locatie-stap/kaart';
+import { NotificationStore } from '../features/dashboard/stores/notificatie.store';
 
 import { ImageModule } from 'primeng/image';
 
@@ -23,10 +24,10 @@ import { SelectModule } from 'primeng/select';
 // ];
 
 const tijdlijnElementen: TijdlijnElement[] = [
-  { note: "Hier komt een eventuele opmerking te staan en als deze veel langer is dan gebeurd het volgende dus", date: new Date(2020, 1, 1) },
-  { note: 'Status verranderd van x naar y', date: new Date(2020, 1, 2) },
-  { note: "Status verranderd van y naar z Opletten met het ophalen, gebroken glas", date: new Date(2020, 1, 4) },
-  { note: "Afgehandeld", date: new Date(2020, 1, 5) },
+  { content: "Hier komt een eventuele opmerking te staan en als deze veel langer is dan gebeurd het volgende dus", createdAt: new Date(2020, 1, 1) },
+  { content: 'Status verranderd van x naar y', createdAt: new Date(2020, 1, 2) },
+  { content: "Status verranderd van y naar z Opletten met het ophalen, gebroken glas", createdAt: new Date(2020, 1, 4) },
+  { content: "Afgehandeld", createdAt: new Date(2020, 1, 5) },
 ];
 
 @Component({
@@ -51,6 +52,10 @@ export class DetailComponent {
   searchQuery = '';
   selectedAddress = '';
 
+  lastSelected : number | null = null;
+
+  store = inject(NotificationStore);
+
   ngOnInit() {
         this.states = [
           {status: 'Nieuw'},
@@ -58,6 +63,8 @@ export class DetailComponent {
           {status: 'Ingepland'},
           {status: 'Opgehaald'}
         ];
+
+        this.setNotificaties();
     }
 
   constructor(public selection: IDService) {}
@@ -66,5 +73,15 @@ export class DetailComponent {
     this.selection.closeDetail();
   }
 
+  ngDoCheck() {
+    if (this.selection.selectedId() !== this.lastSelected) {
+      this.lastSelected = this.selection.selectedId();
 
+      this.setNotificaties();
+    }
+  }
+
+  setNotificaties() {
+    this.store.fetch(this.selection.selectedId());
+  }
 }

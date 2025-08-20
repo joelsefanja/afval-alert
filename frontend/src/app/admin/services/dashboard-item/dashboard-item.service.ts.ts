@@ -11,8 +11,8 @@ export class DashboardItemServiceTs {
 
   constructor(private http: HttpClient) {}
 
-  fetchNotities(meldingId:number) {
-    this.http.get<any[]>('http://localhost:8080/api/notities/' + meldingId)
+  fetchNotities(meldingId:number | null | undefined) {
+    this.http.get<TijdlijnElement[]>('http://localhost:8080/api/notities/' + meldingId)
       .pipe(
         map(notities =>
           notities.map(m => ({
