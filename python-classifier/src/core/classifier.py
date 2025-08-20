@@ -24,6 +24,7 @@ class AfvalClassifier:
         self.gemini_adapter = MockGeminiAI()  # Using mock for now
         self.config_service = get_configuration_service()
         self.afval_typen = self._get_afval_typen()
+        self.internal_to_official_mapping = self._get_type_mapping()
     
     def _get_afval_typen(self) -> List[str]:
         """Get all afval types from configuration."""
@@ -33,6 +34,38 @@ class AfvalClassifier:
             "Organisch", "Textiel", "Elektronisch afval", 
             "Bouw- en sloopafval", "Chemisch afval", "Overig", "Geen afval"
         ]
+    
+    def _get_type_mapping(self) -> Dict[str, str]:
+        """Map internal classifier names to official Dutch waste categories."""
+        return {
+            # Plastic items
+            "plastic_flessen": "Restafval",
+            "plastic_zakken": "Restafval",
+            
+            # Metal items
+            "blikjes": "Restafval",
+            "metaal": "Restafval",
+            
+            # Organic waste
+            "sigarettenpeuken": "Restafval",
+            "voedselresten": "Organisch",
+            
+            # Paper and cardboard
+            "papier": "Papier en karton",
+            
+            # Glass
+            "glas": "Glas",
+            
+            # Textiles
+            "textiel": "Textiel",
+            
+            # Electronics
+            "elektronisch_afval": "Elektronisch afval",
+            
+            # Default fallbacks
+            "niet_classificeerbaar": "Overig",
+            "onbekend": "Overig"
+        }
     
     def classificeer_afval(self, image_data: bytes) -> List[Dict[str, float]]:
         """Classify waste and return all types with confidence scores."""
@@ -83,11 +116,13 @@ class AfvalClassifier:
             afval_type: 0.0 for afval_type in self.afval_typen
         }
         
-        # Add local predictions
+        # Add local predictions with proper mapping
         for pred in local_result.predictions:
-            if pred.class_name in afval_confidences:
-                afval_confidences[pred.class_name] = max(
-                    afval_confidences[pred.class_name], 
+            # Map internal type to official category
+            official_type = self.internal_to_official_mapping.get(pred.class_name, "Overig")
+            if official_type in afval_confidences:
+                afval_confidences[official_type] = max(
+                    afval_confidences[official_type], 
                     pred.probability
                 )
         

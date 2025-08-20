@@ -258,20 +258,10 @@ async def classify_waste_hybrid(
         # Use the new classifier for consistent results
         from src.core.classifier import AfvalClassifier
         classifier = AfvalClassifier()
-        # afval_resultaten = classifier.classificeer_afval(contents)
+        afval_resultaten = classifier.classificeer_afval(contents)
         
-        # Prepare response with correct format - transform field names for consistency
-        # transformed_results = []
-        # for result in afval_resultaten:
-        #     transformed_results.append({
-        #         "afval_type": result["type"],
-        #         "confidence": result["confidence"]
-        #     })
-        
-        resultaat = {
-            "afval_typen": [{"afval_type": "Restafval", "confidence": 1.0}]
-        }
-        return resultaat
+        # Return direct list format as requested: [{"type": "...", "confidence": ...}]
+        return afval_resultaten
         
     except HTTPException:
         raise
@@ -337,44 +327,43 @@ async def classify_waste_with_gemini(
         await afbeelding.seek(0)
         
         # Process image directly with Gemini AI
-        # logger.info(f"[{request_id}] Starting Gemini analysis")
-        # gemini_start = time.time()
-        # gemini_resultaat = gemini_adapter.analyseer_afbeelding(contents, afbeelding.content_type)
-        # gemini_time = time.time() - gemini_start
+        logger.info(f"[{request_id}] Starting Gemini analysis")
+        gemini_start = time.time()
+        gemini_resultaat = gemini_adapter.analyseer_afbeelding(contents, afbeelding.content_type)
+        gemini_time = time.time() - gemini_start
         
-        # logger.info(f"[{request_id}] Gemini analysis completed in {gemini_time:.3f}s")
+        logger.info(f"[{request_id}] Gemini analysis completed in {gemini_time:.3f}s")
 
-        # Convert to the new format - only include categories with confidence > 0.0
-        # afval_confidences = []
+        # Convert to the requested format - only include categories with confidence > 0.0
+        afval_confidences = []
         
         # Add Gemini results (only those with confidence > 0.0)
-        # if gemini_resultaat.afval_types:
-        #     for item in gemini_resultaat.afval_types:
-        #         confidence = item["zekerheid"]
-        #         if confidence > 0.0:
-        #             afval_confidences.append({
-        #                 "afval_type": item["afval_type"],
-        #                 "confidence": confidence
-        #             })
+        if gemini_resultaat.afval_types:
+            for item in gemini_resultaat.afval_types:
+                confidence = item["zekerheid"]
+                if confidence > 0.0:
+                    afval_confidences.append({
+                        "type": item["afval_type"],
+                        "confidence": confidence
+                    })
         
         # If no valid results from Gemini, provide a fallback
-        # if not afval_confidences:
-        #     logger.warning(f"[{request_id}] No valid Gemini results, providing fallback")
-        #     afval_confidences = [
-        #         {"afval_type": "Geen afval", "confidence": 1.0}
-        #     ]
+        if not afval_confidences:
+            logger.warning(f"[{request_id}] No valid Gemini results, providing fallback")
+            afval_confidences = [
+                {"type": "Geen afval", "confidence": 1.0}
+            ]
         
         # Sort by confidence (highest first)
-        # afval_confidences.sort(key=lambda x: x["confidence"], reverse=True)
+        afval_confidences.sort(key=lambda x: x["confidence"], reverse=True)
 
         # Prepare response with performance metrics
         total_time = time.time() - start_time
         
         logger.info(f"[{request_id}] Request completed in {total_time:.3f}s")
         
-        return {
-            "afval_typen": [{"afval_type": "Restafval", "confidence": 1.0}]
-        }
+        # Return direct list format as requested
+        return afval_confidences
         
     except HTTPException:
         raise
