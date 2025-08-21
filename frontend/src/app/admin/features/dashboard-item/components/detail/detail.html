@@ -1,5 +1,13 @@
 <p-button label="Sluiten" (click)="closeDetail()" />
 
+<div *ngIf="dashboardItemStore.selectedNotification() as item">
+  <app-detail-header
+  [status]="item.status"
+  [createdAt]="item.createdAt"
+  [comment]="item.comment">
+  </app-detail-header>
+</div>
+
 <div class="card">
     <p-tabs value="0">
         <p-tablist>
@@ -9,11 +17,9 @@
         </p-tablist>
         <p-tabpanels>
           <p-tabpanel value="0">
-            <div class="sizepanel">
-              <h1>Foto voor melding met id: {{ selection.selectedId() }}</h1>
-              <p-image [src]="imageStore.image()" alt="Image" class="mapp" height="400"/>
-              <p>Afvaltype, status, datum</p>
-              Opmerking van gebruiker bij melding
+            <div *ngIf="dashboardItemStore.selectedNotification() as item">
+              <h1>Foto voor melding met id: {{ item.id }}</h1>
+              <p-image [src]="imageStore.image()" alt="Image" class="mapp" height="400"></p-image>
             </div>
           </p-tabpanel>
 

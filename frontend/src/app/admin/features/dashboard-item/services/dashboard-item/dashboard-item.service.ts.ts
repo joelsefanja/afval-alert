@@ -1,30 +1,33 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
-import { TijdlijnElement } from '../../interfaces/tijdlijn-element.interface';
 import { map } from 'rxjs/operators';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class DashboardItemService {
-  private itemsSignal = signal<TijdlijnElement[]>([]);
+  private itemSignal = signal<any | null>(null);
 
   constructor(private http: HttpClient) {}
 
-  fetchNotities(meldingId:number | null | undefined) {
-    this.http.get<TijdlijnElement[]>('http://localhost:8080/api/notities/' + meldingId)
+  fetchDetails(meldingId: number | null | undefined) {
+    if (meldingId == null) return;
+
+    this.http.get<any>('http://localhost:8080/api/melding/' + meldingId)
       .pipe(
-        map(notities =>
-          notities.map(m => ({
-            content: m.content,
-            createdAt: m.createdAt
-          }))
-        )
+        map(m => ({
+          id: m.id,
+          lat: m.lat,
+          lon: m.lon,
+          comment: m.comment,
+          imageUrl: m.imageUrl,
+          status: m.status,
+          notities: m.notities,
+          createdAt: m.createdAt
+        }))
       )
-      .subscribe(list => this.itemsSignal.set(list));
+      .subscribe(item => this.itemSignal.set(item));
   }
 
-  get notifications() {
-    return this.itemsSignal;
+  get item() {
+    return this.itemSignal;
   }
 }

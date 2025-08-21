@@ -13,18 +13,20 @@ import { LocatieService } from '@services/locatie/locatie.service';
 import { NotificationStore } from '../../stores/notificatie.store';
 import { ImageStore } from '../../stores/image.store';
 import { UpdateStatusStore } from '../../stores/update-status.store';
+import { DashboardItemService } from '../../services/dashboard-item/dashboard-item.service.ts';
 
 import { ImageModule } from 'primeng/image';
 import { TabsModule } from 'primeng/tabs';
-
+import { DetailHeaderComponent } from '../detail-header/detail-header/detail-header';
 
 import { SelectModule } from 'primeng/select';
 import { state } from '@angular/animations';
+import { DashboardItemStore } from '../../stores/dashboard-item.store';
 
 @Component({
   selector: 'app-detail',
   standalone: true,
-  imports: [CommonModule, TijdlijnElementen, TextareaModule, FormsModule, SelectModule, ButtonModule, KaartComponent, ImageModule, TabsModule],
+  imports: [CommonModule, TijdlijnElementen, TextareaModule, FormsModule, SelectModule, ButtonModule, KaartComponent, ImageModule, TabsModule, DetailHeaderComponent],
   templateUrl: './detail.html',
   styleUrl: './detail.scss'
 })
@@ -51,6 +53,7 @@ export class DetailComponent {
   notificatieStore = inject(NotificationStore);
   imageStore = inject(ImageStore);
   updateStatusStore = inject (UpdateStatusStore);
+  dashboardItemStore = inject(DashboardItemStore);
 
   ngOnInit() {
         this.states = [
@@ -59,6 +62,8 @@ export class DetailComponent {
           {status: 'Wordtopgehaald'},
           {status: 'Opgehaald'}
         ];
+
+        
     }
 
   constructor(public selection: IDService) {}
@@ -73,6 +78,7 @@ export class DetailComponent {
 
       this.setNotificaties();
       this.setImage();
+      this.setItem();
     } else if (this.notitieAdded) {
       this.setNotificaties();
 
@@ -86,6 +92,10 @@ export class DetailComponent {
 
   setImage() {
     this.imageStore.fetch(this.selection.selectedId());
+  }
+
+  setItem() {
+    this.dashboardItemStore.fetch(this.selection.selectedId());
   }
 
   onUpdateStatus() {
