@@ -1,8 +1,8 @@
-# AfvalAlert - Clean Architecture Implementation
+# AfvalAlert Python Classifier - V3.0 Modular Architecture
 
 ## Overview
 
-AfvalAlert heeft een complete herstructurering ondergaan naar een schone, SOLID en DRY architectuur zonder hardcoded constanten. Alle configuratie is nu uitbreidbaar en klaar voor toekomstige database-integratie.
+AfvalAlert heeft een complete herstructurering ondergaan naar een modulaire architectuur volgens single responsibility principes. Elk bestand heeft nu één duidelijke verantwoordelijkheid en de code is opgesplitst in logische modules.
 
 ## Key Achievements
 
@@ -25,25 +25,45 @@ AfvalAlert heeft een complete herstructurering ondergaan naar een schone, SOLID 
 ### Configuration-Driven Architecture
 - Alle constanten verplaatst van code naar YAML configuratie
 - Extensible voor toekomstige database integratie
-- Caching en validatie systeem geïmplementeerd
+- Caching systeem geïmplementeerd
 
-## Project Structure
+## Project Structure (V3.0)
 
 ```
-afval-alert/
-├── src/afval_alert/           # Schone package structuur
-│   ├── api/                   # FastAPI endpoints
-│   ├── core/                  # Business logic  
-│   ├── models/                # Data schemas (geen hardcoded constanten)
-│   ├── adapters/              # External service interfaces
-│   │   ├── lokale_classificatie.py # Lokale AI model adapter
-│   │   └── gemini_ai.py       # Google Gemini AI adapter
-│   ├── config/                # SOLID configuratie systeem
-│   │   ├── interfaces.py      # Configuratie interfaces
-│   │   ├── implementations.py # Concrete implementaties
-│   │   ├── loader.py          # DRY configuratie service
-│   │   └── data/              # YAML configuratie bestanden
-│   └── utils/                 # Utilities (zonder Unicode)
+src/
+├── api/                           # FastAPI Application Layer
+│   ├── app.py                     # FastAPI app instance
+│   ├── server.py                  # Server startup functions
+│   └── endpoints/                 # Individual endpoint modules
+│       ├── info.py               # Service info endpoints
+│       ├── status.py             # Health/status endpoints
+│       └── classification.py     # Classification endpoints
+├── config/                        # Configuration Classes
+│   ├── app_config.py             # Application configuration
+│   └── afval_config.py           # Waste classification config
+├── decorators/                    # Decorator Functions
+│   ├── logging_decorator.py      # @logged decorator
+│   ├── validation_decorator.py   # @validate_image decorator
+│   └── singleton_decorator.py    # @singleton decorator
+├── context_managers/              # Context Managers
+│   ├── torch_context.py          # PyTorch inference context
+│   └── image_context.py          # PIL image processing context
+├── features/                      # Feature Processing
+│   ├── tensor_processing.py      # Tensor statistics & formatting
+│   └── response_validation.py    # Gemini response validation
+├── exceptions/                    # Exception Classes
+│   ├── base_exceptions.py        # Base AfvalAlertError
+│   ├── service_exceptions.py     # ServiceNotAvailableError
+│   └── validation_exceptions.py  # ValidationError
+├── services/                      # Service Layer
+│   ├── service_factory.py        # ServiceFactory pattern
+│   └── implementations/          # Service implementations
+│       ├── lokale_service.py     # Local Swin Tiny service
+│       └── gemini_service.py     # Gemini AI service
+├── controller.py                  # Main controller (imports all)
+├── pipeline.py                    # Functional classification pipeline
+├── main.py                        # Legacy API compatibility
+└── utils.py                       # (DEPRECATED - can be removed)
 ```
 
 ## UV Virtual Environment
@@ -63,50 +83,53 @@ uv venv
 uv pip install -e ".[dev,test]"
 ```
 
-### Development Commands
-```bash
-# Via Makefile
-make setup     # Setup environment
-make test      # Run all tests  
-make dev       # Start development server
-make lint      # Code quality checks
+### Development Commands (Makefile)
 
-# Direct UV commands
-uv run afval-alert server    # Start server
-uv run afval-alert-test      # Run tests
-uv run pytest tests/unit/   # Specific test suite
+**🚀 ONE COMMAND TO RULE THEM ALL:**
+```bash
+make dev            # Setup + Run development server
+                    # (Installs dependencies and starts server with reload)
 ```
 
-### Automated Testing with Datasets
+**Other Commands:**
 ```bash
-# Download datasets and run all tests
-python scripts/download_datasets_simple.py    # Download only
-python scripts/run_all_tests_with_datasets.py # Download + run tests
+# Testing
+make test           # Run all tests with coverage
+make test-unit      # Unit tests only
+make test-integration # Integration tests only
+make test-e2e       # End-to-end tests only
 
-# Datasets will be stored in:
-# - tests/assets/zwerfafval/        (litter images)
-# - tests/assets/geen-zwerfafval/   (nature images)
+# Code Quality
+make lint           # Code linting (flake8, black, isort)
+make format         # Code formatting
+make type           # Type checking
+make check          # Full quality check
+
+# Other
+make run            # Run main controller
+make run-legacy     # Run legacy API
+make clean          # Clean temp files
+make build          # Build package
+make docs           # Update documentation
+```
+
+### Testing Structure
+```bash
+# Run different test categories
+make test           # All tests with coverage
+make test-unit      # Unit tests only
+make test-integration # Integration tests only
+make test-e2e       # End-to-end tests only
+
+# Direct pytest commands
+uv run pytest tests/unit/        # Unit tests
+uv run pytest tests/integration/ # Integration tests
+uv run pytest tests/e2e/         # E2E tests
 ```
 
 ## Configuration System
+TODO: INVULLEN
 
-### YAML-Based Constants
-Alle constanten zijn verplaatst naar configuratie:
-
-```yaml
-# src/afval_alert/config/data/constants.yaml
-waste_types:
-  plastic_flessen: "plastic_flessen"
-  # ... etc
-
-api_defaults:
-  max_file_size_mb: 50
-  timeout_seconds: 30
-  
-response_messages:
-  success: "Classificatie succesvol voltooid"
-  file_too_large: "Bestand te groot (max {max_size}MB)"
-```
 
 ### Extensible Architecture
 Ready voor database integratie:

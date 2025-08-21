@@ -178,7 +178,7 @@ Docs endpoint working
 Testing classification API...
 Classification successful: True
    Local confidence: 0.7
-   Gemini type: plastic_flessen
+   Gemini type: restafval
 
 Testing docker-compose compatibility...
 docker-compose.yml syntax valid

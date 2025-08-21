@@ -1,1 +1,1 @@
-"""afval_alert package"""
+"""AfvalAlert package"""

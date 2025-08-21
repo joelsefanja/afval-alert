@@ -1,39 +1,42 @@
-# Makefile for AfvalAlert with UV
-.PHONY: help install setup test lint format type run develop clean build pre-commit check ci
+# Makefile for AfvalAlert Python Classifier with UV
+.PHONY: help dev test lint format type run clean build check docs
 
 # Default target
 help:
-	@echo "AfvalAlert Development Commands (UV-based)"
-	@echo "=========================================="
-	@echo "setup       - Set up development environment with UV (Development omgeving instellen met UV)"
-	@echo "install     - Install dependencies with UV (Dependencies installeren met UV)"
-	@echo "test        - Run all tests (Alle tests uitvoeren)"
-	@echo "test-unit   - Run unit tests only (Alleen unit tests uitvoeren)"
-	@echo "test-integration - Run integration tests only (Alleen integratie tests uitvoeren)"
-	@echo "test-e2e    - Run end-to-end tests only (Alleen end-to-end tests uitvoeren)"
-	@echo "test-all    - Run all tests with automatic dataset download (Alle tests uitvoeren met automatische dataset download)"
-	@echo "lint        - Lint code (Code linten)"
-	@echo "format      - Format code with black and isort (Code formatteren met black en isort)"
-	@echo "type        - Perform type checking with mypy (Type checking uitvoeren met mypy)"
-	@echo "run         - Run development server (Development server uitvoeren)"
-	@echo "develop     - Run development server with uvicorn (Development server uitvoeren met uvicorn)"
-	@echo "clean       - Clean temporary files (Tijdelijke bestanden opschonen)"
-	@echo "build       - Build package (Package bouwen)"
+	@echo "AfvalAlert Python Classifier - UV Development Commands"
+	@echo "====================================================="
+	@echo "dev         - 🚀 ONE COMMAND: Setup + Run development server"
+	@echo "             (Installs dependencies and starts server with reload)"
+	@echo ""
+	@echo "Other Commands:"
+	@echo "test        - Run all tests with coverage"
+	@echo "test-unit   - Run unit tests only"
+	@echo "test-integration - Run integration tests only"
+	@echo "test-e2e    - Run end-to-end tests only"
+	@echo "lint        - Lint code with flake8, black, isort"
+	@echo "format      - Format code with black and isort"
+	@echo "type        - Type checking with mypy"
+	@echo "run         - Run main controller server"
+	@echo "run-legacy  - Run legacy API server"
+	@echo "clean       - Clean temporary files and caches"
+	@echo "build       - Build package"
+	@echo "check       - Full quality check (lint + type + test)"
+	@echo "docs        - Generate/update documentation"
 
-# Set up development environment
-setup:
-	@echo "Setting up development environment..."
-	uv venv
-	uv pip install -e ".[dev,test]"
-	@echo "Setup complete!"
-
-# Install dependencies
-install:
-	uv pip install -e ".[dev,test]"
+# ONE COMMAND: Setup + Run development server
+dev:
+	@echo "Starting AfvalAlert Development Server..."
+	@echo "Installing dependencies with UV..."
+	@uv pip install -e ".[dev,test]" --quiet
+	@echo "Dependencies installed!"
+	@echo "Starting server at http://localhost:8001"
+	@echo "API docs at http://localhost:8001/docs"
+	@echo "Auto-reload enabled - edit files and see changes instantly!"
+	uv run uvicorn src.controller:app --reload --host 127.0.0.1 --port 8001
 
 # Run all tests
 test:
-	uv run python -m pytest tests/ -v --cov=afval_alert --cov-report=term-missing --cov-fail-under=0
+	uv run python -m pytest tests/ -v --cov=src --cov-report=term-missing --cov-fail-under=80
 
 # Run unit tests only
 test-unit:
@@ -47,52 +50,50 @@ test-integration:
 test-e2e:
 	uv run python -m pytest tests/e2e/ -v
 
-# Run all tests with automatic dataset download
-test-all:
-	uv run python scripts/run_all_tests_with_datasets_fixed.py
 
 # Lint code
 lint:
-	uv run flake8 src/afval_alert/
-	uv run black --check src/afval_alert/
-	uv run isort --check-only src/afval_alert/
+	uv run flake8 src/
+	uv run black --check src/
+	uv run isort --check-only src/
 
 # Format code
 format:
-	uv run black src/afval_alert/
-	uv run isort src/afval_alert/
+	uv run black src/
+	uv run isort src/
 
 # Type checking
 type:
 	uv run mypy src/
 
-# Run development server
+# Run main controller server
 run:
-	PYTHONPATH=src:. uv run python -m src.api.main --host 0.0.0.0 --port 8000
+	uv run python -m src.controller
 
-# Run with uvicorn for development
-develop:
-	cd src && PYTHONPATH=.. uv run uvicorn api.main:app --reload --host 0.0.0.0 --port 8000
+# Run legacy API server
+run-legacy:
+	uv run python -m src.main
 
-# Alias for develop
-dev: develop
 
 # Clean temporary files
 clean:
-	find . -type f -name "*.pyc" -delete
-	find . -type d -name "__pycache__" -delete
-	find . -type d -name "*.egg-info" -exec rm -rf {} +
-	find . -type d -name ".pytest_cache" -exec rm -rf {} +
-	find . -type d -name ".mypy_cache" -exec rm -rf {} +
-	find . -type f -name ".coverage" -delete
+	-find . -type f -name "*.pyc" -delete
+	-find . -type d -name "__pycache__" -delete
+	-find . -type d -name "*.egg-info" -exec rm -rf {} +
+	-find . -type d -name ".pytest_cache" -exec rm -rf {} +
+	-find . -type d -name ".mypy_cache" -exec rm -rf {} +
+	-find . -type f -name ".coverage" -delete
+	-find . -type f -name ".DS_Store" -delete
+	-rm -rf dist/
 
 # Build package
 build:
 	uv build
 
-# Install pre-commit hooks
-pre-commit:
-	uv run pre-commit install
+# Generate/update documentation
+docs:
+	@echo "Updating project documentation..."
+	@echo "Project structure documented in docs/ARCHITECTURE_V3.md"
 
 # Quality check (lint + type + test)
 check: lint type test
