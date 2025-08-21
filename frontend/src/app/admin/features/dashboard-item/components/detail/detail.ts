@@ -1,23 +1,25 @@
 import { Component, inject, ViewChild, output, input, SimpleChange} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TijdlijnElementen } from '../tijdlijn-element/tijdlijn-element';
-import { IDService } from '../../../dashboard/services/id/id';
+import { IDService } from '@app/admin/features/dashboard/services/id/id';
 import { TextareaModule } from 'primeng/textarea';
 import { FormsModule } from '@angular/forms';
-import { State } from '../../../dashboard/interfaces/state.interface';
+import { State } from '@app/admin/features/dashboard/interfaces/state.interface';
 import { ButtonModule } from 'primeng/button';
 import { KaartService } from '@services/locatie/kaart.service';
 import { KaartComponent } from '@components/3-locatie-selectie/components';
 import { LocatieService } from '@services/locatie/locatie.service';
 
-import { NotificationStore as NotificatieStore }  from '../../stores/notificatie.store';
-import { NotificationStore as ImageStore} from '../../stores/image.store';
+import { NotificationStore } from '../../stores/notificatie.store';
+import { ImageStore } from '../../stores/image.store';
+import { UpdateStatusStore } from '../../stores/update-status.store';
 
 import { ImageModule } from 'primeng/image';
 import { TabsModule } from 'primeng/tabs';
   
 
 import { SelectModule } from 'primeng/select';
+import { state } from '@angular/animations';
 
 @Component({
   selector: 'app-detail',
@@ -44,19 +46,17 @@ export class DetailComponent {
 
   lastSelected : number | null = null;
 
-  notificatieStore = inject(NotificatieStore);
+  notificatieStore = inject(NotificationStore);
   imageStore = inject(ImageStore);
+  updateStatusStore = inject (UpdateStatusStore);
 
   ngOnInit() {
         this.states = [
-          {status: 'Nieuw'},
-          {status: 'Gecontroleerd'},
-          {status: 'Ingepland'},
-          {status: 'Opgehaald'}
+          {status: 'NIEUW'},
+          {status: 'MELDINGVERWERKT'},
+          {status: 'WORDTOPGEHAALD'},
+          {status: 'OPGEHAALD'}
         ];
-
-        this.setNotificaties();
-        this.setImage();
     }
 
   constructor(public selection: IDService) {}
@@ -80,7 +80,11 @@ export class DetailComponent {
 
   setImage() {
     this.imageStore.fetch(this.selection.selectedId());
+  }
 
-    console.log(this.imageStore.image);
+  onUpdateStatus() {
+    if (!this.selectedStatus || this.selectedStatus === "Selecteer een status") { return; }
+
+    this.updateStatusStore.update(this.selection.selectedId(), {"status": this.selectedStatus});
   }
 }

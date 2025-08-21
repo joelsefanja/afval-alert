@@ -30,12 +30,12 @@
             <div class="sizepanel">
               <p>Update status</p>
               <div>
-                <p-select [options]="states" [(ngModel)]="selectedStatus" optionLabel="status" placeholder="Selecteer een status" class="w-full md:w-56" />
+                <p-select [options]="states" [(ngModel)]="selectedStatus" optionLabel="status" optionValue="status" placeholder="Selecteer een status" class="w-full md:w-56" />
               </div>
               <p>Voeg opmerking toe</p>
               <textarea rows="5"cols="30" pTextarea [autoResize]="true"></textarea>
               <div>
-                <p-button label="Update" />
+                <p-button label="Update" (click)="onUpdateStatus()"/>
               </div>
             </div>
           </p-tabpanel>

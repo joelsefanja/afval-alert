@@ -1,12 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
-import { TijdlijnElement } from '../../features/dashboard/interfaces/tijdlijn-element.interface';
+import { TijdlijnElement } from '../../interfaces/tijdlijn-element.interface';
 import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
-export class DashboardItemServiceTs {
+export class DashboardItemService {
   private itemsSignal = signal<TijdlijnElement[]>([]);
 
   constructor(private http: HttpClient) {}
