@@ -1,0 +1,54 @@
+<div class="relative w-full h-full bg-gray-100 rounded-xl overflow-hidden">
+  @if (fotoUrl()) {
+    <img 
+      [src]="fotoUrl()" 
+      alt="Vastgelegde foto"
+      class="w-full h-full object-cover"
+    />
+    
+    <!-- Action Buttons -->
+    <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex items-center space-x-3">
+      <p-button
+        icon="pi pi-trash"
+        (onClick)="onVerwijderen()"
+        severity="danger"
+        size="large"
+        class="rounded-full"
+        label="Opnieuw"
+      ></p-button>
+      
+      <p-button
+        icon="pi pi-check"
+        (onClick)="onBevestigen()"
+        [loading]="isBevestigen()"
+        size="large"
+        class="rounded-full"
+        label="Verder"
+      ></p-button>
+    </div>
+    
+    <!-- Info Badge -->
+    @if (toonInfo()) {
+      <div class="absolute top-4 left-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm">
+        <i class="pi pi-check-circle mr-1"></i>
+        Foto gereed
+      </div>
+    }
+    
+    <!-- Upload Status -->
+    @if (isBevestigen()) {
+      <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <div class="bg-white rounded-xl p-6 text-center">
+          <i class="pi pi-spin pi-spinner text-2xl text-primary-500 mb-2"></i>
+          <p class="text-sm">{{ uploadStatus() }}</p>
+        </div>
+      </div>
+    }
+  } @else {
+    <!-- Empty State -->
+    <div class="flex flex-col items-center justify-center h-full text-gray-500">
+      <i class="pi pi-image text-4xl mb-2"></i>
+      <p class="text-sm">Geen foto beschikbaar</p>
+    </div>
+  }
+</div>

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LocatieConfigService, LocatieConfig } from '../services/locatie-config.service';
 
@@ -7,14 +7,16 @@ import { LocatieConfigService, LocatieConfig } from '../services/locatie-config.
   template: `
     <div class="config-viewer">
       <h2>Applicatie Configuratie</h2>
-      <div *ngIf="config; else noConfig">
+      @if (config) {
         <h3>Versie: {{config.versie}}</h3>
         
         <h4>Toegestane Gebieden:</h4>
         <ul>
-          <li *ngFor="let gebied of config.toegestaneGebieden">
-            <strong>{{gebied.naam}}</strong> ({{gebied.type}}) - {{gebied.land}}
-          </li>
+          @for (gebied of config.toegestaneGebieden; track gebied.naam) {
+            <li>
+              <strong>{{gebied.naam}}</strong> ({{gebied.type}}) - {{gebied.land}}
+            </li>
+          }
         </ul>
         
         <h4>Nominatim Instellingen:</h4>
@@ -23,11 +25,9 @@ import { LocatieConfigService, LocatieConfig } from '../services/locatie-config.
           <li><strong>Reverse Zoom:</strong> {{config.nominatim.reverseZoom}}</li>
           <li><strong>Search Zoom:</strong> {{config.nominatim.searchZoom}}</li>
         </ul>
-      </div>
-      
-      <ng-template #noConfig>
+      } @else {
         <p>Configuratie kon niet worden geladen.</p>
-      </ng-template>
+      }
     </div>
   `,
   styles: [`
@@ -57,8 +57,7 @@ import { LocatieConfigService, LocatieConfig } from '../services/locatie-config.
 })
 export class ConfigViewerComponent implements OnInit {
   config: LocatieConfig | null = null;
-  
-  constructor(private locatieConfigService: LocatieConfigService) {}
+  locatieConfigService = inject(LocatieConfigService);
   
   ngOnInit(): void {
     this.config = this.locatieConfigService.getConfig();

@@ -1,4 +1,4 @@
-import { AfvalType } from './afval-herkenning';
+import { AfvalType } from './afval-type';
 
 export interface MeldingConcept {
   id: string;
@@ -17,12 +17,6 @@ export interface MeldingConcept {
   };
   status: MeldingConceptStatus;
   aanmaakDatum: Date;
-}
-
-import { FotoHerkenningResultaat } from '@app/app-users/features/afval-melden/interfaces/foto-verwerking.interface';
-
-export interface MeldingConcept {
-  fotoHerkenningResultaat?: FotoHerkenningResultaat;
 }
 
 export enum MeldingConceptStatus {

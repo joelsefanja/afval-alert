@@ -1,3 +1,4 @@
 export const environment = {
-  GEMINI_API_KEY: 'AIzaSyCqI9AsDznUdE5OKRhdhrHKbxdUD8YlJfc'
+  apiUrl: 'http://localhost:8080',
+
 };

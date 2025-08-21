@@ -5,7 +5,6 @@ import { KaartInitialisatieService } from './kaart/kaart-initialisatie.service';
 import { KaartMarkerService } from './kaart/kaart-marker.service';
 import { KaartGeolocationService } from './kaart/kaart-geolocation.service';
 import { GeocodingService } from './geocoding/geocoding.service';
-import { Kaart3dService } from './kaart/kaart-3d.service';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +19,6 @@ export class KaartService {
   private geolocation = inject(KaartGeolocationService);
   private locatieConfig = inject(LocatieConfigService);
   private geocoding = inject(GeocodingService);
-  private kaart3d = inject(Kaart3dService);
 
   // Expose signals en events van sub-services
   readonly isKaartKlaar = this.kaartInit.isKaartKlaar;
@@ -130,9 +128,6 @@ export class KaartService {
         console.error(errorMsg);
         throw new Error(errorMsg);
       }
-      
-      // Set marker on 3D map
-      this.kaart3d.setMarker3d(lat, lng, displayName);
       
       // Emit location events
       this.kaartMarker.emitLocatieEvents(lat, lng, displayName);

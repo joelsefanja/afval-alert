@@ -1,69 +1,145 @@
-import { Component, inject } from '@angular/core';
-import { ButtonModule } from 'primeng/button';
+import { Component, inject, computed, signal } from '@angular/core';
+import { ToastModule } from 'primeng/toast';
 import { CardModule } from 'primeng/card';
-import { ImageModule } from 'primeng/image';
 import { TagModule } from 'primeng/tag';
-import { ControleStapService } from '@services/proces/stappen';
-import { MeldingStateService } from '@services/melding/state/melding-state.service';
-import { AfvalTypeDetectie } from '@app/app-users/features/afval-melden/interfaces/gemini-response.interface';
+import { MessageService } from 'primeng/api';
+import { NavigatieService } from '../../services/navigatie/navigatie.service';
+import { MeldingConceptService } from '../../services/melding/concept/melding-concept.service';
+import { MeldingVerzendingService } from '../../services/melding/verzending/melding-verzending.service';
+import { SessieStorageService } from '../../services/opslag/sessie-storage.service';
+import { NavigatieKnoppenComponent } from '../shared/navigatie-knoppen/navigatie-knoppen.component';
+import { MeldingOverzichtComponent } from './components/melding-overzicht/melding-overzicht.component';
+import { FotoSamenvattingComponent } from './components/foto-samenvatting/foto-samenvatting.component';
+import { ContactSamenvattingComponent } from './components/contact-samenvatting/contact-samenvatting.component';
+import { FotoUploadService } from '../../services/foto-upload.service';
 
+/**
+ * Controle stap component
+ * Overzicht van melding met verzend functionaliteit
+ */
 @Component({
   selector: 'app-controle-stap',
   standalone: true,
-  imports: [ButtonModule, CardModule, ImageModule, TagModule],
-  templateUrl: './controle-stap.component.html'
+  imports: [
+    ToastModule,
+    NavigatieKnoppenComponent,
+    MeldingOverzichtComponent,
+    FotoSamenvattingComponent,
+    ContactSamenvattingComponent,
+    CardModule,
+    TagModule
+  ],
+  templateUrl: './controle-stap.component.html',
 })
 export class ControleStapComponent {
-  private controleService: ControleStapService = inject(ControleStapService);
-  private meldingState: MeldingStateService = inject(MeldingStateService);
+  // Services
+  private readonly navigatie = inject(NavigatieService);
+  private readonly conceptService = inject(MeldingConceptService);
+  private readonly verzendService = inject(MeldingVerzendingService);
+  private readonly sessieStorage = inject(SessieStorageService);
+  private readonly messageService = inject(MessageService);
+  private readonly fotoUploadService = inject(FotoUploadService);
 
-  readonly overzicht = this.controleService.overzicht;
-  readonly isComplete = this.controleService.isComplete;
-  readonly meldingData = this.meldingState.meldingData;
+  // State
+  private readonly isVerzenden = signal(false);
 
-  get gedetecteerdeAfvalTypes() {
-    return this.meldingData()?.fotoHerkenningResultaat?.afvalTypes ?? [];
+  // Computed data
+  readonly contactGegevens = computed(() => this.conceptService.concept().contact);
+  readonly classificatieResultaten = computed(() => {
+    const meldingId = this.sessieStorage.krijgMeldingId();
+    if (!meldingId) return null;
+    return this.sessieStorage.krijgClassificatie(meldingId);
+  });
+  readonly kanVerzenden = computed(() => {
+    // Basis validatie - foto en locatie zijn verplicht
+    const concept = this.conceptService.concept();
+    return concept.afbeeldingUrl && concept.locatie;
+  });
+
+  // Helper voor beste AI gok
+  readonly getBestGuess = computed(() => {
+    const resultaat = this.classificatieResultaten();
+    if (!resultaat?.length) return 'Wordt nog geclassificeerd...';
+
+    const beste = resultaat.reduce((prev, current) =>
+      current.confidence > prev.confidence ? current : prev
+    );
+
+    return `${beste.type} (${(beste.confidence * 100).toFixed(0)}%)`;
+  });
+
+  async onVerzenden(): Promise<void> {
+    if (!this.kanVerzenden() || this.isVerzenden()) return;
+
+    this.isVerzenden.set(true);
+
+    try {
+      // Haal het melding ID op dat tijdens de foto-upload is opgeslagen
+      const meldingId = this.fotoUploadService.getMeldingId();
+
+      if (!meldingId) {
+        throw new Error('Geen melding ID gevonden. Upload eerst een foto.');
+      }
+
+      // Verstuur de volledige melding naar de backend
+      const concept = this.conceptService.concept();
+      const meldingData = {
+        lat: concept.locatie?.breedtegraad ?? 0,
+        lon: concept.locatie?.lengtegraad ?? 0,
+        email: concept.contact?.email ?? '',
+        name: concept.contact?.naam ?? ''
+      };
+
+      await this.fotoUploadService.verstuurMelding(meldingId, meldingData).toPromise();
+
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Melding verstuurd!',
+        detail: `Je melding is verstuurd met ID: ${meldingId}`,
+        life: 6000
+      });
+
+      // Verwijder het melding ID uit de sessie na succesvolle verzending
+      this.fotoUploadService.clearMeldingId();
+
+      this.navigatie.volgende();
+    } catch (error: any) {
+      console.error('Error during verzending:', error);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Verzending mislukt',
+        detail: (error as Error).message,
+        life: 8000
+      });
+
+      if (window.location.hostname === 'localhost') {
+        await this.handleBackendUnreachableInDevMode();
+      }
+    } finally {
+      this.isVerzenden.set(false);
+    }
   }
 
-  prev() {
-    this.controleService.prev();
+  async handleBackendUnreachableInDevMode(): Promise<void> {
+    if (window.location.hostname === 'localhost') {
+      this.navigatie.volgende();
+    }
   }
 
-  submit() {
-    this.controleService.submit();
+  onVorige(): void {
+    this.navigatie.vorige();
   }
 
-  editFoto() {
-    this.controleService.editFoto();
+  onVolgende(): void {
+    this.onVerzenden();
   }
 
-  editLocatie() {
-    this.controleService.editLocatie();
+  // Template helpers
+  krijgConcept() {
+    return this.conceptService.concept();
   }
 
-  editContact() {
-    this.controleService.editContact();
-  }
-
-  getAfvalTypeText(type: AfvalTypeDetectie): string {
-    // For now, we'll just show the name since we don't have confidence data
-    return type.afval_type;
-  }
-
-  getAfvalTypeSeverity(type: AfvalTypeDetectie): string {
-    // Default to secondary since we don't have confidence data
-    return 'secondary';
-  }
-
-  isAnoniemeContact(): boolean {
-    // Type assertion to handle the missing 'anoniem' property
-    const contact: any = this.meldingData().contact;
-    return !!contact?.anoniem;
-  }
-
-  getContactNaam(): string {
-    // Type assertion to handle the missing 'naam' property
-    const contact: any = this.meldingData().contact;
-    return contact?.naam || 'Geen naam';
+  isBezig(): boolean {
+    return this.isVerzenden();
   }
 }

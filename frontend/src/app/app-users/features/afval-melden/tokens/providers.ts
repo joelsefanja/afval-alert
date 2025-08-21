@@ -23,7 +23,7 @@ export const TEST_AFVAL_ALERT_TOKENS: AfvalAlertTokens = {
   // Add any test-specific overrides here
 };
 
-export { MOCK_AFVAL_CLASSIFICATIE_PROVIDER } from '../services/media/providers';
+// Removed complex providers - using simple MediaOrchestratorService
 /**
  * Provider configurations for different environments
  */

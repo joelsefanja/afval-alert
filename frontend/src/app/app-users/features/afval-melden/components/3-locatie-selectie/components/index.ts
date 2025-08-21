@@ -1,3 +1,4 @@
 export * from './kaart/kaart.component';
-export * from './huidige-locatie/huidige-locatie.component';
-export * from './locatie-picker/locatie-picker.component';
+export * from './kaart-container/kaart-container.component';
+export * from './adres-zoeker/adres-zoeker.component';
+export * from './locatie-kaartje/locatie-kaartje.component';

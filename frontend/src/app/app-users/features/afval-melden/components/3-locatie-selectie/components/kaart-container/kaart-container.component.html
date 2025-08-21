@@ -1,0 +1,26 @@
+<div class="h-full border-round-2xl shadow-3 overflow-hidden bg-white">
+  @if (toonKaart()) {
+    <app-shared-kaart
+      [geselecteerdeLocatie]="geselecteerdeLocatie()"
+      [locaties]="geselecteerdeLocatie() ? [geselecteerdeLocatie()!] : []"
+      [hoogte]="'100%'"
+      [aspectRatio]="'16/9'"
+      [klikbaar]="true"
+      [toonControls]="true"
+      (nieuweLocatieIsGeselecteerd)="onLocatieGeselecteerd($event)"
+      (kaartGeladen)="onKaartGeladen()"
+      class="h-full w-full"
+      role="application"
+      tabindex="0"
+    ></app-shared-kaart>
+  } @else {
+    <div
+      class="h-full flex align-items-center justify-content-center bg-gray-50"
+    >
+      <div class="text-center">
+        <i class="pi pi-spin pi-spinner text-3xl text-primary-500 mb-2"></i>
+        <p class="text-gray-600 text-sm">{{ laadTekst() }}</p>
+      </div>
+    </div>
+  }
+</div>

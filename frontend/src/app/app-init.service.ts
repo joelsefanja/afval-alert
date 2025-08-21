@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { LocatieConfigService } from './services/locatie-config.service';
 
 @Injectable({
@@ -6,7 +6,10 @@ import { LocatieConfigService } from './services/locatie-config.service';
 })
 export class AppInitService {
   
-  constructor(private locatieConfigService: LocatieConfigService) {}
+  constructor() {
+    this.locatieConfigService = inject(LocatieConfigService);
+  }
+  private locatieConfigService: LocatieConfigService;
   
   initializeApp(): Promise<any> {
     return new Promise((resolve, reject) => {

@@ -1,23 +1,29 @@
 import { Injectable } from '@angular/core';
 import { FormattedAddress } from '@interfaces/locatie.interface';
 
-@Injectable({
-  providedIn: 'root'
-})
+/**
+ * Service voor formatteren en verrijken van adresgegevens.
+ * Kan in de toekomst opgesplitst worden:
+ * - FormatterService: formatDetailedAddress
+ * - LocatieVerrijkerService: enrichLocationWithAddressData
+ */
+@Injectable({ providedIn: 'root' })
 export class AdresFormatterService {
-  
-  formatDetailedAddress(addressData: FormattedAddress, fallback: string): string {
-    if (!addressData) return fallback;
-    return `${addressData.street} ${addressData.houseNumber}, ${addressData.postalCode} ${addressData.city}`;
+
+  // ===== Formatteer volledig adres =====
+  formatVolledigAdres(adresData: FormattedAddress, fallback: string): string {
+    if (!adresData) return fallback;
+    return `${adresData.street} ${adresData.houseNumber}, ${adresData.postalCode} ${adresData.city}`;
   }
 
-  enrichLocationWithAddressData(locatieInfo: any, addressData: FormattedAddress): any {
+  // ===== Verrijk locatie-object met adresinformatie =====
+  verrijkLocatieMetAdres(locatie: any, adresData: FormattedAddress): any {
     return {
-      ...locatieInfo,
-      address: this.formatDetailedAddress(addressData, locatieInfo.address),
-      wijk: addressData?.wijk,
-      buurt: addressData?.buurt,
-      gemeente: addressData?.gemeente
+      ...locatie,
+      address: this.formatVolledigAdres(adresData, locatie.address),
+      wijk: adresData?.wijk,
+      buurt: adresData?.buurt,
+      gemeente: adresData?.gemeente
     };
   }
 }

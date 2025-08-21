@@ -3,7 +3,7 @@
  */
 
 export interface AfvalTypeConfidence {
-  afval_type: string;
+  type: string;
   confidence: number; // 0.0 - 1.0, alleen > 0.0 worden gereturned
 }
 

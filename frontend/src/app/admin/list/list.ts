@@ -1,4 +1,4 @@
-import { Component, computed, output, ViewChild, OnInit } from '@angular/core';
+import { Component, computed, output, ViewChild, OnInit, inject, AfterViewInit } from '@angular/core';
 import { ListNotification } from '../interfaces/listnotification.interface';
 import { TableModule, Table } from 'primeng/table';
 import { InputTextModule } from 'primeng/inputtext';
@@ -26,7 +26,7 @@ const Test_Notification_Data: ListNotification[] = [
   templateUrl: './list.html',
   styleUrl: './list.scss'
 })
-export class ListComponent {
+export class ListComponent implements AfterViewInit {
   notifications = Test_Notification_Data;
   clicked = output<number>();
 
@@ -40,7 +40,10 @@ export class ListComponent {
       : null;
   });
 
-  constructor(private selection: IDService) {}
+  constructor() {
+    this.selection = inject(IDService);
+  }
+  private selection: IDService;
 
   ngAfterViewInit() {
   // Enable PrimeNG session state for the table

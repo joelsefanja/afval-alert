@@ -19,11 +19,9 @@ export class LocatieService {
   private adresFormatter: AdresFormatterService = inject(AdresFormatterService);
   private validatieService: LocatieValidatieService = inject(LocatieValidatieService);
 
-  // State signals
   readonly isLoading = signal(false);
   readonly currentLocation = signal<Locatie | null>(null);
 
-  // Expose kaart events and signals
   readonly isKaartKlaar = this.kaartService.isKaartKlaar;
   readonly huidigeMarker = this.kaartService.huidigeMarker;
   readonly adresGeselecteerd = this.kaartService.adresGeselecteerd;
@@ -53,11 +51,11 @@ export class LocatieService {
   }
 
   async getAddressFromCoordinates(breedtegraad: number, lengtegraad: number): Promise<FormattedAddress> {
-    return this.geocodingService.getAddressFromCoordinates(breedtegraad, lengtegraad);
+    return this.geocodingService.adresVanCoordinaten(breedtegraad, lengtegraad);
   }
 
   async getCoordinatesFromAddress(adres: string): Promise<{ breedtegraad: number; lengtegraad: number }> {
-    const result = await this.geocodingService.getCoordinatesFromAddress(adres);
+    const result = await this.geocodingService.coordinatenVanAdres(adres);
     return {
       breedtegraad: result.lat,
       lengtegraad: result.lng
@@ -68,12 +66,12 @@ export class LocatieService {
     return this.geocodingService.reverseGeocode(breedtegraad, lengtegraad);
   }
 
-  async searchAddress(query: string): Promise<Locatie[]> {
-    const results = await this.geocodingService.searchAddress(query);
-    return results.map(result => ({
+  async zoekAdres(query: string): Promise<Locatie[]> {
+    const results = await this.geocodingService.zoekAdres(query);
+    return results.map((result: { adres: string; lat: number; lng: number }) => ({
       latitude: result.lat,
       longitude: result.lng,
-      address: result.address
+      address: result.adres
     }));
   }
 
@@ -87,7 +85,7 @@ export class LocatieService {
   }
 
   enrichLocationWithAddressData(locatieInformatie: any, adresGegevens: FormattedAddress): any {
-    return this.adresFormatter.enrichLocationWithAddressData(locatieInformatie, adresGegevens);
+    return this.adresFormatter.verrijkLocatieMetAdres(locatieInformatie, adresGegevens);
   }
 
   // === VALIDATIE ===
@@ -134,7 +132,7 @@ export class LocatieService {
     return this.kaartService.getHuidigeLocatie();
   }
 
-  async zoekAdres(adres: string): Promise<void> {
+  async zoekAdresOpKaart(adres: string): Promise<void> {
     return this.kaartService.zoekAdres(adres);
   }
 }

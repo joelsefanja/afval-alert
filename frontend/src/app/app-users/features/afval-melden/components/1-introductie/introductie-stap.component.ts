@@ -1,20 +1,40 @@
 import { Component, inject } from '@angular/core';
+import { NavigatieService } from '../../services/navigatie/navigatie.service';
+import { IntroStapService } from '../../services/stappen/intro/intro-stap.service';
+import { NavigatieKnoppenComponent } from '../shared/navigatie-knoppen/navigatie-knoppen.component';
+import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
-import { ProcesBuilderService } from '@services/proces/navigatie';
-import { MeldingStateService } from '@services/melding/state/melding-state.service';
+import { AvatarModule } from 'primeng/avatar';
+import { TagModule } from 'primeng/tag';
 
+/**
+ * Introductie stap component
+ * Welkomst scherm met start knop
+ */
 @Component({
   selector: 'app-introductie-stap',
   standalone: true,
-  imports: [ButtonModule],
+  imports: [
+    NavigatieKnoppenComponent,
+    CardModule,
+    ButtonModule,
+    AvatarModule,
+    TagModule
+  ],
   templateUrl: './introductie-stap.component.html',
+  // Geen styleUrls meer nodig omdat we PrimeNG componenten gebruiken
 })
 export class IntroductieStapComponent {
-  private procesManager = inject(ProcesBuilderService);
-  private meldingState = inject(MeldingStateService);
+  // Services
+  private readonly navigatie = inject(NavigatieService);
+  private readonly introStap = inject(IntroStapService);
 
-  start() {
-    this.meldingState.initializeMelding();
-    this.procesManager.volgende();
+  onStarten(): void {
+    this.introStap.startMelding();
+    this.navigatie.volgende();
+  }
+  
+  onVolgende(): void {
+    this.onStarten();
   }
 }

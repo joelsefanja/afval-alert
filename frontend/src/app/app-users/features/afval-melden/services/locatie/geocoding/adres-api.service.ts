@@ -5,6 +5,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { FormattedAddress } from '@app/app-users/features/afval-melden/interfaces/locatie.interface';
 
+// ===== Interfaces =====
 export interface AddressDetails {
   road?: string;
   house_number?: string;
@@ -29,98 +30,98 @@ interface GeocodingApiResponse {
   display_name?: string;
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+// ===== Service =====
+@Injectable({ providedIn: 'root' })
 export class AdresApiService {
   private http = inject(HttpClient);
-  private locatieConfigService = inject(LocatieConfigService);
+  private locatieConfig = inject(LocatieConfigService);
   private config: any;
 
   constructor() {
-    this.locatieConfigService.loadConfig().subscribe(config => {
-      this.config = config;
-    });
+    // Laad configuratie bij aanmaak
+    this.locatieConfig.loadConfig().subscribe(cfg => this.config = cfg);
   }
 
+  // ===== Helper: GET request =====
   private get<T>(url: string): Observable<T> {
     return this.http.get<T>(url).pipe(
-      catchError(error => {
-        console.error('Geocoding API error:', error);
-        return throwError(() => new Error('Geocoding API error')); // Throw an error instead of returning null
+      catchError(err => {
+        console.error('Geocoding API fout:', err);
+        return throwError(() => new Error('Geocoding API fout'));
       })
     );
   }
 
-  private getApiUrl(endpoint: string, params: string): string {
-    if (!this.config) {
-      throw new Error('Geocoding config not loaded');
-    }
-    const nominatimConfig = this.config.nominatim; // Still uses nominatim config for base URL
-    return `${nominatimConfig.baseUrl}/${endpoint}?${params}`;
+  // ===== Helper: API URL bouwen =====
+  private apiUrl(endpoint: string, params: string): string {
+    if (!this.config) throw new Error('Geocoding config niet geladen');
+    const base = this.config.nominatim.baseUrl;
+    return `${base}/${endpoint}?${params}`;
   }
 
-  getCoordinatesFromAddress(address: string): Observable<{ lat: number; lng: number }> {
-    const params = `format=json&q=${encodeURIComponent(address)}&addressdetails=1`;
-    const url = this.getApiUrl('search', params);
-
-    return this.get<GeocodingApiResponse[]>(url).pipe(
-      map(results => {
-        if (!results || results.length === 0) throw new Error('No coordinates found'); // Throw error if no results
-        const result = results[0];
-        const lat = parseFloat(result?.lat);
-        const lng = parseFloat(result?.lon);
-        if (isNaN(lat) || isNaN(lng)) throw new Error('Invalid coordinates');
+  // ===== Coördinaten ophalen =====
+  getCoordinatenVanAdres(adres: string): Observable<{ lat: number; lng: number }> {
+    const params = `format=json&q=${encodeURIComponent(adres)}&addressdetails=1`;
+    return this.get<GeocodingApiResponse[]>(this.apiUrl('search', params)).pipe(
+      map(res => {
+        if (!res || res.length === 0) throw new Error('Geen coördinaten gevonden');
+        const lat = parseFloat(res[0].lat);
+        const lng = parseFloat(res[0].lon);
+        if (isNaN(lat) || isNaN(lng)) throw new Error('Ongeldige coördinaten');
         return { lat, lng };
       })
     );
   }
 
-  searchAddress(query: string): Observable<Array<{ address: string, lat: number, lng: number }>> {
+  // ===== Meerdere adressen zoeken =====
+  zoekAdres(query: string): Observable<Array<{ adres: string; lat: number; lng: number }>> {
     const params = `format=json&q=${encodeURIComponent(query)}&limit=5`;
-    const url = this.getApiUrl('search', params);
-
-    return this.get<GeocodingApiResponse[]>(url).pipe(
-      map(data => data ? data.map((item: GeocodingApiResponse) => ({
-        address: item.display_name || '',
+    return this.get<GeocodingApiResponse[]>(this.apiUrl('search', params)).pipe(
+      map(data => data.map(item => ({
+        adres: item.display_name || '',
         lat: parseFloat(item.lat),
         lng: parseFloat(item.lon)
-      })) : [])
+      })))
     );
   }
 
-  getAddressFromCoordinates(lat: number, lon: number): Observable<FormattedAddress> {
+  // ===== Adres ophalen van coördinaten =====
+  getAdresVanCoordinaten(lat: number, lon: number): Observable<FormattedAddress> {
     const params = `format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`;
-    const url = this.getApiUrl('reverse', params);
-
-    return this.get<GeocodingApiResponse>(url).pipe(
-      map(response => {
-        const address = response?.address ?? {};
+    return this.get<GeocodingApiResponse>(this.apiUrl('reverse', params)).pipe(
+      map(resp => {
+        const adr = resp.address || {};
         return {
-          street: address.road || '',
-          houseNumber: address.house_number || '',
-          postalCode: address.postcode || '',
-          city: address.city || address.town || address.village || '',
-          country: address.country || 'Nederland',
-          latitude: parseFloat(response.lat),
-          longitude: parseFloat(response.lon),
-          wijk: address.neighbourhood || address.quarter || address.suburb || '',
-          buurt: address.neighbourhood || '',
-          gemeente: address.city || address.municipality || '',
-          provincie: address.state || '',
-          rawAddress: address
+          street: adr.road || '',
+          houseNumber: adr.house_number || '',
+          postalCode: adr.postcode || '',
+          city: adr.city || adr.town || adr.village || '',
+          country: adr.country || 'Nederland',
+          latitude: parseFloat(resp.lat),
+          longitude: parseFloat(resp.lon),
+          wijk: adr.neighbourhood || adr.quarter || adr.suburb || '',
+          buurt: adr.neighbourhood || '',
+          gemeente: adr.city || adr.municipality || '',
+          provincie: adr.state || '',
+          rawAddress: adr
         };
       })
     );
   }
 
-  reverseGeocode(lat: number, lng: number): Observable<string> {
-    const params = `format=json&lat=${lat}&lon=${lng}`;
-    const url = this.getApiUrl('reverse', params);
-
-    return this.get<GeocodingApiResponse>(url).pipe(
+  // ===== Reverse geocoding =====
+  reverseGeocode(lat: number, lon: number): Observable<string> {
+    const params = `format=json&lat=${lat}&lon=${lon}`;
+    return this.get<GeocodingApiResponse>(this.apiUrl('reverse', params)).pipe(
       map(data => data?.display_name || 'Onbekende locatie'),
-      catchError(() => throwError(() => new Error('Reverse geocoding error')))
+      catchError(() => throwError(() => new Error('Reverse geocoding fout')))
     );
   }
 }
+
+/**
+ * Mogelijke refactor in meerdere services:
+ * - AdresZoekerService: searchAdres, getCoordinatenVanAdres
+ * - CoördinatenService: getAdresVanCoordinaten, reverseGeocode
+ * - HttpService: helper get<T> en apiUrl
+ */
