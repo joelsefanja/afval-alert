@@ -8,7 +8,15 @@
       "Bash(git commit:*)",
       "Bash(npm test)",
       "Bash(npm start)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(mv:*)",
+      "Bash(del /q \"src\\app\\app-users\\features\\afval-melden\\components\\base-stap.component.ts\")",
+      "Bash(move:*)",
+      "Bash(rm:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(npm run lint)",
+      "Bash(find:*)",
+      "mcp__ide__getDiagnostics"
     ],
     "deny": [],
     "ask": [],

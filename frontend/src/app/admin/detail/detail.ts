@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TijdlijnElementen } from '../tijdlijn-element/tijdlijn-element';
 import { TijdlijnElement } from '../interfaces/tijdlijn-element.interface';
@@ -24,7 +24,7 @@ const tijdlijnElementen: TijdlijnElement[] = [
   templateUrl: './detail.html',
   styleUrl: './detail.scss'
 })
-export class DetailComponent {
+export class DetailComponent implements OnInit {
   TEST = tijdlijnElementen;
   value: string = ''; // Initialize with a default value
   states!: State[];
@@ -40,7 +40,10 @@ export class DetailComponent {
         ];
     }
 
-  constructor(public selection: IDService) {}
+  constructor() {
+    this.selection = inject(IDService);
+  }
+  public selection: IDService;
 
   closeDetail() {
     this.selection.closeDetail();

@@ -1,4 +1,4 @@
-import { AfvalType } from './afval-herkenning';
+import { AfvalType } from './afval-type';
 
 export interface MeldingConcept {
   id: string;

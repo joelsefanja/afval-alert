@@ -1,0 +1,27 @@
+<div class="flex flex-col min-h-screen">
+  <p-toolbar class="sticky top-0 z-20">
+    <ng-template pTemplate="start">
+      <div class="mx-auto max-w-3xl w-full">
+        <h1 class="text-2xl font-bold text-center text-primary">
+          <i class="pi pi-trash mr-2"></i>
+          Meld zwerfafval
+        </h1>
+        <p-steps
+          [model]="navigatieService.menuItems()"
+          [activeIndex]="navigatieService.huidigeMenuIndex()"
+          [readonly]="true"
+          styleClass="w-full mt-2"
+          aria-label="Voortgang"
+        ></p-steps>
+      </div>
+    </ng-template>
+  </p-toolbar>
+
+  <main class="flex-grow w-full mx-auto p-3">
+    <p-card class="flex-grow">
+      @if (navigatieService.huidigeStap(); as stap) {
+        <ng-container [ngComponentOutlet]="stap.component"></ng-container>
+      }
+    </p-card>
+  </main>
+</div>

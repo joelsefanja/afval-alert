@@ -1,0 +1,46 @@
+<div class="max-w-md mx-auto space-y-4">
+  <!-- Name Field -->
+  <div class="space-y-2">
+    <label class="block text-sm font-medium text-gray-700">Naam (optioneel)</label>
+    <input 
+      pInputText 
+      [ngModel]="naam()" 
+      (ngModelChange)="onNaamWijziging($event)" 
+      placeholder="Je naam" 
+      class="w-full p-3 rounded-xl border border-gray-300 focus:border-primary-500 focus:ring-1 focus:ring-primary-500" 
+    />
+  </div>
+
+  <!-- Email Field -->
+  <div class="space-y-2">
+    <label class="block text-sm font-medium text-gray-700">E-mail (optioneel)</label>
+    <input 
+      pInputText 
+      type="email" 
+      [ngModel]="email()" 
+      (ngModelChange)="onEmailWijziging($event)" 
+      placeholder="naam@email.com" 
+      class="w-full p-3 rounded-xl border border-gray-300 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+    />
+    @if (email() && !isEmailGeldig()) {
+      <p class="text-red-500 text-sm mt-1">
+        <i class="pi pi-exclamation-triangle mr-1"></i>
+        {{ emailFoutmelding() }}
+      </p>
+    }
+  </div>
+  
+  <!-- Info Card -->
+  <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+    <div class="flex items-start space-x-3">
+      <i class="pi pi-info-circle text-blue-500 text-lg mt-0.5"></i>
+      <div>
+        <h4 class="text-sm font-medium text-blue-800 mb-1">Waarom contactgegevens?</h4>
+        <p class="text-xs text-blue-700 leading-relaxed">
+          We sturen je een bevestiging en houden je op de hoogte van de voortgang. 
+          Je gegevens worden niet gedeeld.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

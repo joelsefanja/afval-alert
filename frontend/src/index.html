@@ -10,13 +10,14 @@
     
     <!-- PWA Meta Tags -->
     <link rel="manifest" href="manifest.json" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Afval-Alert" />
     
     <!-- Icons -->
-    <link rel="icon" type="image/x-icon" href="favicon.ico" />
-    <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/icon-192x192.png" />
+    <link rel="icon" type="image/x-icon" href="https://picsum.photos/32/32?random=1" />
+    <link rel="apple-touch-icon" sizes="180x180" href="https://picsum.photos/192/192?random=1" />
     
     <!-- Fonts -->
     <link
@@ -28,6 +29,14 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
   </head>
+  <script>
+    window.addEventListener('load', function() {
+      console.log('Fonts and CSS loaded');
+    });
+    window.addEventListener('error', function(event) {
+      console.error('Error loading resource', event.target.href);
+    });
+  </script>
   <body>
     <app-root></app-root>
     <script type="module" src="./main.js"></script>

@@ -13,7 +13,7 @@ export interface Stap {
  * Deze component kan de originele header component vervangen.
  */
 @Component({
-  selector: 'ui-primeng-header',
+  selector: 'app-primeng-header',
   template: `
     <header class="bg-white dark:bg-surface-900 shadow-sm border-b border-surface-200 dark:border-surface-700 px-4 py-3">
       <div class="max-w-7xl mx-auto">

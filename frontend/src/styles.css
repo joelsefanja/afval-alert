@@ -1,124 +1,183 @@
-@import "primeicons/primeicons.css";
+/* Application Styles */
 
-@import "tailwindcss";
-@plugin "tailwindcss-primeui";
+/* CSS Layers for optimal cascade order */
+@layer reset, primeflex, tailwind, primeng, components;
 
-/* Custom Animations for Step Progress */
-@keyframes pulse-grow {
-  0% {
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.4);
+/* PrimeFlex v4 utilities for PrimeNG components */
+@import 'primeflex/primeflex.css' layer(primeflex);
+
+/* TailwindCSS utilities */
+@layer tailwind {
+  @tailwind base;
+  @tailwind components; 
+  @tailwind utilities;
+}
+
+/* PrimeNG theme will be injected here in primeng layer */
+
+/* Global styles */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  background-color: var(--p-surface-ground);
+  color: var(--p-text-color);
+}
+
+/* Mobile-first responsive design */
+* {
+  box-sizing: border-box;
+}
+
+/* Ensure touch targets are at least 44px with proper spacing */
+button, 
+[role="button"], 
+input, 
+select, 
+textarea,
+.p-button {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Standard mobile-first spacing utilities */
+.space-y-2 > * + * { margin-top: 0.5rem; }
+.space-y-3 > * + * { margin-top: 0.75rem; }
+.space-y-4 > * + * { margin-top: 1rem; }
+.space-y-6 > * + * { margin-top: 1.5rem; }
+
+.gap-2 { gap: 0.5rem; }
+.gap-3 { gap: 0.75rem; }
+.gap-4 { gap: 1rem; }
+.gap-6 { gap: 1.5rem; }
+
+/* Mobile-first button spacing */
+.p-button {
+  padding: 0.75rem 1.5rem;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+}
+
+.p-button.p-button-lg {
+  padding: 0.875rem 2rem;
+  gap: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* Mobile-first card spacing */
+.p-card {
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.p-card .p-card-body {
+  padding: 1.5rem;
+}
+
+.p-card .p-card-header {
+  padding: 1.5rem 1.5rem 0;
+}
+
+.p-card .p-card-footer {
+  padding: 0 1.5rem 1.5rem;
+}
+
+/* Input field spacing */
+.p-inputtext {
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+}
+
+/* Grid system with proper gaps */
+.grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.grid.grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+.grid.grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid.grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+@media (min-width: 768px) {
+  .md\\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .md\\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+/* Focus styles for accessibility */
+:focus-visible {
+  outline: 3px solid var(--p-focus-ring);
+  outline-offset: 2px;
+}
+
+/* High contrast for better readability */
+@media (prefers-contrast: high) {
+  :root {
+    --p-text-color: #000000;
+    --p-surface-ground: #ffffff;
   }
-  70% {
-    transform: scale(1.05);
-    box-shadow: 0 0 0 10px rgba(52, 211, 153, 0);
-  }
-  100% {
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0);
-  }
 }
 
-@keyframes bounce-smooth {
-  0%, 20%, 50%, 80%, 100% {
-    transform: translateY(0);
-  }
-  40% {
-    transform: translateY(-5px);
-  }
-  60% {
-    transform: translateY(-3px);
+/* Reduced motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 
-@keyframes slide-in-right {
-  0% {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-  100% {
-    transform: translateX(0);
-    opacity: 1;
-  }
+/* Custom styles for p-steps */
+.steps-accessible .p-steps-list {
+  gap: 1rem;
 }
 
-@keyframes fill-progress {
-  0% {
-    width: 0%;
-  }
-  100% {
-    width: var(--target-width, 0%);
-  }
+/* Mobile-first spacing system */
+:root {
+  --spacing-xxs: 0.25rem;
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 0.75rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-xxl: 3rem;
 }
 
-@keyframes fade-in {
-  0% {
-    opacity: 0;
-    transform: scale(0.8);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
+/* Consistent flex utilities */
+.flex-column {
+  flex-direction: column;
 }
 
-/* Custom Classes */
-.pulse-grow-animation {
-  animation: pulse-grow 2s infinite;
-}
-
-.bounce-smooth-animation {
-  animation: bounce-smooth 2s infinite;
-}
-
-.slide-in-right-animation {
-  animation: slide-in-right 0.5s ease-out forwards;
-}
-
-.progress-fill-animation {
-  animation: fill-progress 0.5s ease-out forwards;
-}
-
-.animate-fade-in {
-  animation: fade-in 0.3s ease-out forwards;
-}
-
-/* Enhanced Step Styles */
-.step-circle {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.step-circle-active {
-  transform: scale(1.1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.step-label {
-  transition: all 0.3s ease;
-}
-
-.step-progress-bar {
-  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Map container style */
-#map {
-  height: 400px;
+/* Responsive container for mobile */
+.mobile-container {
   width: 100%;
-  border-radius: var(--radius);
+  max-width: 100%;
+  padding-left: var(--spacing-sm);
+  padding-right: var(--spacing-sm);
+  margin-left: auto;
+  margin-right: auto;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .step-label {
-    font-size: 0.65rem;
-    width: 12px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  
-  .step-circle {
-    width: 6px;
-    height: 6px;
-  }
+/* Mobile button styles */
+.mobile-button {
+  width: 100%;
+  padding: var(--spacing-md) var(--spacing-sm);
+  font-size: 1rem;
+  border-radius: 0.5rem;
+}
+
+/* Mobile form styles */
+.mobile-form-group {
+  margin-bottom: var(--spacing-md);
+  padding: var(--spacing-sm);
+  border-radius: 0.5rem;
+}
+
+/* Mobile card styles */
+.mobile-card {
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }

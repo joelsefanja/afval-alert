@@ -1,0 +1,23 @@
+{
+  "versie": "1.0.0",
+  "toegestaneGebieden": [
+    {
+      "naam": "Nederland",
+      "type": "land",
+      "land": "NL"
+    }
+  ],
+  "nominatim": {
+    "baseUrl": "https://nominatim.openstreetmap.org",
+    "reverseZoom": 18,
+    "searchZoom": 16,
+    "addressdetails": 1,
+    "format": "json"
+  },
+  "boundingBox": {
+    "south": 50.7,
+    "north": 53.6,
+    "west": 3.3,
+    "east": 7.2
+  }
+}

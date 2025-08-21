@@ -1,4 +1,5 @@
 export const environment = {
   production: false,
-  useRealGeocodingApi: true
+  useRealGeocodingApi: true,
+  apiUrl: 'http://localhost:8080'
 };

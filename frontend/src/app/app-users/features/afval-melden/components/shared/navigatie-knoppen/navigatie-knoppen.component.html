@@ -1,0 +1,29 @@
+<div class="p-3 bg-white border-top-1 surface-border">
+  <div class="grid gap-2">
+    @if (toonVorigeKnop()) {
+      <div class="col-6">
+        <p-button
+          [label]="vorigeLabel()"
+          icon="pi pi-chevron-left"
+          (onClick)="onVorige()"
+          [disabled]="vorigeUitgeschakeld()"
+          severity="secondary"
+          class="w-full"
+        ></p-button>
+      </div>
+    }
+    @if (toonVolgendeKnop()) {
+      <div [class]="volgendeColumnClass()">
+        <p-button
+          [label]="volgendeLabel()"
+          [icon]="volgendeIcon()"
+          [iconPos]="volgendeIconPositie()"
+          (onClick)="onVolgende()"
+          [disabled]="volgendeUitgeschakeld()"
+          [severity]="volgendeSeverity()"
+          class="w-full"
+        ></p-button>
+      </div>
+    }
+  </div>
+</div>

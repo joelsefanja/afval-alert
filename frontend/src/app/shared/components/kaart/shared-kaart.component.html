@@ -1,0 +1,18 @@
+<div 
+  #kaartContainer 
+  class="w-full rounded-lg border border-gray-300 overflow-hidden bg-gray-100"
+  [style]="kaartStijl()"
+  role="application"
+  tabindex="0"
+  aria-label="Interactieve kaart voor locatie selectie"
+>
+  <!-- Loading indicator -->
+  @if (!isGeladen()) {
+    <div class="w-full h-full flex items-center justify-center">
+      <div class="text-center text-gray-500">
+        <i class="pi pi-spin pi-spinner text-2xl mb-2"></i>
+        <p class="text-sm">Kaart wordt geladen...</p>
+      </div>
+    </div>
+  }
+</div>

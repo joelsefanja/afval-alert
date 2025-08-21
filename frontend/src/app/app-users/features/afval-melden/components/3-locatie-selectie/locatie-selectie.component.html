@@ -1,0 +1,68 @@
+<!-- Mobile-first Locatie Selectie Pagina -->
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-green-50">
+  <!-- Header -->
+  <div class="bg-white shadow-sm border-b border-gray-200 p-4">
+    <div class="flex items-center justify-between">
+      <h1 class="text-xl font-bold text-gray-800">Waar ligt het afval?</h1>
+      <div class="bg-blue-100 px-3 py-1 rounded-full">
+        <span class="text-blue-700 text-sm font-medium">Stap 3 van 6</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="flex-1 p-4 space-y-4">
+    <!-- Adres Zoeker - Bovenaan voor betere UX -->
+    <app-adres-zoeker
+      [initieleZoekTekst]="zoekTekst()"
+      [isZoekenBezig]="isZoekenBezig()"
+      [isHuidigeLocatieBezig]="isHuidigeLocatieBezig()"
+      [foutmelding]="foutmelding()"
+      (zoeken)="onZoeken($event)"
+      (huidigeLocatieOpvragen)="onHuidigeLocatie()"
+    ></app-adres-zoeker>
+
+    <!-- Geselecteerde Locatie Info - Direct na zoeker -->
+    @if (huidigeLocatie()) {
+      <app-locatie-kaartje
+        [locatie]="huidigeLocatie()"
+        (locatieGewist)="onLocatieWissen()"
+      ></app-locatie-kaartje>
+    }
+
+    <!-- Kaart Container - Zonder adres popups -->
+    <div class="h-64 sm:h-80">
+      <app-kaart-container
+        [geselecteerdeLocatie]="kaartLocatie()"
+        [isGeladen]="kaartGeladen()"
+        (locatieGeselecteerd)="onLocatieGeselecteerd($event)"
+      ></app-kaart-container>
+    </div>
+
+    <!-- Instructies -->
+    @if (!huidigeLocatie()) {
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div class="flex items-start space-x-3">
+          <i class="pi pi-info-circle text-blue-600 mt-1"></i>
+          <div class="text-sm text-blue-800">
+            <p class="font-medium mb-1">Hoe selecteer je een locatie?</p>
+            <ul class="text-xs space-y-1 leading-relaxed">
+              <li>• Zoek een adres in de zoekbalk</li>
+              <li>• Gebruik je huidige locatie</li>
+              <li>• Klik op de kaart om een punt te selecteren</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Navigation Footer -->
+  <div class="sticky bottom-0">
+    <app-navigatie-knoppen
+      [volgendeUitgeschakeld]="!kanVolgende()"
+      (vorige)="onVorige()"
+      (volgende)="onVolgende()"
+    ></app-navigatie-knoppen>
+  </div>
+</div>
