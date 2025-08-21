@@ -128,13 +128,13 @@ test.describe('State Machine Integratie Tests', () => {
     await page.reload();
     
     // Controleer of de offline notificatie zichtbaar is
-    await expect(page.locator('ui-offline-notificatie')).toBeVisible();
+    await expect(page.locator('div.bg-orange-100')).toBeVisible();
     
     // Start de melding
     await page.locator('button:has-text("Start melding")').click();
     
     // Foto stap - offline indicator moet nog steeds zichtbaar zijn
-    await expect(page.locator('ui-offline-notificatie')).toBeVisible();
+    await expect(page.locator('div.bg-orange-100')).toBeVisible();
     
     // Ga terug online
     await context.setOffline(false);
@@ -143,6 +143,6 @@ test.describe('State Machine Integratie Tests', () => {
     await page.reload();
     
     // Controleer of de offline notificatie niet meer zichtbaar is
-    await expect(page.locator('ui-offline-notificatie')).not.toBeVisible();
+    await expect(page.locator('div.bg-orange-100')).not.toBeVisible();
   });
 });

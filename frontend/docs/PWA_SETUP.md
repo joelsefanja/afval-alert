@@ -19,8 +19,8 @@ De Afval-Alert app is geconfigureerd als Progressive Web App (PWA) met installat
 - `canInstall` - Of PWA geïnstalleerd kan worden
 - `isInstalled` - Of PWA al geïnstalleerd is
 
-### 2. **Succes Pagina Integration**
-De succesStapService en component zijn uitgebreid met PWA functionaliteit:
+### 2. **Melding Verzonden Pagina Integration**
+De meldingVerzondenStapService en component zijn uitgebreid met PWA functionaliteit:
 
 ```typescript
 // Service methode
@@ -30,7 +30,7 @@ async promptPWAInstall(): Promise<boolean> {
 
 // Component gebruk
 async downloadApp() {
-  await this.succesService.promptPWAInstall();
+  await this.meldingVerzondenStapService.promptPWAInstall();
 }
 ```
 

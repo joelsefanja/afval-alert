@@ -19,17 +19,22 @@ export interface AfbeeldingUploadResponse {
 
 // Request 2: Melding verzenden met locatie en contact
 export interface MeldingVerzendRequest {
-    meldingId: string;
-    locatie: {
+    afbeeldingUrl: string;
+    afvalTypes: any[];
+    locatie?: {
         latitude: number;
         longitude: number;
+        adres?: string;
     };
     contact?: {
         email?: string;
         naam?: string;
+        telefoon?: string;
     };
 }
 
 export interface MeldingVerzendResponse {
     success: boolean;
+    meldingId: string;
+    message: string;
 }

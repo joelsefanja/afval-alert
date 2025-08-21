@@ -1,4 +1,4 @@
-import { Component, output, ViewChild, AfterViewInit, OnInit, inject } from '@angular/core';
+import { Component, output, ViewChild, AfterViewInit, OnInit, inject, WritableSignal, signal } from '@angular/core';
 import { Table, TableModule } from 'primeng/table';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { InputTextModule } from 'primeng/inputtext';
@@ -12,6 +12,7 @@ import { IDService } from '../../../../services/id/id';
 import { ListNotification } from '../../interfaces/listnotification.interface';
 import { NotificationStore } from '../../stores/melding.store';
 import { getReadableStatus, getReadableType } from '../../utilities/melding-mappings';
+import { MultiSelectFilter} from '../multi-select-filter/multi-select-filter';
 
 @Component({
   selector: 'app-list',
@@ -25,6 +26,7 @@ import { getReadableStatus, getReadableType } from '../../utilities/melding-mapp
     MultiSelectModule,
     FormsModule,
     SliderModule,
+    MultiSelectFilter
   ],
   templateUrl: './list.html',
   styleUrl: './list.scss'
@@ -32,6 +34,8 @@ import { getReadableStatus, getReadableType } from '../../utilities/melding-mapp
 export class ListComponent implements AfterViewInit, OnInit {
   clicked = output<number>();
   @ViewChild('dt') dt!: Table;
+
+  
 
   private selection = inject(IDService);
   store = inject(NotificationStore);

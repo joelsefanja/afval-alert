@@ -1,0 +1,156 @@
+<div class="flex flex-col h-full p-4">
+
+  <!-- Content Section -->
+  <div class="flex-grow flex flex-col">
+    <!-- Toegankelijke titel -->
+    <h2 class="text-xl font-semibold mb-4 text-primary-800" 
+        role="heading" aria-level="2" id="location-title">
+      <i class="pi pi-map-marker mr-2" aria-hidden="true"></i>
+      Waar ligt het afval?
+    </h2>
+    
+    <!-- Instructies voor gebruiker -->
+    <p class="text-surface-600 text-base mb-4" role="region" aria-live="polite">
+      Tik op de kaart of zoek een adres om de locatie te selecteren.
+    </p>
+    
+    <!-- Kaart container met aria labels -->
+    <div class="flex-grow mb-4" role="region" aria-labelledby="location-title">
+      <div class="border-round-2xl overflow-hidden h-full border-2 surface-border" 
+           [attr.aria-label]="'Interactieve kaart voor locatie selectie'">
+        @if (showMap()) {
+          <app-kaart
+            [selectedLocation]="getSelectedLocationForMap()"
+            (locationSelected)="onLocationSelected($event)"
+            class="h-full w-full"
+            role="application"
+            [attr.aria-label]="'Kaart - tik om locatie te selecteren'"
+            tabindex="0">
+          </app-kaart>
+        } @else {
+          <!-- Loading state voor kaart -->
+          <div class="h-full flex align-items-center justify-content-center bg-surface-100">
+            <div class="text-center">
+              <i class="pi pi-spin pi-spinner text-3xl text-primary-500 mb-3" aria-hidden="true"></i>
+              <p class="text-surface-600">Kaart wordt geladen...</p>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Selected Location Display (never show coordinates) -->
+    @if (huidigeLocatie()) {
+      <div class="mb-4 p-4 bg-primary-50 border-round-xl border border-primary-200">
+        <div class="flex items-center gap-3">
+          <i class="pi pi-map-marker text-primary-600 text-xl" aria-hidden="true"></i>
+          <div class="flex-grow">
+            <h3 class="text-sm font-semibold text-primary-800 mb-1">Geselecteerde locatie:</h3>
+            <p class="text-primary-700 font-medium">{{ huidigeLocatie()?.address }}</p>
+            @if (huidigeLocatie()?.wijk || huidigeLocatie()?.buurt) {
+              <p class="text-xs text-primary-600 mt-1">
+                @if (huidigeLocatie()?.buurt) {
+                  {{ huidigeLocatie()?.buurt }}@if (huidigeLocatie()?.wijk) {, {{ huidigeLocatie()?.wijk }}}
+                } @else if (huidigeLocatie()?.wijk) {
+                  {{ huidigeLocatie()?.wijk }}
+                }
+              </p>
+            }
+          </div>
+          <p-button 
+            icon="pi pi-times" 
+            (onClick)="clearSelectedLocation()"
+            severity="secondary"
+            text
+            rounded
+            size="small"
+            aria-label="Wis geselecteerde locatie">
+          </p-button>
+        </div>
+      </div>
+    }
+    
+    <!-- Toegankelijke zoek en locatie sectie -->
+    <div class="flex flex-col gap-3" role="search" aria-labelledby="search-section">
+      <!-- Error messages met verbeterde accessibility -->
+      @if (error()) {
+        <p-message severity="error" [text]="error() || ''" 
+                  class="w-full" role="alert" aria-live="assertive"></p-message>
+      }
+      
+      @if (foutmelding) {
+        <p-message severity="error" [text]="foutmelding" 
+                  class="w-full" role="alert" aria-live="assertive"></p-message>
+      }
+
+      <div class="flex flex-col gap-3">
+        <!-- Verbeterde zoekbalk met labels -->
+        <div class="flex gap-2">
+          <span class="p-input-icon-left flex-1">
+            <i class="pi pi-search" aria-hidden="true"></i>
+            <input 
+              pInputText 
+              [value]="searchQuery()"
+              (input)="updateSearchQuery($any($event.target).value)"
+              placeholder="Bijv: Grote Markt 1, Groningen"
+              class="w-full py-3 text-lg border-round-2xl pl-5"
+              (keyup.enter)="onSearch()"
+              aria-label="Zoek adres, straat of postcode"
+              id="search-input"
+              type="search"
+              autocomplete="street-address" />
+          </span>
+          
+          <p-button 
+            icon="pi pi-search" 
+            (onClick)="onSearch()"
+            [loading]="isLoading()"
+            [disabled]="!searchQuery().trim()"
+            severity="primary"
+            class="py-3 px-4 text-lg border-round-2xl"
+            [attr.aria-label]="'Zoek opgegeven adres'"
+            size="large">
+          </p-button>
+        </div>
+        
+        <!-- Verbeterde huidige locatie knop -->
+        <p-button 
+          [icon]="isHuidigeLocatieLoading() ? 'pi pi-spin pi-spinner' : 'pi pi-crosshairs'" 
+          (onClick)="onHuidigeLocatie()"
+          [loading]="isHuidigeLocatieLoading()"
+          severity="secondary"
+          [label]="huidigeLocatieButtonLabel()"
+          class="w-full py-3 text-lg border-round-2xl font-medium"
+          [attr.aria-label]="'Gebruik mijn huidige GPS locatie'"
+          size="large">
+        </p-button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Bottom Navigation -->
+  <div class="w-full max-w-md mx-auto pt-4">
+    <div class="flex gap-3">
+      <p-button 
+        label="Vorige" 
+        icon="pi pi-chevron-left" 
+        (onClick)="onVorige()"
+        severity="secondary"
+        styleClass="flex-1"
+        size="large"
+        aria-label="Ga terug naar vorige stap">
+      </p-button>
+      
+      <p-button 
+        label="Volgende" 
+        icon="pi pi-chevron-right" 
+        iconPos="right"
+        (onClick)="onVolgende()"
+        styleClass="flex-1"
+        size="large"
+        aria-label="Ga door naar volgende stap">
+      </p-button>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,56 @@
+<div class="flex flex-col h-full p-4 text-center">
+  <div class="flex-grow flex flex-col justify-center">
+    <i class="pi pi-check-circle text-6xl text-green-500 mb-4"></i>
+    <h1 class="text-2xl font-bold text-primary-800 mb-2">Melding verstuurd!</h1>
+    <p class="text-surface-600 mb-4">
+      Bedankt! We nemen je melding in behandeling.
+    </p>
+
+    <!-- AI resultaat -->
+    @if (gedetecteerdeAfvalTypes().length > 0) {
+      <div class="p-4 bg-primary-50 rounded-xl mb-4">
+        <h3 class="font-semibold text-primary-800 mb-2">Gedetecteerd:</h3>
+        <div class="flex flex-wrap gap-2 justify-center">
+          @for (type of gedetecteerdeAfvalTypes(); track type) {
+            <p-tag
+              [value]="type.type + ' (' + type.confidence + '%)'"
+              severity="success"
+            ></p-tag>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- PWA prompt -->
+    @if (kanPWAInstalleren()) {
+      <div class="p-4 bg-blue-50 rounded-xl">
+        <h3 class="font-semibold text-blue-800 mb-2">Download de app</h3>
+        <p class="text-sm text-blue-700 mb-2">
+          Samen houden we de buurt schoon.
+        </p>
+        <p-button
+          label="Download Afval-Alert"
+          icon="pi pi-download"
+          (click)="downloadApp()"
+          severity="info"
+          styleClass="w-full h-10"
+        ></p-button>
+      </div>
+    }
+  </div>
+
+  <div class="w-full max-w-sm mx-auto mt-4 space-y-3">
+    <p-button
+      label="Nieuwe melding"
+      icon="pi pi-plus"
+      (click)="nieuweMelding()"
+      styleClass="w-full h-12"
+    ></p-button>
+    <p-button
+      label="Sluiten"
+      severity="secondary"
+      (click)="sluitApplicatie()"
+      styleClass="w-full h-12"
+    ></p-button>
+  </div>
+</div>

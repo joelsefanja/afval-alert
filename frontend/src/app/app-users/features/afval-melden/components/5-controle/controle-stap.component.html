@@ -1,0 +1,56 @@
+<div class="flex flex-col h-full p-4">
+  <div class="flex-grow space-y-5">
+    <h2 class="text-xl font-semibold text-primary-800">
+      Controleer je melding
+    </h2>
+
+    <!-- Foto -->
+    <div>
+      <h3 class="font-semibold mb-2">Foto</h3>
+      <img [src]="meldingData().afbeeldingUrl" class="rounded-xl w-full" />
+    </div>
+
+    <!-- AI Resultaat -->
+    <div class="p-4 bg-primary-50 rounded-xl">
+      <h3 class="font-semibold text-primary-800 mb-2">AI herkenning</h3>
+      <div class="flex flex-wrap gap-2">
+        @for (type of gedetecteerdeAfvalTypes; track type) {
+          <p-tag
+            [value]="type.afval_type + ' (' + type.zekerheid + '%)'"
+            [severity]="type.zekerheid > 0.8 ? 'success' : 'warning'"
+          ></p-tag>
+        }
+      </div>
+      <p class="text-sm text-surface-600 mt-2">
+        Onzeker? Je kunt het nog aanpassen.
+      </p>
+    </div>
+
+    <!-- Locatie -->
+    <div>
+      <h3 class="font-semibold mb-1">Locatie</h3>
+      <p class="text-surface-700">{{ meldingData().locatie?.adres }}</p>
+    </div>
+
+    <!-- Contact -->
+    <div>
+      <h3 class="font-semibold mb-1">Contact</h3>
+      <p class="text-surface-700">
+        {{
+          isAnoniemeContact()
+            ? "Anonieme melding"
+            : meldingData().contact?.email
+        }}
+      </p>
+    </div>
+  </div>
+
+  <div class="w-full max-w-sm mx-auto mt-4">
+    <p-button
+      label="Verstuur melding"
+      icon="pi pi-send"
+      (click)="submit()"
+      styleClass="w-full h-12"
+    ></p-button>
+  </div>
+</div>

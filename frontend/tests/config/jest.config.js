@@ -4,7 +4,8 @@ export default {
   testEnvironment: 'jsdom',
   rootDir: './../../',
   testMatch: [
-    '<rootDir>/tests/**/*.spec.ts'
+    '<rootDir>/tests/**/*.spec.ts',
+    '<rootDir>/src/**/*.spec.ts'
   ],
   testPathIgnorePatterns: [
     '<rootDir>/node_modules/',
@@ -12,17 +13,17 @@ export default {
     '<rootDir>/tests/e2e/',
   ],
   transform: {
-    '^.+\\.(ts|js|html)$': ['jest-preset-angular', {
+    '^.+\\.(ts|js|html): ['jest-preset-angular', {
       tsconfig: '<rootDir>/tests/config/tsconfig.spec.json',
-      stringifyContentPathRegex: '\\.html$',
+      stringifyContentPathRegex: '\\.html,
     }],
   },
   moduleNameMapper: {
-    '^@app/(.*)$': '<rootDir>/src/app/$1',
-    '^@models/(.*)$': '<rootDir>/src/app/models/$1',
-    '^@models$': '<rootDir>/src/app/models',
-    '^@shared/(.*)$': '<rootDir>/src/app/shared/$1',
-    '^@environments/(.*)$': '<rootDir>/environments/$1',
+    '^@app/(.*): '<rootDir>/src/app/$1',
+    '^@models/(.*): '<rootDir>/src/app/models/$1',
+    '^@models: '<rootDir>/src/app/models',
+    '^@shared/(.*): '<rootDir>/src/app/shared/$1',
+    '^@environments/(.*): '<rootDir>/environments/$1',
   },
   collectCoverageFrom: [
     'src/**/*.ts',

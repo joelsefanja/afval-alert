@@ -1,3 +1,72 @@
-.p-column-filter {
+
+.list-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: 1rem;
+}
+
+.selectable-row {
+  cursor: pointer;
+
+  &:hover {
+    background-color: #f5f5f5; 
+  }
+}
+
+
+/* Ensure table uses equal-width columns */
+.p-datatable {
+  table-layout: fixed; /* Enforce equal column widths */
   width: 100%;
+}
+
+/* Make filter inputs stretch */
+.p-column-filter,
+.app-multi-select-filter {
+  width: 100% !important;
+  box-sizing: border-box;
+  display: block;
+}
+
+
+.app-multi-select-filter {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+
+.date-filter-column {
+  .flex {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+
+.p-datatable-sm {
+  font-size: 0.875rem; 
+}
+
+
+.p-paginator {
+  margin-top: 0.5rem;
+}
+
+
+.p-datatable td,
+.p-datatable th {
+  padding: 0.5rem 0.75rem;
+}
+
+
+@media (max-width: 768px) {
+  .list-container {
+    padding: 0.5rem;
+  }
+
+  .p-datatable {
+    font-size: 0.8rem;
+  }
 }

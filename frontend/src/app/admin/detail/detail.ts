@@ -7,8 +7,10 @@ import { TextareaModule } from 'primeng/textarea';
 import { FormsModule } from '@angular/forms';
 import { State } from '../features/dashboard/interfaces/state.interface';
 import { ButtonModule } from 'primeng/button';
-import { KaartService } from '../../app-users/features/afval-melden/services/kaart';
-import { Kaart } from '../../app-users/features/afval-melden/components/locatie-stap/kaart';
+import { KaartService } from '@services/locatie/kaart.service';
+import { KaartComponent } from '@components/3-locatie-selectie/components';
+import { LocatieService } from '@services/locatie/locatie.service';
+
 import { NotificationStore as NotificatieStore }  from '../features/dashboard/stores/notificatie.store';
 import { NotificationStore as ImageStore} from '../features/dashboard/stores/image.store';
 
@@ -19,13 +21,15 @@ import { SelectModule } from 'primeng/select';
 @Component({
   selector: 'app-detail',
   standalone: true,
-  imports: [CommonModule, TijdlijnElementen, TextareaModule, FormsModule, SelectModule, ButtonModule, Kaart, ImageModule],
+  imports: [CommonModule, TijdlijnElementen, TextareaModule, FormsModule, SelectModule, ButtonModule, KaartComponent, ImageModule],
   templateUrl: './detail.html',
   styleUrl: './detail.scss'
 })
 export class DetailComponent {
   private kaartService = inject(KaartService);
-  @ViewChild(Kaart) kaartComponent!: Kaart;
+  private locatieService = inject(LocatieService);
+
+  @ViewChild(KaartComponent) kaartComponent!: KaartComponent;
   value: string = ''; // Initialize with a default value
   states!: State[];
 

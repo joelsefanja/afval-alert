@@ -1,0 +1,1 @@
+export * from './afval-melden.component';

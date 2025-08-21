@@ -31,30 +31,20 @@
             class="p-column-filter">
         </th>
         <th>
-          <p-multiSelect
+          <app-multi-select-filter
             [options]="store.typeOptions()"
             [(ngModel)]="selectedTypes"
-            optionLabel="label"
-            optionValue="value"
-            (onChange)="onTypeFilterChange()"
             placeholder="Filter type"
-            class="p-column-filter"
-            style="min-width: 7%"
-            appendTo="body">
-          </p-multiSelect>
+            ngDefaultControl
+          ></app-multi-select-filter>
         </th>
         <th>
-          <p-multiSelect
+          <app-multi-select-filter
             [options]="store.stateOptions()"
             [(ngModel)]="selectedStates"
-            optionLabel="label"
-            optionValue="value"
-            (onChange)="onTypeFilterChange()"
             placeholder="Filter status"
-            class="p-column-filter"
-            style="min-width: 7%"
-            appendTo="body">
-          </p-multiSelect>
+            ngDefaultControl
+          ></app-multi-select-filter>
         </th>
         <th style="min-width:7%">
                     <div class="flex items-center justify-between">

@@ -12,7 +12,8 @@
     "test:e2e": "playwright test --config config/playwright/playwright.config.ts",
     "test:e2e:ui": "playwright test --ui --config config/playwright/playwright.config.ts",
     "test:e2e:headed": "playwright test --headed --config config/playwright/playwright.config.ts",
-    "health-check": "node health-check.js"
+    "health-check": "node health-check.js",
+    "lint": "ng lint"
   },
   "prettier": {
     "overrides": [
@@ -55,9 +56,13 @@
     "tailwindcss-motion": "^1.1.1",
     "tailwindcss-primeui": "^0.6.1",
     "tslib": "^2.3.0",
+    "validator": "^13.15.15",
     "zone.js": "~0.15.0"
   },
   "devDependencies": {
+    "@angular-eslint/builder": "^20.1.1",
+    "@angular-eslint/eslint-plugin": "^20.1.1",
+    "@angular-eslint/eslint-plugin-template": "^20.1.1",
     "@angular/build": "^20.1.6",
     "@angular/cli": "^20.1.6",
     "@angular/compiler-cli": "^20.1.7",
@@ -65,10 +70,15 @@
     "@playwright/test": "^1.54.2",
     "@types/jest": "^30.0.0",
     "@types/leaflet": "^1.9.20",
+    "@types/validator": "^13.15.2",
+    "@typescript-eslint/eslint-plugin": "^8.40.0",
+    "@typescript-eslint/parser": "^8.40.0",
     "autoprefixer": "^10.4.16",
+    "eslint": "^9.33.0",
     "jest": "^30.0.5",
     "jest-environment-jsdom": "^30.0.5",
     "jest-preset-angular": "^15.0.0",
-    "typescript": "~5.8.2"
+    "typescript": "~5.8.2",
+    "typescript-eslint": "^8.40.0"
   }
 }
