@@ -16,7 +16,7 @@ import { UpdateStatusStore } from '../../stores/update-status.store';
 
 import { ImageModule } from 'primeng/image';
 import { TabsModule } from 'primeng/tabs';
-  
+
 
 import { SelectModule } from 'primeng/select';
 import { state } from '@angular/animations';
@@ -52,10 +52,10 @@ export class DetailComponent {
 
   ngOnInit() {
         this.states = [
-          {status: 'NIEUW'},
-          {status: 'MELDINGVERWERKT'},
-          {status: 'WORDTOPGEHAALD'},
-          {status: 'OPGEHAALD'}
+          {status: 'Nieuw'},
+          {status: 'Meldingverwerkt'},
+          {status: 'Wordtopgehaald'},
+          {status: 'Opgehaald'}
         ];
     }
 
