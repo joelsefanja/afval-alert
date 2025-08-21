@@ -2,7 +2,6 @@ import { Component, input, output, signal, computed } from '@angular/core';
 import { SharedKaartComponent } from '../../../shared/components/kaart/shared-kaart.component';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
-import { Button } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 
 interface AfvalMelding {

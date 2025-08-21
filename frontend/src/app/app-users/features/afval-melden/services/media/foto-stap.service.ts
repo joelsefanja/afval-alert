@@ -1,7 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { CameraService } from './camera.service';
-import { MeldingStateService } from '../melding';
-import { StepBuilderService } from '../steps/step-builder.service';
+import { CameraService } from '../camera.service';
+import { NavigatieService } from '../navigatie/navigatie.service';
 import { FotoUploadService } from './foto-upload.service';
 
 /**
@@ -28,8 +27,7 @@ import { FotoUploadService } from './foto-upload.service';
 @Injectable({ providedIn: 'root' })
 export class FotoStapService {
   private cameraService = inject(CameraService);
-  private meldingState = inject(MeldingStateService);
-  private stepBuilder = inject(StepBuilderService);
+  private navigator = inject(NavigatieService);
   private fotoUpload = inject(FotoUploadService);
 
   readonly cameraActive = signal(false);
@@ -37,26 +35,31 @@ export class FotoStapService {
   private videoStream: MediaStream | null = null;
 
   async startCamera(): Promise<MediaStream | null> {
-    this.videoStream = await this.cameraService.getUserMedia();
-    if (this.videoStream) {
-      this.cameraActive.set(true);
+    try {
+      this.videoStream = await this.cameraService.startCamera();
+      if (this.videoStream) {
+        this.cameraActive.set(true);
+      }
+      return this.videoStream;
+    } catch (error) {
+      console.error('Camera start failed:', error);
+      return null;
     }
-    return this.videoStream;
   }
 
-  takeFoto(video: HTMLVideoElement): void {
+  async takeFoto(video: HTMLVideoElement): Promise<void> {
     if (this.videoStream) {
-      const photoUrl = this.cameraService.captureFrame(video);
+      await this.cameraService.maakFoto(video);
+      const photoUrl = this.cameraService.fotoURL;
       this.fotoUrl.set(photoUrl);
-      this.meldingState.setFoto(photoUrl);
       this.stopCamera();
     }
   }
 
   async selectFromGallery(): Promise<void> {
-    const photoUrl = await this.cameraService.selectFromDevice();
+    await this.cameraService.selecteerFoto();
+    const photoUrl = this.cameraService.fotoURL;
     this.fotoUrl.set(photoUrl);
-    this.meldingState.setFoto(photoUrl);
   }
 
   reset(): void {
@@ -70,15 +73,13 @@ export class FotoStapService {
     if (!url) return;
     const blob = await (await fetch(url)).blob();
     this.fotoUpload.upload(blob).subscribe({
-      next: (res) => { console.log(res); this.stepBuilder.next(); },
+      next: (res) => { console.log(res); this.navigator.volgende(); },
       error: (err) => console.error(err)
     });
   }
 
   stopCamera(): void {
-    if (this.videoStream) {
-      this.cameraService.stopTracks(this.videoStream);
-    }
+    this.cameraService.stopCamera();
     this.videoStream = null;
     this.cameraActive.set(false);
   }
