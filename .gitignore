@@ -1,3 +1,7 @@
 docs/inception_model_b1.md
 .claude/settings.local.json
 python-classifier/.claude/settings.local.json
+frontend-gebruikers/.env
+.kiro
+github-feature-builder-prompt.md
+/node_modules

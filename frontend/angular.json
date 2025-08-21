@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "browser": "src/main.ts",
+            "browser": "./src/main.ts",
             "polyfills": [
               "zone.js"
             ],
@@ -32,11 +32,19 @@
                 "glob": "**/*",
                 "input": "src/assets",
                 "output": "assets"
+              },
+              {
+                "glob": "manifest.json",
+                "input": "src",
+                "output": ""
               }
             ],
             "styles": [
-              "src/styles.scss",
+              "src/styles.css",
               "node_modules/leaflet/dist/leaflet.css"
+            ],
+            "scripts": [
+              "node_modules/leaflet/dist/leaflet.js"
             ]
           },
           "configurations": {
@@ -58,7 +66,29 @@
             "development": {
               "optimization": false,
               "extractLicenses": false,
-              "sourceMap": true
+              "sourceMap": true,
+              "assets": [
+                {
+                  "glob": "**/*",
+                  "input": "public"
+                },
+                {
+                  "glob": "**/*",
+                  "input": "src/assets",
+                  "output": "assets"
+                },
+                {
+                  "glob": "manifest.json",
+                  "input": "src",
+                  "output": ""
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "environments/environment.ts",
+                  "with": "environments/environment.development.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"
@@ -73,7 +103,11 @@
               "buildTarget": "afval-alert:build:development"
             }
           },
-          "defaultConfiguration": "development"
+          "defaultConfiguration": "development",
+          "options": {
+            "port": 4200,
+            "open": true
+          }
         },
         "extract-i18n": {
           "builder": "@angular/build:extract-i18n"
@@ -94,7 +128,16 @@
               }
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles.css"
+            ]
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
             ]
           }
         }

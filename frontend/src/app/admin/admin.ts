@@ -1,11 +1,21 @@
-import { Component } from '@angular/core';
+import { inject } from '@angular/core';
+import { Component, computed } from '@angular/core';
+import { ListComponent } from './list/list';
+import { DetailComponent } from './detail/detail';
+import { IDService } from './services/id/id';
 
 @Component({
   selector: 'app-admin',
-  imports: [],
+  standalone: true,
+  imports: [ListComponent, DetailComponent],
   templateUrl: './admin.html',
-  styleUrl: './admin.scss'
+  styleUrls: ['./admin.scss']
 })
 export class AdminComponent {
+  constructor() {
+    this.selection = inject(IDService);
+  }
+  public selection: IDService;
 
+  showDetail = computed(() => this.selection.isDetailOpen());
 }

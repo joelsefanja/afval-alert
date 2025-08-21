@@ -1,1 +1,12 @@
-<p>admin works!</p>
+@if (showDetail()) {
+  <div class="split-container">
+    <div class="split-left">
+      <app-list></app-list>
+    </div>
+    <div class="split-right">
+      <app-detail></app-detail>
+    </div>
+  </div>
+} @else {
+  <app-list></app-list>
+}

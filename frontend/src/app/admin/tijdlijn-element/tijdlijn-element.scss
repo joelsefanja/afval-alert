@@ -1,0 +1,12 @@
+.timeline-box {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 1rem;
+  margin: 1rem 0;
+  width: fit-content;
+  max-width: 600px;
+}
+
+::ng-deep .p-timeline-event-opposite {
+    max-width: 140px;
+}

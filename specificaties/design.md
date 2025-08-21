@@ -180,40 +180,102 @@ class MeldingService {
 
 ## REST API Endpoints & Request Bodies
 
-### `POST /api/meldingen`
-
-**Content-Type:** `multipart/form-data`
-Body:
-
-* `foto` → Blob (JPEG/PNG, geoptimaliseerd).
-* `locatie` → JSON: `{ "latitude": 53.2194, "longitude": 6.5665 }`
-
----
-
-### `PUT /api/meldingen/{id}/status`
+### `POST /api/image`
 
 **Content-Type:** `application/json`
 
+Het uploaden van een foto. Hiermee wordt ook een lege, bijbehorende melding aangemaakt.
+
 ```json
 {
-  "status": "IN_BEHANDELING",
-  "opmerkingen": "Wordt morgen opgehaald"
+  "file": "MultipartFile"
 }
 ```
 
 ---
 
-### `POST /api/ai/classify`
+### `PUT /api/melding{id}`
 
-**Content-Type:** `application/json`
+**Content-Type** `application/json`
+
+Het afmaken van een eerder aangemaakte melding.
 
 ```json
 {
-  "imageBase64": "<base64-data>",
-  "imageFormat": "jpeg",
-  "confidence_threshold": 0.8
+  "lat": "Float",
+  "lon": "Float",
+  "email": "String",
+  "name": "String"
 }
 ```
+
+---
+
+### `PUT /api/melding/status/{id}`
+
+**Content-Type** `application/json`
+
+Het updaten van de status van een melding.
+
+```json
+{
+  "status": "String"
+}
+```
+
+---
+
+### `POST /api/notitie/{id}`
+
+**Content-Type** `application/json`
+
+Het toevoegen van een notitie aan een melding.
+
+```json
+{
+  "notitie": "String"
+}
+```
+
+---
+
+### `GET  /api/meldingen`
+
+**Content-Type** `application/json`
+
+Het ophalen van alle meldingen.
+
+---
+
+### `GET /api/melding/{id}`
+
+**Content-Type** `application/json`
+
+Het ophalen van een specifieke melding.
+
+---
+
+### `GET /api/notities/{id}`
+
+**Content-Type** `application/json`
+
+Het ophalen van alle notities van een melding
+
+---
+
+### `GET /api/image/{id}`
+
+**Content-Type** `application/json`
+
+Het ophalen van de afbeelding van een melding.
+
+---
+
+### `GET /api/status`
+
+**Content-Type** `application/json`
+
+Het ophalen van alle status enums.
 
 ---
 

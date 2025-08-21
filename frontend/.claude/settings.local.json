@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx playwright:*)",
+      "Bash(mkdir:*)",
+      "Bash(npm run test:e2e:*)",
+      "Bash(npm install:*)",
+      "Bash(git commit:*)",
+      "Bash(npm test)",
+      "Bash(npm start)",
+      "Bash(npm run build:*)",
+      "Bash(mv:*)",
+      "Bash(del /q \"src\\app\\app-users\\features\\afval-melden\\components\\base-stap.component.ts\")",
+      "Bash(move:*)",
+      "Bash(rm:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(npm run lint)",
+      "Bash(find:*)",
+      "mcp__ide__getDiagnostics"
+    ],
+    "deny": [],
+    "ask": [],
+    "additionalDirectories": [
+      "\\users\\joels\\dev\\afval-alert"
+    ]
+  }
+}

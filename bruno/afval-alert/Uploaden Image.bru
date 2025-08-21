@@ -1,0 +1,19 @@
+meta {
+  name: Uploaden Image
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8080/api/image
+  body: multipartForm
+  auth: inherit
+}
+
+body:multipart-form {
+  file: @file(/home/thijs/Downloads/lesbrief-zwerfafval-iStock-1257753934.jpg)
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,40 @@
+<p-card>
+  <ng-template pTemplate="header">
+    <div class="p-2 bg-green-500 text-white text-center text-sm">
+      <i class="pi pi-camera mr-1"></i> Vastgelegde foto
+    </div>
+  </ng-template>
+  
+  <div class="p-2">
+    @if (heeftFoto() && fotoUrl()) {
+      <div class="relative">
+        <img 
+          [src]="fotoUrl()" 
+          alt="Afval foto" 
+          class="w-full h-48 object-cover rounded-lg border border-gray-200"
+        />
+        
+        <!-- Status Badge -->
+        <div class="absolute top-2 left-2 bg-green-600 text-white px-2 py-1 rounded-full text-xs">
+          <i class="pi pi-check mr-1"></i>
+          Foto gereed
+        </div>
+      </div>
+      
+      <!-- Info -->
+      <div class="mt-3 text-center">
+        <p class="text-sm text-green-700">
+          <i class="pi pi-info-circle mr-1"></i>
+          Deze foto wordt meegestuurd met je melding
+        </p>
+      </div>
+    } @else {
+      <!-- Geen foto state -->
+      <div class="text-center py-8 text-gray-500">
+        <i class="pi pi-image text-4xl mb-3"></i>
+        <p class="text-sm">Geen foto beschikbaar</p>
+        <p class="text-xs mt-1">Ga terug om een foto toe te voegen</p>
+      </div>
+    }
+  </div>
+</p-card>

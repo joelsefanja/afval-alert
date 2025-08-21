@@ -1,15 +1,44 @@
 <!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>AfvalAlert</title>
-  <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-</head>
-<body>
-  <app-root></app-root>
-</body>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8" />
+    <title>Afval-Alert App - Samen houden we de buurt schoon</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Meld zwerfafval eenvoudig en snel. Samen houden we de buurt schoon met de Afval-Alert app." />
+    <meta name="theme-color" content="#10b981" />
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="manifest.json" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Afval-Alert" />
+    
+    <!-- Icons -->
+    <link rel="icon" type="image/x-icon" href="https://picsum.photos/32/32?random=1" />
+    <link rel="apple-touch-icon" sizes="180x180" href="https://picsum.photos/192/192?random=1" />
+    
+    <!-- Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <script>
+    window.addEventListener('load', function() {
+      console.log('Fonts and CSS loaded');
+    });
+    window.addEventListener('error', function(event) {
+      console.error('Error loading resource', event.target.href);
+    });
+  </script>
+  <body>
+    <app-root></app-root>
+    <script type="module" src="./main.js"></script>
+  </body>
 </html>

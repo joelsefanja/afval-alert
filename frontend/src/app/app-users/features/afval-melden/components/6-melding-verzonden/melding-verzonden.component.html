@@ -1,0 +1,44 @@
+<!-- Mobile-first Succes Pagina -->
+<div class="min-h-screen flex flex-col">
+  <!-- Header -->
+  <p-toolbar class="bg-primary text-center">
+    <ng-template pTemplate="start">
+      <div class="w-full max-w-md mx-auto">
+        <p-avatar
+          icon="pi pi-check"
+          class="mx-auto mb-3"
+          size="large"
+          shape="circle"
+        ></p-avatar>
+        <h1 class="text-2xl font-bold mb-2 text-white">Melding verstuurd!</h1>
+        <p class="text-primary-100">Je melding is succesvol ontvangen</p>
+      </div>
+    </ng-template>
+  </p-toolbar>
+
+  <!-- Main Content -->
+  <div class="flex-1 p-4">
+    <div class="max-w-md mx-auto space-y-4">
+      <!-- Succes Bericht Component -->
+      <p-card>
+        <app-succes-bericht
+          [meldingId]="meldingId()"
+          [kanPWAInstalleren]="kanPWAInstalleren()"
+          (nieuweMelding)="onNieuweMelding()"
+          (pwaInstalleren)="onPWAInstalleren()"
+          (sluitApplicatie)="onSluitApplicatie()"
+        ></app-succes-bericht>
+      </p-card>
+
+      <!-- AI Classificatie Resultaten -->
+      @if (heeftClassificatie()) {
+        <p-card>
+          <app-classificatie-resultaat
+            [resultaten]="classificatieResultaten()"
+            [isGeladen]="true"
+          ></app-classificatie-resultaat>
+        </p-card>
+      }
+    </div>
+  </div>
+</div>

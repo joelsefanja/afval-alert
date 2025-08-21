@@ -1,0 +1,74 @@
+<div class="max-w-md mx-auto">
+  <!-- Succes Kaart -->
+  <p-card class="text-center mb-4">
+    <ng-template pTemplate="header">
+      <div class="p-6 bg-green-500 text-white">
+        <div class="w-16 h-16 mx-auto bg-white bg-opacity-20 rounded-full flex items-center justify-center mb-3">
+          <i class="pi pi-check text-3xl"></i>
+        </div>
+        <h2 class="text-xl font-bold">Melding verstuurd!</h2>
+      </div>
+    </ng-template>
+    
+    <div class="p-6">
+      <!-- Melding ID -->
+      <div class="mb-6">
+        <label class="text-sm font-medium text-gray-600 block mb-2">Je melding nummer</label>
+        <div class="bg-gray-100 border border-gray-300 rounded-lg p-3">
+          <span class="font-mono text-lg font-bold text-green-600">{{ meldingId() }}</span>
+        </div>
+        <p class="text-xs text-gray-500 mt-2">
+          Bewaar dit nummer voor je administratie
+        </p>
+      </div>
+      
+      <!-- Status Bericht -->
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+        <div class="flex items-start space-x-3">
+          <i class="pi pi-info-circle text-blue-600 mt-1"></i>
+          <div class="text-sm text-blue-800">
+            <p class="font-medium mb-1">Wat gebeurt er nu?</p>
+            <ul class="text-xs space-y-1 leading-relaxed">
+              <li>• De gemeente ontvangt je melding direct</li>
+              <li>• Er wordt een handhaver gestuurd om te controleren</li>
+              <li>• Het afval wordt opgeruimd binnen 5 werkdagen</li>
+              <li>• Je krijgt een bevestiging per e-mail (indien opgegeven)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Acties -->
+      <div class="space-y-3">
+        <!-- PWA Installatie -->
+        @if (kanPWAInstalleren()) {
+          <p-button
+            label="Installeer als app"
+            icon="pi pi-download"
+            (onClick)="onPWAInstalleren()"
+            severity="secondary"
+            class="w-full"
+          ></p-button>
+        }
+        
+        <!-- Nieuwe melding -->
+        <p-button
+          label="Nieuwe melding maken"
+          icon="pi pi-plus"
+          (onClick)="onNieuweMelding()"
+          class="w-full"
+        ></p-button>
+        
+        <!-- Sluiten -->
+        <p-button
+          label="Applicatie sluiten"
+          icon="pi pi-times"
+          (onClick)="onSluiten()"
+          severity="secondary"
+          outlined="true"
+          class="w-full"
+        ></p-button>
+      </div>
+    </div>
+  </p-card>
+</div>

@@ -1,0 +1,79 @@
+<!-- Mobile-first Controle Pagina -->
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-green-50">
+  <!-- Header -->
+  <div class="bg-white shadow-sm border-b border-gray-200 p-4">
+    <div class="flex items-center justify-between">
+      <h1 class="text-xl font-bold text-gray-800">Controleer je melding</h1>
+      <div class="bg-blue-100 px-3 py-1 rounded-full">
+        <span class="text-blue-700 text-sm font-medium">Stap 5 van 6</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="p-4 space-y-4">
+    <!-- Melding Overzicht -->
+    <app-melding-overzicht 
+      [concept]="krijgConcept()"
+      [meldingId]="''"
+    ></app-melding-overzicht>
+    
+    <!-- Foto Samenvatting -->
+    <app-foto-samenvatting
+      [fotoUrl]="krijgConcept().afbeeldingUrl || ''"
+      [heeftFoto]="!!krijgConcept().afbeeldingUrl"
+    ></app-foto-samenvatting>
+    
+    <!-- Contact Samenvatting -->
+    <app-contact-samenvatting
+      [contact]="contactGegevens()"
+    ></app-contact-samenvatting>
+
+    <!-- AI Classificatie Resultaten -->
+    @if (classificatieResultaten(); as resultaten) {
+      <p-card>
+        <ng-template pTemplate="header">
+          <div class="p-2 bg-orange-500 text-white text-center text-sm">
+            <i class="pi pi-eye mr-1"></i> AI heeft gedetecteerd
+          </div>
+        </ng-template>
+        <div class="p-2">
+          @if (resultaten.length > 0) {
+            <div class="space-y-2">
+              <h4 class="font-medium">Beste gok: {{ getBestGuess() }}</h4>
+              <div class="space-y-1">
+                @for (resultaat of resultaten; track resultaat.type) {
+                  <div class="flex justify-between items-center">
+                    <span class="text-sm">{{ resultaat.type }}</span>
+                    <p-tag 
+                      [value]="(resultaat.confidence * 100).toFixed(0) + '%'"
+                      [severity]="resultaat.confidence > 0.7 ? 'success' : 'warning'"
+                    ></p-tag>
+                  </div>
+                }
+              </div>
+            </div>
+          } @else {
+            <p class="text-center text-gray-600 py-2">
+              <i class="pi pi-spin pi-spinner mr-2"></i>
+              AI analyseert nog...
+            </p>
+          }
+        </div>
+      </p-card>
+    }
+  </div>
+
+  <!-- Navigation Footer -->
+  <div class="sticky bottom-0">
+    <app-navigatie-knoppen
+      [volgendeLabel]="'Verzenden'"
+      [volgendeUitgeschakeld]="!kanVerzenden() || isBezig()"
+      (vorige)="onVorige()"
+      (volgende)="onVolgende()"
+    ></app-navigatie-knoppen>
+  </div>
+</div>
+
+<!-- Toast voor meldingen -->
+<p-toast></p-toast>
