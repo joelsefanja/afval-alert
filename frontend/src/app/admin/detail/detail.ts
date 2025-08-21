@@ -16,6 +16,8 @@ import { NotificationStore as ImageStore} from '../features/dashboard/stores/ima
 import { NotificationStore as UpdateStatusStore } from '../features/dashboard/stores/update-status.store';
 
 import { ImageModule } from 'primeng/image';
+import { TabsModule } from 'primeng/tabs';
+  
 
 import { SelectModule } from 'primeng/select';
 import { state } from '@angular/animations';
@@ -23,7 +25,7 @@ import { state } from '@angular/animations';
 @Component({
   selector: 'app-detail',
   standalone: true,
-  imports: [CommonModule, TijdlijnElementen, TextareaModule, FormsModule, SelectModule, ButtonModule, KaartComponent, ImageModule],
+  imports: [CommonModule, TijdlijnElementen, TextareaModule, FormsModule, SelectModule, ButtonModule, KaartComponent, ImageModule, TabsModule],
   templateUrl: './detail.html',
   styleUrl: './detail.scss'
 })
