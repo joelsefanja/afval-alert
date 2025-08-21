@@ -1,7 +1,5 @@
 <p-button label="Sluiten" (click)="closeDetail()" />
 
-<p-button label="Sluiten" (click)="closeDetail()" />
-
 <div class="card">
     <p-tabs value="0">
         <p-tablist>
@@ -11,14 +9,16 @@
         </p-tablist>
         <p-tabpanels>
           <p-tabpanel value="0">
-            <h1>Foto voor melding met id: {{ selection.selectedId() }}</h1>
-            <p-image [src]="imageStore.image()" alt="Image" class="mapp" />
-            <p>Afvaltype, status, datum</p>
-            Opmerking van gebruiker bij melding
+            <div class="sizepanel">
+              <h1>Foto voor melding met id: {{ selection.selectedId() }}</h1>
+              <p-image [src]="imageStore.image()" alt="Image" class="mapp" height="400"/>
+              <p>Afvaltype, status, datum</p>
+              Opmerking van gebruiker bij melding
+            </div>
           </p-tabpanel>
 
           <p-tabpanel value="1">
-            <div class="mapp">
+            <div class="sizepanel">
               <h1>Kaart voor melding met id: {{ selection.selectedId() }}</h1>
               <app-kaart></app-kaart>
             </div>
@@ -27,15 +27,16 @@
           <p-tabpanel value="2">
 
           <app-tijdlijn-element [notificaties]="notificatieStore.notificaties()"></app-tijdlijn-element>
-
-            <p>Update status</p>
-            <div>
-              <p-select [options]="states" [(ngModel)]="selectedStatus" optionLabel="status" placeholder="Selecteer een status" class="w-full md:w-56" />
-            </div>
-            <p>Voeg opmerking toe</p>
-            <textarea rows="5"cols="30" pTextarea [autoResize]="true"></textarea>
-            <div>
-              <p-button label="Update" />
+            <div class="sizepanel">
+              <p>Update status</p>
+              <div>
+                <p-select [options]="states" [(ngModel)]="selectedStatus" optionLabel="status" placeholder="Selecteer een status" class="w-full md:w-56" />
+              </div>
+              <p>Voeg opmerking toe</p>
+              <textarea rows="5"cols="30" pTextarea [autoResize]="true"></textarea>
+              <div>
+                <p-button label="Update" />
+              </div>
             </div>
           </p-tabpanel>
          </p-tabpanels>
