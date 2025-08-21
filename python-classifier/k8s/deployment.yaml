@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: afval-alert
+  labels:
+    app: afval-alert
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: afval-alert
+  template:
+    metadata:
+      labels:
+        app: afval-alert
+    spec:
+      serviceAccountName: afval-alert-sa
+      containers:
+      - name: afval-alert
+        image: YOUR_REGISTRY/afval-alert:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: GEMINI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: gemini-api-key
+              key: GEMINI_API_KEY
+        envFrom:
+        - configMapRef:
+            name: afval-alert-config
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        volumeMounts:
+        - name: models-volume
+          mountPath: /root/.keras
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      volumes:
+      - name: models-volume
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: afval-alert-service
+spec:
+  selector:
+    app: afval-alert
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+  type: LoadBalancer

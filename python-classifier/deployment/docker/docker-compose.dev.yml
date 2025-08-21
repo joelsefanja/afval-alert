@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  classifier-dev:
+    build: ./classifier
+    ports:
+      - "8000:8000"
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - API_KEY=${API_KEY}
+      - TF_CPP_MIN_LOG_LEVEL=3
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONUNBUFFERED=1
+    env_file:
+      - ./classifier/.env
+    volumes:
+      - ./classifier:/app
+    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload", "--log-level", "info"]
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'

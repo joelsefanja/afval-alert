@@ -1,0 +1,50 @@
+name: Run Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.11', '3.12']
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Install dependencies
+      run: |
+        cd classifier
+        pip install --upgrade pip uv
+        uv pip install -e .
+    
+    - name: Run unit tests
+      run: |
+        cd classifier
+        python -m pytest tests/test_unit.py -v
+    
+    - name: Run integration tests
+      run: |
+        cd classifier
+        python -m pytest tests/test_integration.py -v
+      env:
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        TEST_MODE: true
+    
+    - name: Run E2E tests
+      run: |
+        cd classifier
+        python -m pytest tests/test_e2e.py::TestE2E -v
+      env:
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        TEST_MODE: true

@@ -1,0 +1,33 @@
+{
+  "properties": {
+    "siteConfig": {
+      "appSettings": [
+        {
+          "name": "GEMINI_API_KEY",
+          "value": "@Microsoft.KeyVault(SecretUri=https://your-keyvault.vault.azure.net/secrets/gemini-api-key)"
+        },
+        {
+          "name": "TF_CPP_MIN_LOG_LEVEL",
+          "value": "3"
+        },
+        {
+          "name": "PYTHONPATH",
+          "value": "/app"
+        },
+        {
+          "name": "WEBSITES_PORT",
+          "value": "8000"
+        },
+        {
+          "name": "DOCKER_ENABLE_CI",
+          "value": "true"
+        }
+      ],
+      "linuxFxVersion": "DOCKER|python:3.12-alpine",
+      "alwaysOn": true,
+      "ftpsState": "FtpsOnly",
+      "healthCheckPath": "/health",
+      "minimumElasticInstanceCount": 1
+    }
+  }
+}
