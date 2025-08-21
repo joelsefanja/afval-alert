@@ -3,7 +3,7 @@ export interface ListNotification {
   lat: number;
   lon: number;
   location: string;
-  type: string;
+  wastetype: string;
   status: string;
   date: Date;
   useremail?: string;

@@ -17,7 +17,7 @@
     <ng-template pTemplate="header">
       <tr>
         <th pSortableColumn="location">Locatie <p-sortIcon field="location"></p-sortIcon></th>
-        <th pSortableColumn="type">Afvaltype <p-sortIcon field="type"></p-sortIcon></th>
+        <th pSortableColumn="wastetype">Afvaltype <p-sortIcon field="wastetype"></p-sortIcon></th>
         <th pSortableColumn="status">Status <p-sortIcon field="status"></p-sortIcon></th>
         <th pSortableColumn="date">Datum <p-sortIcon field="date"></p-sortIcon></th>
       </tr>
@@ -32,7 +32,7 @@
         </th>
         <th>
           <app-multi-select-filter
-            [options]="store.typeOptions()"
+            [options]="store.wastetypeOptions()"
             [(ngModel)]="selectedTypes"
             placeholder="Filter type"
             ngDefaultControl
@@ -57,7 +57,7 @@
     <ng-template pTemplate="body" let-notification>
       <tr (click)="goToDetails(notification)" [pSelectableRow]="notification" style="cursor:pointer">
         <td>{{ notification.location }}</td>
-        <td>{{ getReadableType(notification.type) }}</td>
+        <td>{{ notification.wastetype }}</td>
         <td>{{ getReadableStatus(notification.status) }}</td>
         <td>{{ notification.date | date:'dd-MM-yyyy' }}</td>
       </tr>

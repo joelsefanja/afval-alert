@@ -11,7 +11,7 @@ import { SliderModule } from 'primeng/slider';
 import { IDService } from '../../services/id/id';
 import { ListNotification } from '../../interfaces/listnotification.interface';
 import { NotificationStore } from '../../stores/melding.store';
-import { getReadableStatus, getReadableType } from '../../utilities/melding-mappings';
+import { getReadableStatus } from '../../utilities/melding-mappings';
 import { MultiSelectFilter} from '../multi-select-filter/multi-select-filter';
 
 @Component({
@@ -69,6 +69,5 @@ export class ListComponent implements AfterViewInit, OnInit {
     this.dt.filter(this.selectedStates?.length ? this.selectedStates : null, 'status', 'in');
   }
 
-  getReadableType = getReadableType;
   getReadableStatus = getReadableStatus;
 }

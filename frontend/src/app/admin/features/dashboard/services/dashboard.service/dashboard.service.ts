@@ -23,7 +23,7 @@ export class DashboardService {
             id: m.id,
             lat: m.lat,
             lon: m.lon,
-            type: m.trashType,
+            wastetype: m.wastetypes?.map((w: any) => w.name).join(', ') || '',
             status: m.status,
             date: m.created_at ? new Date(m.created_at) : new Date(),
             // temporary placeholder until we fetch address
