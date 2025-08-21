@@ -37,6 +37,7 @@ export class DetailComponent {
   states!: State[];
 
   selectedStatus : string = '';
+  notitie: string = "";
 
   locationSelected = output<string>();
   locatieGeselecteerd = output<{latitude: number, longitude: number, address: string, wijk?: string, buurt?: string, gemeente?: string}>();
@@ -45,6 +46,7 @@ export class DetailComponent {
   selectedAddress = '';
 
   lastSelected : number | null = null;
+  notitieAdded: boolean = false;
 
   notificatieStore = inject(NotificationStore);
   imageStore = inject(ImageStore);
@@ -71,6 +73,10 @@ export class DetailComponent {
 
       this.setNotificaties();
       this.setImage();
+    } else if (this.notitieAdded) {
+      this.setNotificaties();
+
+      this.notitieAdded = false;
     }
   }
 
@@ -86,5 +92,8 @@ export class DetailComponent {
     if (!this.selectedStatus || this.selectedStatus === "Selecteer een status") { return; }
 
     this.updateStatusStore.update(this.selection.selectedId(), {"status": this.selectedStatus});
+    this.notificatieStore.post(this.selection.selectedId(), {"notitie": "Status verranderd naar: " + this.selectedStatus})
+
+    this.notitieAdded = true;
   }
 }
