@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: afval-alert-config
+data:
+  # Application configuration
+  LOG_LEVEL: "info"
+  TF_CPP_MIN_LOG_LEVEL: "1"
+  
+  # Model configuration
+  MODEL_PATH: "/app/models"
+  
+  # Server configuration
+  HOST: "0.0.0.0"
+  PORT: "8000"
