@@ -1,7 +1,7 @@
 import { Component, computed } from '@angular/core';
 import { ListComponent } from './features/dashboard/components/list/list';
-import { DetailComponent } from './detail/detail';
-import { IDService } from './services/id/id';
+import { DetailComponent } from './features/dashboard-item/components/detail/detail';
+import { IDService } from './features/dashboard/services/id/id';
 import { nl } from 'primelocale/js/nl.js';
 
 @Component({

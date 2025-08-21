@@ -1,7 +1,7 @@
 import { Injectable, computed, inject } from "@angular/core";
-import { TijdlijnElement } from "@app/admin/interfaces/tijdlijn-element.interface";
+import { TijdlijnElement } from "@app/admin/features/dashboard-item/interfaces/tijdlijn-element.interface";
 import { DashboardItemServiceTs } from "@app/admin/services/dashboard-item/dashboard-item.service.ts";
-import { IDService } from "@app/admin/services/id/id";
+import { IDService } from "@app/admin/features/dashboard/services/id/id";
 
 
 @Injectable({ providedIn: 'root' })

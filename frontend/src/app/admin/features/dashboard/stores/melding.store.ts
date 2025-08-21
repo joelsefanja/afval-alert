@@ -1,6 +1,6 @@
 import { Injectable, computed, inject } from '@angular/core';
-import { DashboardService } from '../services/dashboard.service';
-import { IDService } from '../../../services/id/id';
+import { DashboardService } from '../services/dashboard.service/dashboard.service';
+import { IDService } from '../services/id/id';
 import { STATUS_ORDER, TYPE_ORDER, getReadableStatus, getReadableType } from '../utilities/melding-mappings';
 import { LocatieService } from '@services/locatie/locatie.service';
 

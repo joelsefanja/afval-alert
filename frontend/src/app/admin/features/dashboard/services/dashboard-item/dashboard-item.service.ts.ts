@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
-import { TijdlijnElement } from '../../interfaces/tijdlijn-element.interface';
+import { TijdlijnElement } from '../../features/dashboard/interfaces/tijdlijn-element.interface';
 import { map } from 'rxjs/operators';
 
 @Injectable({

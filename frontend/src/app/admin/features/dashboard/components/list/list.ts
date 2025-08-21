@@ -8,7 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { SliderModule } from 'primeng/slider';
 
-import { IDService } from '../../../../services/id/id';
+import { IDService } from '../../services/id/id';
 import { ListNotification } from '../../interfaces/listnotification.interface';
 import { NotificationStore } from '../../stores/melding.store';
 import { getReadableStatus, getReadableType } from '../../utilities/melding-mappings';

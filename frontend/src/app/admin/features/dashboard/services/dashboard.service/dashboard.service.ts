@@ -1,6 +1,6 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ListNotification } from '../interfaces/listnotification.interface';
+import { ListNotification } from '../../interfaces/listnotification.interface';
 import { map } from 'rxjs/operators';
 import { LocatieService } from '@services/locatie/locatie.service';
 
