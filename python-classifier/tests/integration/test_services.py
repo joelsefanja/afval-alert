@@ -4,7 +4,8 @@ import os
 import torch
 import pytest
 from src.services import factory
-from src.utils import AppConfig, AfvalConfig
+from src.config.app_config import AppConfig
+from src.config.afval_config import AfvalConfig
 
 class TestServiceIntegration:
     """Integration tests for service components"""
@@ -13,28 +14,36 @@ class TestServiceIntegration:
         """Test that factory can create all services"""
         services = factory.create_all_services()
         
-        assert 'lokaal' in services
-        assert 'gemini' in services
-        # Check that we get service instances (can't check exact type due to singleton decorator)
-        assert hasattr(services['lokaal'], 'is_ready')
+        # Check that we got the expected services
+        assert "lokaal" in services
+        assert "gemini" in services
+        assert services["lokaal"].is_ready()
+        assert services["gemini"].is_ready()
         
-        # Gemini service may or may not be available depending on API key
-        if os.getenv("GEMINI_API_KEY"):
-            assert hasattr(services['gemini'], 'is_ready')
+        # Check that services use lazy initialization
+        assert services["lokaal"].model is None
+        assert services["lokaal"].transform is None
+        assert services["lokaal"]._initialized is False
+        assert services["gemini"].model is None
+        assert services["gemini"]._initialized is False
     
     def test_local_service_initialization(self):
         """Test that local service initializes correctly"""
         service = factory.create_lokale_service()
         assert service.is_ready()
-        assert service.model is not None
-        assert service.transform is not None
+        # Model and transform are lazy loaded, so they should be None initially
+        assert service.model is None
+        assert service.transform is None
+        assert service._initialized is False
     
     @pytest.mark.skipif(not os.getenv("GEMINI_API_KEY"), reason="GEMINI_API_KEY not set")
     def test_gemini_service_initialization(self):
         """Test that Gemini service initializes correctly with API key"""
         service = factory.create_gemini_service()
         assert service.is_ready()
-        assert service.model is not None
+        # Model is lazy loaded, so it should be None initially
+        assert service.model is None
+        assert service._initialized is False
         assert len(service.config.afval_types) > 0
 
 class TestConfigurationIntegration:

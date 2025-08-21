@@ -4,10 +4,10 @@ import pytest
 import torch
 from PIL import Image
 import io
-from src.utils import (
-    extract_tensor_stats, validate_gemini_response, 
-    format_feature_description, AppConfig, AfvalConfig
-)
+from src.config.app_config import AppConfig
+from src.config.afval_config import AfvalConfig
+from src.features.response_validation import validate_gemini_response
+from src.features.tensor_processing import extract_tensor_stats, format_feature_description
 
 class TestUtilityFunctions:
     """Unit tests for utility functions"""
@@ -71,16 +71,22 @@ class TestUtilityFunctions:
             'max': 1.0,
             'min': 0.0,
             'std': 0.25,
-            'shape': '[1, 1000]'
+            'shape': '[1, 1000]',
+            'range': 1.0,
+            'variance': 0.0625,
+            'median': 0.5,
+            'q25': 0.25,
+            'q75': 0.75,
+            'positive_ratio': 0.6,
+            'negative_ratio': 0.4,
+            'high_activation_ratio': 0.3
         }
         
         description = format_feature_description(stats)
         assert isinstance(description, str)
         assert len(description) > 0
-        assert 'gem=' in description  # Check for the actual format used
-        assert 'max=' in description
-        assert 'min=' in description
-        assert 'std=' in description
+        assert 'CONVNEXT BASE MODEL ANALYSE RESULTAAT:' in description
+        assert 'Gemiddelde activatie: 0.500' in description
 
 class TestConfiguration:
     """Unit tests for configuration classes"""
@@ -92,7 +98,7 @@ class TestConfiguration:
         # Check default values
         assert config.max_file_size == 20 * 1024 * 1024  # 20MB in bytes
         assert config.device in ['cuda', 'cpu']
-        assert config.model_name == 'swin_tiny_patch4_window7_224'
+        assert config.model_name == 'convnext_base_384_in22k_ft_in1k'
     
     def test_afval_config_loading(self):
         """Test AfvalConfig loading from YAML"""

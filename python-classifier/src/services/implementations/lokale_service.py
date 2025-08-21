@@ -1,5 +1,6 @@
 """Lokale Service Implementation"""
 
+import torch
 from ...config.app_config import AppConfig
 from ...decorators.logging_decorator import logged
 from ...decorators.singleton_decorator import singleton

@@ -6,7 +6,7 @@ from .api.app import app
 # Import endpoints om routes te registreren
 print("Endpoints importeren...")
 from .api.endpoints import info, status, classification
-print("✅ Alle endpoints geïmporteerd")
+print("Alle endpoints geïmporteerd")
 print(f"App: {app.title} v{app.version}")
 print(f"Routes: {[(r.path, list(r.methods)) for r in app.routes if not r.path.startswith('/docs')]}")
 

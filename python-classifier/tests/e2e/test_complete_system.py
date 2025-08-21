@@ -32,15 +32,16 @@ class TestCompleteSystemE2E:
         assert response.status_code == 200
         data = response.json()
         assert "service" in data
-        assert data["service"] == "AfvalAlert Classificatie v3.0"
-    
+        assert data["service"] == "AfvalAlert Nederlandse Afval Classificatie"
+
     def test_system_status_endpoint(self):
         """Test that system status is available"""
         response = client.get("/status")
         assert response.status_code == 200
         data = response.json()
-        assert "lokaal" in data
-        assert "gemini" in data
+        assert "lokaal_model" in data
+        assert "gemini_ai" in data
+        assert "overall_status" in data
     
     def test_debug_endpoint_without_file(self):
         """Test debug endpoint without file"""
