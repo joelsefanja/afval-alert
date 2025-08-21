@@ -1,50 +1,79 @@
 import { Component, inject, computed } from '@angular/core';
-import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
-import { TagModule } from 'primeng/tag';
-import { SuccesStapService } from '@services/proces/stappen';
-import { AfvalMeldingStateService } from '@services/melding';
-import { MediaService } from '../../services';
+import { NavigatieService } from '../../services/navigatie/navigatie.service';
+import { SessieStorageService } from '../../services/opslag/sessie-storage.service';
+import { MeldingConceptService } from '../../services/melding/concept/melding-concept.service';
+import { PwaInstallService } from '../../services/netwerk/pwa-install.service';
+import { SuccesBerichtComponent } from './components/succes-bericht/succes-bericht.component';
+import { ClassificatieResultaatComponent } from './components/classificatie-resultaat/classificatie-resultaat.component';
+import { Toolbar } from 'primeng/toolbar';
+import { Avatar } from 'primeng/avatar';
+import { Card } from 'primeng/card';
+
+/**
+ * Melding verzonden component
+ * Succes pagina met classificatie resultaten en PWA installatie
+ */
 @Component({
   selector: 'app-melding-verzonden',
   standalone: true,
-  imports: [ButtonModule, CardModule, TagModule],
-  templateUrl: './melding-verzonden.component.html'
+  imports: [SuccesBerichtComponent, ClassificatieResultaatComponent, Toolbar, Avatar, Card],
+  templateUrl: './melding-verzonden.component.html',
 })
 export class MeldingVerzondenComponent {
-  private succesService: SuccesStapService = inject(SuccesStapService);
-  private afvalMeldingService: AfvalMeldingStateService = inject(AfvalMeldingStateService);
-  private mediaService: MediaService = inject(MediaService);
+  // Services
+  private readonly navigatie = inject(NavigatieService);
+  private readonly sessieStorage = inject(SessieStorageService);
+  private readonly conceptService = inject(MeldingConceptService);
+  private readonly pwaService = inject(PwaInstallService);
 
-  readonly kanPWAInstalleren = this.succesService.kanPWAInstalleren;
-  readonly isGeinstalleerd = this.succesService.isGeinstalleerd;
-  
-  readonly gedetecteerdeAfvalTypes = computed(() => {
-    const classificatieResultaat = this.mediaService.classificatieResultaat();
-    if (classificatieResultaat?.afval_typen) {
-      return classificatieResultaat.afval_typen.map((type: any) => ({
-        type: type.afval_type,
-        confidence: type.confidence
-      }));
-    }
-    return [];
-  });
-  
+  // Computed data
   readonly meldingId = computed(() => {
-    const melding = this.afvalMeldingService.afvalMeldingConcept();
-    // Return concept ID if available
-    return melding.conceptId || 'AFV-' + Math.random().toString(36).substr(2, 8).toUpperCase();
+    return this.sessieStorage.krijgMeldingId() || this.genereerMockId();
+  });
+  
+  readonly classificatieResultaten = computed(() => {
+    const meldingId = this.sessieStorage.krijgMeldingId();
+    if (!meldingId) return [];
+    const resultaten = this.sessieStorage.krijgClassificatie(meldingId);
+    return resultaten || [];
+  });
+  
+  readonly heeftClassificatie = computed(() => this.classificatieResultaten().length > 0);
+  readonly kanPWAInstalleren = computed(() => this.pwaService.kanInstalleren());
+  
+  readonly besteGok = computed(() => {
+    const resultaten = this.classificatieResultaten();
+    if (!resultaten.length) return null;
+    
+    return resultaten.reduce((prev, current) => 
+      current.confidence > prev.confidence ? current : prev
+    );
   });
 
-  async downloadApp() {
-    await this.succesService.promptPWAInstallatie();
+  async onPWAInstalleren(): Promise<void> {
+    try {
+      await this.pwaService.promptInstall();
+    } catch (error) {
+      console.log('PWA installatie geannuleerd');
+    }
   }
 
-  nieuweMelding() {
-    this.succesService.terugNaarHome();
+  onNieuweMelding(): void {
+    // Reset alles en ga naar start
+    this.sessieStorage.clear();
+    this.navigatie.herstart();
   }
 
-  sluitApplicatie() {
-    this.succesService.sluitApplicatie();
+  onSluitApplicatie(): void {
+    if ('close' in window) {
+      window.close();
+    } else {
+      // Fallback voor browsers die window.close() niet ondersteunen
+      this.onNieuweMelding();
+    }
+  }
+  
+  private genereerMockId(): string {
+    return 'AFV-' + Math.random().toString(36).substr(2, 8).toUpperCase();
   }
 }

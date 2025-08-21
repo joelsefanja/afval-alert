@@ -1,3 +1,4 @@
+import { inject } from '@angular/core';
 import { Component, computed } from '@angular/core';
 import { ListComponent } from './features/dashboard/components/list/list';
 import { DetailComponent } from './features/dashboard-item/components/detail/detail';
@@ -12,7 +13,10 @@ import { nl } from 'primelocale/js/nl.js';
   styleUrls: ['./admin.scss']
 })
 export class AdminComponent {
-  constructor(public selection: IDService) {}
+  constructor() {
+    this.selection = inject(IDService);
+  }
+  public selection: IDService;
 
   showDetail = computed(() => this.selection.isDetailOpen());
 }

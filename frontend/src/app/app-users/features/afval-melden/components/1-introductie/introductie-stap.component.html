@@ -1,23 +1,52 @@
-<div class="flex flex-col h-full p-4 text-center justify-between">
-  <div class="flex-grow flex flex-col justify-center">
-    <div class="mb-6">
-      <i class="pi pi-trash text-7xl text-primary-500 mb-4"></i>
-      <h1 class="text-3xl font-bold text-primary-800 mb-2">
-        Zie je zwerfafval?
-      </h1>
-      <p class="text-lg text-surface-600">
-        Maak een foto, wij herkennen het type automatisch en maken het schoon.
+<!-- Mobile-first Introductie Pagina -->
+<div class="flex flex-col h-screen">
+  <!-- Main Content -->
+  <div class="flex-1 flex items-center justify-center p-4">
+    <p-card class="w-full max-w-md text-center">
+      <!-- Logo/Icon -->
+      <ng-template pTemplate="header">
+        <div class="flex justify-content-center my-4">
+          <p-avatar
+            icon="pi pi-trash"
+            size="xlarge"
+            class="bg-primary-100 text-primary-700"
+            shape="circle"
+          ></p-avatar>
+        </div>
+      </ng-template>
+
+      <!-- Heading -->
+      <h1 class="text-3xl font-bold mb-4 leading-tight">Zie je zwerfafval?</h1>
+
+      <!-- Description -->
+      <p class="text-lg mb-5 leading-relaxed text-color-secondary">
+        Maak een foto, en de gemeente ruimt het op!
       </p>
-    </div>
+
+      <!-- Start Button -->
+      <p-button
+        label="Start met foto maken"
+        icon="pi pi-camera"
+        class="w-full"
+        size="large"
+        (onClick)="onStarten()"
+      ></p-button>
+    </p-card>
   </div>
 
-  <div class="w-full max-w-sm mx-auto">
-    <p-button
-      label="Start met foto"
-      icon="pi pi-camera"
-      size="large"
-      (click)="start()"
-      styleClass="w-full h-12 text-lg"
-    ></p-button>
+  <!-- Bottom Info -->
+  <div class="p-4 text-center">
+    <p-tag severity="info" icon="pi pi-shield-check" class="mr-2"
+      >Veilig en eenvoudig afval melden</p-tag
+    >
+  </div>
+
+  <!-- Hidden navigation for consistency -->
+  <div class="hidden">
+    <app-navigatie-knoppen
+      [toonVorigeKnop]="false"
+      [volgendeLabel]="'Starten'"
+      (volgende)="onVolgende()"
+    ></app-navigatie-knoppen>
   </div>
 </div>

@@ -1,123 +1,134 @@
 import { Injectable } from '@angular/core';
-import { Observable, of, throwError } from 'rxjs';
-import { MeldingConcept } from '@models/melding-concept';
+import { AfvalTypeConfidence } from '../../interfaces/afval-classificatie.interface';
 
-@Injectable({
-  providedIn: 'root'
-})
+/**
+ * Session storage service
+ * Handles session storage operations with type safety
+ */
+@Injectable({ providedIn: 'root' })
 export class SessieStorageService {
-  private readonly STORAGE_KEY = 'afval-melding-concepten';
-
+  
   /**
-   * Slaat melding concept op in sessie storage
+   * Save data to session storage
+   * @param key The key to save the data under
+   * @param data The data to save (will be JSON stringified)
    */
-  slaaMeldingConceptOp(melding: MeldingConcept): Observable<boolean> {
+  save<T>(key: string, data: T): void {
+    if (typeof sessionStorage === 'undefined') return;
+    
     try {
-      const bestaandeConcepts = this.getAlleConcepts();
-      const index = bestaandeConcepts.findIndex(c => c.id === melding.id);
-      
-      if (index >= 0) {
-        bestaandeConcepts[index] = melding;
-      } else {
-        bestaandeConcepts.push(melding);
-      }
-      
-      sessionStorage.setItem(this.STORAGE_KEY, JSON.stringify(bestaandeConcepts));
-      return of(true);
+      const jsonData = JSON.stringify(data);
+      sessionStorage.setItem(key, jsonData);
     } catch (error) {
-      console.error('Fout bij opslaan melding concept:', error);
-      return throwError(() => new Error('Kon melding concept niet opslaan'));
+      console.error('Error saving to session storage:', error);
     }
   }
-
+  
   /**
-   * Haalt melding concept op uit sessie storage
+   * Load data from session storage
+   * @param key The key to load data from
+   * @returns The parsed data or null if not found
    */
-  getMeldingConcept(meldingId: string): Observable<MeldingConcept | null> {
+  load<T>(key: string): T | null {
+    if (typeof sessionStorage === 'undefined') return null;
+    
     try {
-      const concepts = this.getAlleConcepts();
-      const concept = concepts.find(c => c.id === meldingId);
-      
-      if (concept) {
-        // Converteer datum string terug naar Date object
-        concept.aanmaakDatum = new Date(concept.aanmaakDatum);
-      }
-      
-      return of(concept || null);
+      const jsonData = sessionStorage.getItem(key);
+      return jsonData ? JSON.parse(jsonData) : null;
     } catch (error) {
-      console.error('Fout bij ophalen melding concept:', error);
-      return of(null);
+      console.error('Error loading from session storage:', error);
+      return null;
     }
   }
-
+  
   /**
-   * Verwijdert melding concept uit sessie storage
+   * Remove data from session storage
+   * @param key The key to remove
    */
-  verwijderMeldingConcept(meldingId: string): Observable<boolean> {
+  remove(key: string): void {
+    if (typeof sessionStorage === 'undefined') return;
+    
     try {
-      const concepts = this.getAlleConcepts();
-      const gefilterdeConcepts = concepts.filter(c => c.id !== meldingId);
-      
-      sessionStorage.setItem(this.STORAGE_KEY, JSON.stringify(gefilterdeConcepts));
-      return of(true);
+      sessionStorage.removeItem(key);
     } catch (error) {
-      console.error('Fout bij verwijderen melding concept:', error);
-      return throwError(() => new Error('Kon melding concept niet verwijderen'));
+      console.error('Error removing from session storage:', error);
     }
   }
-
+  
   /**
-   * Haalt alle melding concepten op
+   * Clear all session storage
    */
-  getAlleMeldingConcepten(): Observable<MeldingConcept[]> {
+  clear(): void {
+    if (typeof sessionStorage === 'undefined') return;
+    
     try {
-      const concepts = this.getAlleConcepts();
-      // Converteer datum strings terug naar Date objecten
-      concepts.forEach(concept => {
-        concept.aanmaakDatum = new Date(concept.aanmaakDatum);
-      });
-      
-      return of(concepts);
+      sessionStorage.clear();
     } catch (error) {
-      console.error('Fout bij ophalen alle melding concepten:', error);
-      return of([]);
+      console.error('Error clearing session storage:', error);
     }
   }
-
+  
   /**
-   * Ruimt oude concepten op (ouder dan 24 uur)
+   * Check if a key exists in session storage
+   * @param key The key to check
+   * @returns True if the key exists, false otherwise
    */
-  ruimOudeConceptenOp(): Observable<number> {
-    try {
-      const concepts = this.getAlleConcepts();
-      const nu = new Date();
-      const eenDagGeleden = new Date(nu.getTime() - 24 * 60 * 60 * 1000);
-      
-      const actieveConcepts = concepts.filter(concept => {
-        const aanmaakDatum = new Date(concept.aanmaakDatum);
-        return aanmaakDatum > eenDagGeleden;
-      });
-      
-      const aantalVerwijderd = concepts.length - actieveConcepts.length;
-      
-      if (aantalVerwijderd > 0) {
-        sessionStorage.setItem(this.STORAGE_KEY, JSON.stringify(actieveConcepts));
-      }
-      
-      return of(aantalVerwijderd);
-    } catch (error) {
-      console.error('Fout bij opruimen oude concepten:', error);
-      return of(0);
-    }
+  exists(key: string): boolean {
+    if (typeof sessionStorage === 'undefined') return false;
+    
+    return sessionStorage.getItem(key) !== null;
   }
-
-  private getAlleConcepts(): MeldingConcept[] {
-    try {
-      const stored = sessionStorage.getItem(this.STORAGE_KEY);
-      return stored ? JSON.parse(stored) : [];
-    } catch (error) {
-      console.error('Fout bij lezen uit sessie storage:', error);
-      return [];
-    }
+  
+  // Specifieke methoden voor afval melding
+  
+  /**
+   * Sla classificatie resultaten op voor een melding
+   * @param meldingId De ID van de melding
+   * @param afvalTypen De geclassificeerde afval typen
+   */
+  slaClassificatieOp(meldingId: string, afvalTypen: AfvalTypeConfidence[]): void {
+    this.save(`classificatie_${meldingId}`, afvalTypen);
+  }
+  
+  /**
+   * Haal classificatie resultaten op voor een melding
+   * @param meldingId De ID van de melding
+   * @returns De geclassificeerde afval typen of null
+   */
+  krijgClassificatie(meldingId: string): AfvalTypeConfidence[] | null {
+    return this.load<AfvalTypeConfidence[]>(`classificatie_${meldingId}`);
+  }
+  
+  /**
+   * Sla melding UUID op
+   * @param meldingId De UUID van de huidige melding
+   */
+  slaMeldingIdOp(meldingId: string): void {
+    this.save('huidige_melding_id', meldingId);
+  }
+  
+  /**
+   * Krijg huidige melding UUID
+   * @returns De UUID van de huidige melding of null
+   */
+  krijgMeldingId(): string | null {
+    return this.load<string>('huidige_melding_id');
+  }
+  
+  /**
+   * Genereer en sla nieuwe melding UUID op
+   * @returns Nieuwe melding UUID
+   */
+  genereeerNieuweMeldingId(): string {
+    const uuid = this.genereerId();
+    this.slaMeldingIdOp(uuid);
+    return uuid;
+  }
+  
+  /**
+   * Genereer unieke ID
+   */
+  private genereerId(): string {
+    return `melding_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
 }

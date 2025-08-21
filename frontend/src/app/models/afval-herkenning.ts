@@ -1,12 +1,9 @@
-export interface AfvalType {
-    id: string;
-    naam: string;
-    beschrijving: string;
-    kleur: string;
-    icoon: string;
-}
 
 // Request 1: Afbeelding uploaden en herkenning
+import { AfvalType } from './afval-type';
+
+export { AfvalType };
+
 export interface AfbeeldingUploadRequest {
     afbeelding: Blob;
 }
@@ -20,7 +17,7 @@ export interface AfbeeldingUploadResponse {
 // Request 2: Melding verzenden met locatie en contact
 export interface MeldingVerzendRequest {
     afbeeldingUrl: string;
-    afvalTypes: any[];
+    afvalTypes: AfvalType[];
     locatie?: {
         latitude: number;
         longitude: number;

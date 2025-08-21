@@ -1,0 +1,42 @@
+.introductie-container {
+  background-image: linear-gradient(to bottom right, var(--green-50), var(--blue-50));
+}
+
+.introductie-card {
+  background-color: var(--surface-0);
+  border-radius: var(--border-radius-3xl);
+  box-shadow: var(--shadow-xl);
+}
+
+.introductie-icon-container {
+  background-color: var(--green-100);
+  border-radius: 9999px; /* full */
+}
+
+.introductie-icon {
+  color: var(--green-600);
+}
+
+.introductie-heading {
+  color: var(--gray-800);
+}
+
+.introductie-description {
+  color: var(--gray-600);
+}
+
+.introductie-button {
+  border-radius: var(--border-radius-2xl);
+  box-shadow: var(--shadow-lg);
+  background-color: var(--green-600);
+  color: var(--surface-0);
+  transition: background-color 0.3s;
+  
+  &:hover {
+    background-color: var(--green-700);
+  }
+}
+
+.introductie-footer {
+  color: var(--gray-500);
+}

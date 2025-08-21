@@ -1,0 +1,26 @@
+<div
+  class="relative w-full h-full overflow-hidden border-round-2xl bg-white"
+  style="min-height: 400px; height: 400px"
+>
+  <!-- Map Container -->
+  <div #mapContainer class="w-full h-full"></div>
+
+  <!-- Close Button -->
+  <div class="absolute top-3 right-3 z-50">
+    <p-button
+      icon="pi pi-times"
+      (onClick)="onClose()"
+      size="small"
+      severity="secondary"
+      text
+      rounded
+    ></p-button>
+  </div>
+
+  <!-- Instructions -->
+  <div
+    class="absolute bottom-3 left-3 right-3 z-50 text-center bg-white bg-opacity-95 p-3 border-round-xl shadow-3 text-sm text-surface-700 font-medium flex items-center justify-center"
+  >
+    <i class="pi pi-map-marker mr-2 text-red-500"></i> Klik op de kaart om een locatie te selecteren
+  </div>
+</div>

@@ -1,10 +1,15 @@
 // Export alle afval-melden services voor eenvoudige import
 
-// Service modules
-export * from './afval-melden.service';
-export * from './locatie';
+// Main services
+export { MediaOrchestratorService } from './media-orchestrator.service';
+export { CameraService } from './camera.service';
+export { ClassificatieService } from './classificatie.service';
+export { AfvalHerkenningService } from './mock-classificatie.service';
+
+// Feature services
+export * from './navigatie';
 export * from './melding';
-export * from './proces';
-export * from './media/media.service';
-export * from './netwerk';
+export * from './stappen';
+export * from './locatie';
 export * from './opslag';
+export * from './netwerk';

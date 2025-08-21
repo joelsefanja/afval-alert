@@ -1,12 +1,11 @@
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideHttpClient } from '@angular/common/http';
 import { providePrimeNG } from 'primeng/config';
+import { provideAnimations } from '@angular/platform-browser/animations';
 import { MessageService } from 'primeng/api';
 import { routes } from './app.routes';
-import { AFVAL_ALERT_TOKENS } from './app-users/features/afval-melden/tokens/afval-alert.tokens';
-import { AFVAL_ALERT_TOKENS_PROVIDER, MOCK_AFVAL_CLASSIFICATIE_PROVIDER } from './app-users/features/afval-melden/tokens/providers';
+import { AFVAL_ALERT_TOKENS_PROVIDER } from './app-users/features/afval-melden/tokens/providers';
 import { definePreset } from '@primeuix/themes';
 import { nl } from "primelocale/js/nl.js"
 import Aura from '@primeuix/themes/aura';
@@ -105,6 +104,48 @@ const AfvalAlertPreset = definePreset(Aura, {
       900: '#1e3a8a',
       950: '#172554',
     },
+    // Toegevoegde kleuren voor grijstinten
+    gray: {
+      50: '#f9fafb',
+      100: '#f3f4f6',
+      200: '#e5e7eb',
+      300: '#d1d5db',
+      400: '#9ca3af',
+      500: '#6b7280',
+      600: '#4b5563',
+      700: '#374151',
+      800: '#1f2937',
+      900: '#111827',
+      950: '#030712',
+    },
+    // Toegevoegde kleuren voor paars (voor foto-upload component)
+    purple: {
+      50: '#faf5ff',
+      100: '#f3e8ff',
+      200: '#e9d5ff',
+      300: '#d8b4fe',
+      400: '#c084fc',
+      500: '#a855f7',
+      600: '#9333ea',
+      700: '#7e22ce',
+      800: '#6b21a8',
+      900: '#581c87',
+      950: '#3b0764',
+    },
+    // Toegevoegde kleuren voor blauw (voor notificaties en info)
+    blue: {
+      50: '#eff6ff',
+      100: '#dbeafe',
+      200: '#bfdbfe',
+      300: '#93c5fd',
+      400: '#60a5fa',
+      500: '#3b82f6',
+      600: '#2563eb',
+      700: '#1d4ed8',
+      800: '#1e40af',
+      900: '#1e3a8a',
+      950: '#172554',
+    },
   },
   designTokens: {
     borderRadius: {
@@ -166,6 +207,71 @@ const AfvalAlertPreset = definePreset(Aura, {
       '2xl': '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
     },
   },
+  // Component-specifieke stijling
+  components: {
+    // AfvalMelden hoofdcomponent
+    afvalMelden: {
+      header: {
+        background: 'var(--surface-0)',
+        titleColor: 'var(--primary-800)',
+        shadow: 'var(--shadow-sm)',
+      },
+      container: {
+        background: 'var(--surface-50)',
+      },
+    },
+    // Introductie stap component
+    introductieStap: {
+      container: {
+        background: 'linear-gradient(to bottom right, var(--green-50), var(--blue-50))',
+      },
+      card: {
+        background: 'var(--surface-0)',
+        borderRadius: 'var(--border-radius-3xl)',
+        shadow: 'var(--shadow-xl)',
+      },
+      iconContainer: {
+        background: 'var(--green-100)',
+        borderRadius: 'var(--border-radius-full)',
+      },
+      icon: {
+        color: 'var(--green-600)',
+      },
+      title: {
+        color: 'var(--gray-800)',
+      },
+      description: {
+        color: 'var(--gray-600)',
+      },
+      button: {
+        background: 'var(--green-600)',
+        color: 'var(--surface-0)',
+        borderRadius: 'var(--border-radius-2xl)',
+        shadow: 'var(--shadow-lg)',
+        hoverBackground: 'var(--green-700)',
+      },
+      footer: {
+        color: 'var(--gray-500)',
+      },
+    },
+    // Foto upload component
+    fotoUpload: {
+      container: {
+        background: 'var(--gray-50)',
+      },
+      header: {
+        background: 'linear-gradient(to right, var(--purple-500), var(--purple-600))',
+        color: 'var(--surface-0)',
+        subtitleColor: 'var(--purple-100)',
+      },
+      statusBar: {
+        background: 'var(--blue-50)',
+        borderColor: 'var(--blue-200)',
+        iconColor: 'var(--blue-500)',
+        textColor: 'var(--blue-700)',
+      },
+    },
+  },
 });
 
 export const appConfig: ApplicationConfig = {
@@ -183,14 +289,13 @@ export const appConfig: ApplicationConfig = {
           darkModeSelector: '.app-dark',
           cssLayer: {
             name: 'primeng',
-            order: 'theme, base, primeng',
+            order: 'reset, tailwind, primeng, components',
           },
         },
       },
     }),
     AFVAL_ALERT_TOKENS_PROVIDER.default,
     MessageService,
-    // Provide a mock implementation for development
-    MOCK_AFVAL_CLASSIFICATIE_PROVIDER,
+    // Removed complex classification providers - using simple MediaOrchestratorService
   ],
 };

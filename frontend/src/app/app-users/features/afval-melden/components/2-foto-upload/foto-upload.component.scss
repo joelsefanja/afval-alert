@@ -1,0 +1,25 @@
+.foto-upload-container {
+  background-color: var(--gray-50);
+}
+
+.foto-upload-header {
+  background: linear-gradient(to right, var(--purple-500), var(--purple-600));
+  color: var(--surface-0);
+}
+
+.foto-upload-subheader {
+  color: var(--purple-100);
+}
+
+.foto-upload-status {
+  background-color: var(--blue-50);
+  border-color: var(--blue-200);
+}
+
+.foto-upload-spinner {
+  color: var(--blue-500);
+}
+
+.foto-upload-status-text {
+  color: var(--blue-700);
+}

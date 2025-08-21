@@ -1,58 +1,71 @@
-<div class="flex flex-col h-full p-4">
-  <div class="flex-grow space-y-4">
-    <h2 class="text-xl font-semibold text-primary-800">Maak een foto</h2>
-    <p class="text-surface-600">Zorg voor goed licht en houd het object in beeld.</p>
-
-    <div class="relative aspect-[4/3] rounded-xl overflow-hidden bg-surface-200">
-      <video
-        #videoElement
-        class="w-full h-full object-cover"
-        autoplay
-        playsinline
-        muted
-        [class.hidden]="!showVideo()"
-      ></video>
-      <img
-        #photoElement
-        class="w-full h-full object-cover"
-        [src]="photoUrl()"
-        [class.hidden]="!photoUrl()"
-      />
-      <div
-        class="absolute inset-0 flex flex-col items-center justify-center text-surface-400"
-        [class.hidden]="showVideo() || photoUrl()"
-      >
-        <i class="pi pi-camera text-4xl mb-2"></i>
-        <p>Camera starten of foto kiezen</p>
+<!-- Mobile-first Foto Upload -->
+<div class="flex flex-col h-screen">
+  <!-- Header -->
+  <p-toolbar class="mb-2">
+    <ng-template pTemplate="start">
+      <div class="text-center w-full">
+        <h2 class="text-xl md:text-2xl font-bold mb-1">
+          <i class="pi pi-camera mr-2"></i>
+          Maak een foto
+        </h2>
+        <p class="text-sm text-color-secondary">
+          Leg het afval vast voor automatische herkenning
+        </p>
       </div>
-    </div>
-
-    <div class="grid grid-cols-2 gap-3">
-      <p-button
-        label="Camera openen"
-        icon="pi pi-video"
-        (click)="startCamera()"
-        [disabled]="isProcessing()"
-        styleClass="w-full h-12"
-      ></p-button>
-      <p-button
-        label="Kies uit galerij"
-        icon="pi pi-images"
-        severity="secondary"
-        (click)="selecteerVanGalerij()"
-        styleClass="w-full h-12"
-      ></p-button>
-    </div>
+    </ng-template>
+  </p-toolbar>
+  
+  <!-- Main Content -->
+  <div class="flex-1 p-4">
+    @if (heeftFoto()) {
+      <!-- Foto Voorvertoning -->
+      <app-foto-voorvertoning
+        [fotoUrl]="krijgFotoUrl()"
+        [isBevestigen]="isBezig()"
+        [uploadStatus]="krijgUploadStatus()"
+        (fotoVerwijderd)="onFotoVerwijderd()"
+        (fotoBevestigd)="onFotoBevestigd()"
+      ></app-foto-voorvertoning>
+    } @else {
+      <!-- Camera Preview -->
+      <div class="h-[70vh] w-full">
+        <app-camera-preview
+          (fotoGeselecteerd)="onFotoGeselecteerd($event)"
+          (cameraFout)="onCameraFout($event)"
+        ></app-camera-preview>
+      </div>
+    }
   </div>
-
-  <div class="w-full max-w-sm mx-auto mt-4">
-    <p-button
-      label="Volgende"
-      icon="pi pi-arrow-right"
-      iconPos="right"
-      (click)="volgendeStap()"
-      [disabled]="!photoUrl()"
-      styleClass="w-full h-12"
-    ></p-button>
-  </div>
+  
+  <!-- Status & Progress -->
+  @if (classificatieBezig()) {
+    <div class="p-4 border-top-1 border-300">
+      <p-card class="max-w-md mx-auto text-center">
+        <p-progressSpinner class="mb-2" [style]="{'width': '50px', 'height': '50px'}"></p-progressSpinner>
+        <p class="text-sm text-color-secondary">
+          Afval wordt op de achtergrond geclassificeerd...
+        </p>
+      </p-card>
+    </div>
+  }
+  
+  <!-- Navigation -->
+  @if (heeftFoto()) {
+    <app-navigatie-knoppen
+      [volgendeLabel]="'Verwerken'"
+      [volgendeIcon]="'pi pi-cloud-upload'"
+      [volgendeUitgeschakeld]="!kanVolgende()"
+      (vorige)="onVorige()"
+      (volgende)="onVolgende()"
+    ></app-navigatie-knoppen>
+  } @else {
+    <app-navigatie-knoppen
+      [volgendeLabel]="'Ga verder zonder foto'"
+      (vorige)="onVorige()"
+      (volgende)="onVolgendeZonderFoto()"
+    ></app-navigatie-knoppen>
+  }
 </div>
+
+<!-- Toast Messages -->
+<p-toast></p-toast>

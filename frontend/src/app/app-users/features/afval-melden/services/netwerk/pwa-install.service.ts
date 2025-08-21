@@ -1,71 +1,60 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable } from '@angular/core';
 
 /**
- * Progressive web app (PWA) installatie service
- * 
- * Verantwoordelijkheden:
- * - PWA installatie prompt beheer
- * - Browser compatibility check
- * - Install event handling
- * - User engagement tracking
- * 
- * @example
- * ```typescript
- * constructor(private pwaService: PWAInstallService) {}
- * 
- * async installApp() {
- *   if (this.pwaService.canInstall()) {
- *     await this.pwaService.promptInstall();
- *   }
- * }
- * ```
+ * PWA Install service
+ * Handles PWA installation functionality
  */
 @Injectable({ providedIn: 'root' })
-export class PWAInstallService {
+export class PwaInstallService {
   private deferredPrompt: any = null;
   
-  readonly kanInstalleren = signal(false);
-  readonly isGeinstaleerd = signal(false);
-
   constructor() {
-    this.setupEventListeners();
-    this.checkIfInstalled();
+    // Listen for the beforeinstallprompt event
+    if (typeof window !== 'undefined') {
+      window.addEventListener('beforeinstallprompt', (e) => {
+        // Prevent Chrome 67 and earlier from automatically showing the prompt
+        e.preventDefault();
+        // Stash the event so it can be triggered later.
+        this.deferredPrompt = e;
+      });
+    }
   }
-
-  private setupEventListeners(): void {
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      this.deferredPrompt = e;
-      this.kanInstalleren.set(true);
-    });
-
-    window.addEventListener('appinstalled', () => {
-      this.isGeinstaleerd.set(true);
-      this.kanInstalleren.set(false);
-      this.deferredPrompt = null;
-    });
+  
+  /**
+   * Check if PWA can be installed
+   */
+  kanInstalleren(): boolean {
+    return !!this.deferredPrompt;
   }
-
-  async promptVoorInstallatie(): Promise<boolean> {
-    if (!this.deferredPrompt) return false;
-
-    this.deferredPrompt.prompt();
-    const { outcome } = await this.deferredPrompt.userChoice;
-    
-    if (outcome === 'accepted') {
-      this.deferredPrompt = null;
-      this.kanInstalleren.set(false);
-      return true;
+  
+  /**
+   * Prompt user to install the PWA
+   */
+  async promptInstall(): Promise<boolean> {
+    if (!this.deferredPrompt) {
+      return false;
     }
     
-    return false;
-  }
-
-  private checkIfInstalled(): void {
-    // Check if app is in standalone mode (installed)
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-    const isInWebAppiOS = (window.navigator as any).standalone === true;
+    // Show the install prompt
+    this.deferredPrompt.prompt();
     
-    this.isGeinstaleerd.set(isStandalone || isInWebAppiOS);
+    // Wait for the user to respond to the prompt
+    const { outcome } = await this.deferredPrompt.userChoice;
+    
+    // Reset the deferred prompt variable, since we can only use it once
+    this.deferredPrompt = null;
+    
+    return outcome === 'accepted';
+  }
+  
+  /**
+   * Check if app is installed
+   */
+  isGeinstalleerd(): boolean {
+    if (typeof window === 'undefined') return false;
+    
+    // Check if the app is running as a standalone app
+    return window.matchMedia('(display-mode: standalone)').matches || 
+           (window.navigator as any).standalone === true;
   }
 }

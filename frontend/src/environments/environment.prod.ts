@@ -1,5 +1,4 @@
 export const environment = {
   production: true,
-  useRealGeocodingApi: true,
-  GEMINI_API_KEY: 'your-production-gemini-api-key' // Vervang met productie API key
+  apiUrl: 'http://localhost:8080' // In productie zou dit de echte backend URL zijn
 };

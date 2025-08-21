@@ -2,7 +2,6 @@
 export interface ContactGegevensDto {
   naam?: string;
   email?: string;
-  anoniem?: boolean;
 }
 
 export interface LocatieGegevensDto {

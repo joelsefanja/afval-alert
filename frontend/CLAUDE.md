@@ -34,7 +34,8 @@ Dit is een Angular 20 afval-melding applicatie met moderne Angular features en P
 - **Angular 20** - Latest Angular framework
 - **TypeScript 5.8** - Type-safe development
 - **PrimeNG 20** - UI component library
-- **TailwindCSS** - Utility-first CSS framework
+- **PrimeFlex v4** - CSS utility classes for layouts and forms
+- **TailwindCSS v4** - Utility-first CSS framework
 - **Leaflet** - Interactive maps
 - **Jest** - Unit testing
 - **Playwright** - E2E testing
@@ -271,6 +272,100 @@ export class ModernService {
 - **Sub-service structure**: Organize related functionality in subdirectories
 - **No empty index.ts**: Only create index files when multiple exports needed
 
+## Refactored Service Architecture (2024)
+
+### 🏗️ New Clean Service Structure
+
+De service architectuur is volledig gerefactord volgens SOLID principes:
+
+#### NavigatieService
+```typescript
+// Clean Nederlandse interface voor stap navigatie
+volgende(): boolean     // Ga naar volgende stap
+vorige(): boolean      // Ga naar vorige stap  
+gaNaarStap(index: number): boolean
+herstart(): void
+krijgStapNaam(): string
+```
+
+#### Media Services (SOC Pattern)
+```
+media/
+├── foto/
+│   └── foto.service.ts           # Alleen foto state management
+├── camera/
+│   ├── camera-toegang.service.ts  # Camera toegang & permissions
+│   └── foto-vastleggen.service.ts # Foto maken operaties
+├── ai/
+│   └── afval-herkenning.service.ts # AI classificatie
+└── media-orchestrator.service.ts   # Coördineert alle media operaties
+```
+
+#### Melding Services (Focused)
+```
+melding/
+├── concept/
+│   └── melding-concept.service.ts     # Concept state management
+├── validatie/
+│   └── melding-validatie.service.ts   # Centralized validation
+├── verzending/
+│   └── melding-verzending.service.ts  # Verzending operaties
+└── state/
+    └── afval-melding-state.service.ts # Legacy compatibility
+```
+
+#### Step Services (Per-Stap Logic)
+```
+stappen/
+├── intro/
+│   └── intro-stap.service.ts    # Intro stap logica
+├── foto/
+│   └── foto-stap.service.ts     # Foto stap orchestration
+└── contact/
+    └── contact-stap.service.ts  # Contact stap validatie
+```
+
+### 🔄 Service Interaction Pattern
+
+```typescript
+// Components gebruik orchestrator services
+@Component({})
+export class FotoComponent {
+  private fotoStap = inject(FotoStapService);     // Step logic
+  private navigator = inject(NavigatieService);   // Navigation
+  
+  async maakFoto() {
+    await this.fotoStap.maakFoto(this.videoElement);
+    this.navigator.volgende();
+  }
+}
+
+// Orchestrator delegeert naar focused services
+@Injectable()
+export class MediaOrchestratorService {
+  private foto = inject(FotoService);             // State
+  private camera = inject(CameraToegangService);  // Camera
+  private capture = inject(FotoVastleggenService); // Capture
+  private ai = inject(AfvalHerkenningService);    // AI
+}
+```
+
+### 🎯 Service Principles
+
+1. **Single Responsibility**: Elke service heeft één duidelijke taak
+2. **Nederlandse API**: Alle publieke methoden in het Nederlands
+3. **Signal-based**: Angular 20 signals voor reactive state
+4. **Orchestrator Pattern**: Complexe operaties via orchestrator services
+5. **Clean Interfaces**: Minimale surface area, maximale usability
+6. **Dependency Injection**: Proper DI met interfaces voor testability
+
+### CSS Organization Rules
+- **Layer Priority**: reset → primeflex → tailwind → primeng → components
+- **PrimeFlex for Structure**: Use for grids, forms, and component layouts
+- **Tailwind for Polish**: Use for colors, effects, and custom styling
+- **Mobile-First Always**: Start with smallest screen, enhance upward
+- **Component-Scoped**: Prefer utility classes over custom CSS
+
 ### Testing Strategy
 - **Unit Tests**: Jest with component testing
 - **E2E Tests**: Playwright for user journeys
@@ -382,6 +477,172 @@ ng serve --source-map
 - **API Documentation**: `SERVICES_DOCUMENTATION.md`
 - **PWA Setup**: `PWA_SETUP.md`
 - **Development Guide**: `documentatie/DEVELOPMENT.md`
+
+---
+
+## PrimeFlex v4 + Tailwind CSS v4 Integration
+
+### Overview
+This project uses PrimeFlex v4 alongside Tailwind CSS v4 for optimal mobile-responsive layouts. PrimeFlex provides specialized utility classes for PrimeNG components, while Tailwind handles general styling.
+
+### CSS Architecture Strategy
+```css
+/* Layer order for optimal specificity */
+@layer reset, primeflex, tailwind, primeng, components;
+
+/* PrimeFlex utilities */
+@import 'primeflex/primeflex.css';
+
+/* TailwindCSS utilities */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+### PrimeFlex v4 Key Features
+- **Grid System**: `grid`, `col-12`, `col-6`, `col-4` for responsive layouts
+- **Flexbox**: `flex`, `flex-column`, `justify-content-center`, `align-items-center`
+- **Spacing**: `p-0` to `p-8`, `m-0` to `m-8`, `gap-1` to `gap-8`
+- **Forms**: `formgrid`, `field`, `field-checkbox` for form layouts
+- **Display**: `block`, `inline-block`, `flex`, `grid`, `hidden`
+- **Text**: `text-center`, `text-left`, `text-right`, `font-bold`
+- **Colors**: `text-primary`, `bg-primary`, `surface-ground`
+
+### Mobile-First Responsive Classes
+```html
+<!-- PrimeFlex responsive grid -->
+<div class="grid">
+  <div class="col-12 md:col-6 lg:col-4">
+    <!-- Content adapts: mobile full-width, tablet half, desktop third -->
+  </div>
+</div>
+
+<!-- PrimeFlex + Tailwind combination -->
+<div class="grid gap-3 p-4">
+  <div class="col-12 sm:col-6">
+    <p-card class="h-full shadow-lg rounded-xl">
+      <!-- Card content -->
+    </p-card>
+  </div>
+</div>
+```
+
+### Form Layout Best Practices
+```html
+<!-- PrimeFlex form grid -->
+<div class="formgrid grid">
+  <div class="field col-12 md:col-6">
+    <label for="naam">Naam</label>
+    <input type="text" pInputText id="naam" class="w-full" />
+  </div>
+  <div class="field col-12 md:col-6">
+    <label for="email">Email</label>
+    <input type="email" pInputText id="email" class="w-full" />
+  </div>
+</div>
+```
+
+### Component Layout Patterns
+
+#### Step Container Pattern
+```html
+<div class="grid grid-nogutter h-screen">
+  <!-- Header -->
+  <div class="col-12 h-auto">
+    <p-toolbar class="border-0 bg-primary">
+      <!-- Step navigation -->
+    </p-toolbar>
+  </div>
+  
+  <!-- Main Content -->
+  <div class="col-12 flex-1 overflow-auto">
+    <div class="grid p-4">
+      <div class="col-12 lg:col-8 lg:col-offset-2">
+        <!-- Step content -->
+      </div>
+    </div>
+  </div>
+  
+  <!-- Footer Actions -->
+  <div class="col-12 h-auto">
+    <div class="flex gap-2 p-3">
+      <p-button label="Vorige" class="flex-auto" severity="secondary" />
+      <p-button label="Volgende" class="flex-auto" />
+    </div>
+  </div>
+</div>
+```
+
+#### Card Grid Pattern
+```html
+<div class="grid gap-3">
+  @for (item of items(); track item.id) {
+    <div class="col-12 sm:col-6 md:col-4">
+      <p-card class="h-full cursor-pointer transition-all duration-200 hover:shadow-lg">
+        <ng-template pTemplate="header">
+          <img [src]="item.image" class="w-full h-48 object-cover" />
+        </ng-template>
+        <p class="text-sm text-color-secondary">{{ item.description }}</p>
+      </p-card>
+    </div>
+  }
+</div>
+```
+
+### Utility Class Combinations
+
+#### PrimeFlex + Tailwind Synergy
+```html
+<!-- Layout with PrimeFlex, styling with Tailwind -->
+<div class="grid p-4 gap-4">
+  <div class="col-12 sm:col-6">
+    <div class="bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl p-6 text-white">
+      <h3 class="text-xl font-bold mb-2">Card Title</h3>
+      <p class="opacity-90">Card content with gradient background</p>
+    </div>
+  </div>
+</div>
+
+<!-- Form with PrimeFlex structure, Tailwind polish -->
+<div class="formgrid grid gap-4">
+  <div class="field col-12">
+    <label class="block text-sm font-medium mb-2">Photo Upload</label>
+    <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-primary transition-colors">
+      <i class="pi pi-camera text-4xl text-gray-400 mb-4"></i>
+      <p class="text-gray-500">Click to upload or drag and drop</p>
+    </div>
+  </div>
+</div>
+```
+
+### Responsive Breakpoints
+```css
+/* PrimeFlex breakpoints align with modern mobile-first approach */
+/* xs: 0px - 575px (mobile) */
+/* sm: 576px - 767px (large mobile/small tablet) */
+/* md: 768px - 991px (tablet) */
+/* lg: 992px - 1199px (small desktop) */
+/* xl: 1200px+ (large desktop) */
+```
+
+### Performance Optimization
+- **Tree-shaking**: Only imported PrimeFlex utilities are included
+- **CSS Layers**: Optimal cascade order prevents specificity conflicts
+- **Minimal Footprint**: PrimeFlex adds ~15KB gzipped vs Tailwind's full build
+- **Component-Specific**: PrimeFlex classes work seamlessly with PrimeNG components
+
+### Migration Notes
+- **Gradual Adoption**: Can migrate component-by-component from custom CSS
+- **Consistency**: PrimeFlex ensures consistent spacing and typography with PrimeNG
+- **Accessibility**: Built-in focus states and ARIA-compatible structures
+- **RTL Support**: Full right-to-left language support
+
+### Best Practices
+1. **Use PrimeFlex for**: Layout grids, form structures, component spacing
+2. **Use Tailwind for**: Custom colors, gradients, advanced styling, animations
+3. **Combine Both**: PrimeFlex structure + Tailwind polish = optimal results
+4. **Mobile-First**: Always start with mobile layout, then enhance for larger screens
+5. **Performance**: Leverage CSS layers to avoid specificity wars
 
 ---
 

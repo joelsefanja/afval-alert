@@ -1,80 +1,50 @@
-<div class="flex flex-col h-full p-4">
-
-  <!-- Content Section -->
-  <div class="flex-grow">
-    <div class="flex flex-column gap-4">
-      <h3 class="m-0 text-2xl font-semibold text-primary-800">
-        <i class="pi pi-user mr-2" aria-hidden="true"></i>
-        Contactgegevens (optioneel)
-      </h3>
-      
-      <p class="text-surface-600 text-lg mb-4">
-        Wil je anoniem blijven of kunnen we contact met je opnemen?
-      </p>
-      
-      <div class="p-4 border-round-2xl surface-50">
-        <p-checkbox 
-          [ngModel]="anoniem()" 
-          (ngModelChange)="setAnoniem($event)" 
-          label="Anonieme melding" 
-          binary="true" 
-          class="text-lg font-medium" />
+<!-- Mobile-first Contact Form -->
+<div class="flex flex-col h-screen">
+  <!-- Header -->
+  <p-toolbar class="bg-primary">
+    <ng-template pTemplate="start">
+      <div class="w-full text-center">
+        <h2 class="text-xl md:text-2xl font-bold mb-1 text-white">
+          <i class="pi pi-user mr-2"></i>
+          Contactgegevens
+        </h2>
+        <p class="text-sm text-primary-100">
+          Optioneel - voor updates over je melding
+        </p>
       </div>
-      
-      @if (!anoniem()) {
-        <div class="flex flex-column gap-4">
-          <div class="p-4 border-round-2xl surface-50">
-            <label for="naam-input" class="block text-lg font-medium mb-2 text-primary-800">Naam</label>
-            <input 
-              id="naam-input"
-              pInputText 
-              [ngModel]="naam()" 
-              (ngModelChange)="setNaam($event)" 
-              placeholder="Vul je naam in" 
-              class="w-full py-3 text-lg border-round-xl" 
-              autocomplete="name" />
-          </div>
-          
-          <div class="p-4 border-round-2xl surface-50">
-            <label for="email-input" class="block text-lg font-medium mb-2 text-primary-800">E-mailadres</label>
-            <input 
-              id="email-input"
-              pInputText 
-              [ngModel]="email()" 
-              (ngModelChange)="setEmail($event)" 
-              placeholder="vb: naam@email.com" 
-              type="email" 
-              class="w-full py-3 text-lg border-round-xl" 
-              autocomplete="email" />
-            @if (!isEmailValid() && email()) {
-              <div class="mt-2 text-red-500 text-lg font-medium" role="alert">
-                <i class="pi pi-exclamation-triangle mr-2"></i>
-                Voer een geldig e-mailadres in
-              </div>
-            }
-          </div>
-        </div>
-      }
-    </div>
+    </ng-template>
+  </p-toolbar>
+  
+  <!-- Form Content -->
+  <div class="flex-1 p-4">
+    <p-card>
+      <app-contact-formulier
+        [initieleNaam]="krijgHuidigeNaam()"
+        [initieleEmail]="krijgHuidigeEmail()"
+        (naamGewijzigd)="onNaamGewijzigd($event)"
+        (emailGewijzigd)="onEmailGewijzigd($event)"
+      ></app-contact-formulier>
+    </p-card>
   </div>
   
   <!-- Bottom Navigation -->
-  <div class="w-full max-w-md mx-auto pt-4">
-    <div class="flex gap-3">
-      <p-button 
-        label="Vorige" 
-        icon="pi pi-chevron-left" 
-        (click)="prev()" 
-        severity="secondary" 
-        styleClass="flex-1"
-        size="large" />
-      <p-button 
-        label="Overslaan" 
-        icon="pi pi-chevron-right" 
-        iconPos="right" 
-        (click)="skip()" 
-        styleClass="flex-1"
-        size="large" />
-    </div>
-  </div>
+  <p-toolbar class="p-3 border-t border-gray-200">
+    <ng-template pTemplate="start">
+      <div class="w-full max-w-md mx-auto space-y-3">
+        <p-button 
+          label="Verder zonder gegevens" 
+          (click)="onOverslaan()" 
+          severity="secondary"
+          class="w-full"
+          size="large"
+        ></p-button>
+        
+        <app-navigatie-knoppen
+          [volgendeUitgeschakeld]="!kanVolgende()"
+          (vorige)="onVorige()"
+          (volgende)="onVolgende()"
+        ></app-navigatie-knoppen>
+      </div>
+    </ng-template>
+  </p-toolbar>
 </div>

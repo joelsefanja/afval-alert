@@ -1,4 +1,4 @@
-import { Injectable, NgZone } from '@angular/core';
+import { Injectable, NgZone, inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
@@ -6,8 +6,9 @@ import { BehaviorSubject, Observable } from 'rxjs';
 })
 export class NetworkService {
   private _isOnline$ = new BehaviorSubject<boolean>(navigator.onLine);
+  private ngZone = inject(NgZone);
   
-  constructor(private ngZone: NgZone) {
+  constructor() {
     this.initNetworkListeners();
   }
   
