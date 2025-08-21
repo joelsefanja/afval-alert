@@ -13,10 +13,12 @@ import { LocatieService } from '@services/locatie/locatie.service';
 
 import { NotificationStore as NotificatieStore }  from '../features/dashboard/stores/notificatie.store';
 import { NotificationStore as ImageStore} from '../features/dashboard/stores/image.store';
+import { NotificationStore as UpdateStatusStore } from '../features/dashboard/stores/update-status.store';
 
 import { ImageModule } from 'primeng/image';
 
 import { SelectModule } from 'primeng/select';
+import { state } from '@angular/animations';
 
 @Component({
   selector: 'app-detail',
@@ -45,17 +47,15 @@ export class DetailComponent {
 
   notificatieStore = inject(NotificatieStore);
   imageStore = inject(ImageStore);
+  updateStatusStore = inject (UpdateStatusStore);
 
   ngOnInit() {
         this.states = [
-          {status: 'Nieuw'},
-          {status: 'Gecontroleerd'},
-          {status: 'Ingepland'},
-          {status: 'Opgehaald'}
+          {status: 'NIEUW'},
+          {status: 'MELDINGVERWERKT'},
+          {status: 'WORDTOPGEHAALD'},
+          {status: 'OPGEHAALD'}
         ];
-
-        this.setNotificaties();
-        this.setImage();
     }
 
   constructor(public selection: IDService) {}
@@ -79,7 +79,11 @@ export class DetailComponent {
 
   setImage() {
     this.imageStore.fetch(this.selection.selectedId());
+  }
 
-    console.log(this.imageStore.image);
+  onUpdateStatus() {
+    if (!this.selectedStatus || this.selectedStatus === "Selecteer een status") { return; }
+
+    this.updateStatusStore.update(this.selection.selectedId(), {"status": this.selectedStatus});
   }
 }
