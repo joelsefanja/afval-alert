@@ -13,6 +13,7 @@ public class Classification {
     private Long id;
 
     @OneToOne
+    @JoinColumn(name = "melding_id")
     private Melding melding;
 
     @OneToMany(mappedBy = "classification", cascade = CascadeType.ALL )
@@ -58,10 +59,18 @@ public class Classification {
     public void setStartedAt(LocalDateTime startedAt) { this.startedAt = startedAt; }
 
     public LocalDateTime getClassifiedAt() {
-        return startedAt;
+        return classifiedAt;
     }
 
     public void setClassifiedAt(LocalDateTime classifiedAt) { this.classifiedAt = classifiedAt; }
+
+    public List<ClassificationLabel> getClassificationLabels() {
+        return classificationLabels;
+    }
+
+    public void setClassificationLabels(List<ClassificationLabel> classificationLabels) {
+        this.classificationLabels = classificationLabels;
+    }
 
     public enum Status {
         PENDING,

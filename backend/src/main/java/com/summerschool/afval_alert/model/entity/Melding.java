@@ -38,7 +38,7 @@ public class Melding {
     @OneToMany(mappedBy = "melding", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Notitie> notities = new ArrayList<Notitie>();
 
-    @OneToOne
+    @OneToOne(mappedBy = "melding", cascade = CascadeType.ALL, orphanRemoval = true)
     private Classification classification;
 
     @PrePersist
@@ -118,6 +118,14 @@ public class Melding {
 
     public List<Notitie> getNotities() {
         return notities;
+    }
+
+    public Classification getClassification() {
+        return classification;
+    }
+
+    public void setClassification(Classification classification) {
+        this.classification = classification;
     }
 
     public enum Status {
