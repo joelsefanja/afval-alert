@@ -33,7 +33,7 @@
                 <p-select [options]="states" [(ngModel)]="selectedStatus" optionLabel="status" optionValue="status" placeholder="Selecteer een status" class="w-full md:w-56" />
               </div>
               <p>Voeg opmerking toe</p>
-              <textarea rows="5"cols="30" pTextarea [autoResize]="true"></textarea>
+              <textarea rows="5"cols="30" pTextarea [autoResize]="true" [(ngModel)]="notitie"></textarea>
               <div>
                 <p-button label="Update" (click)="onUpdateStatus()"/>
               </div>
