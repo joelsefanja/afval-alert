@@ -15,6 +15,7 @@ public class ShowMeldingDTO {
     private Melding.Status status;
     private List<NotitieDTO> notities;
     private LocalDateTime createdAt;
+    private List<WasteTypeDTO> wastetypes;
 
     public void setId(Long id) {
         this.id = id;
@@ -66,5 +67,13 @@ public class ShowMeldingDTO {
     }
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public List<WasteTypeDTO> getWastetypes() {
+        return wastetypes;
+    }
+
+    public void setWastetypes(List<WasteTypeDTO> wastetypes) {
+        this.wastetypes = wastetypes;
     }
 }
