@@ -89,16 +89,32 @@ export class DetailComponent {
   }
 
   onUpdateStatus() {
-    if ((!this.selectedStatus || this.selectedStatus === "Selecteer een status") && (!this.notitie || this.notitie === "")) { return; }
+    if (!this.statusSelected() && !this.hasNotitie()) { return; }
 
     this.updateStatusStore.update(this.selection.selectedId(), {"status": this.selectedStatus.toUpperCase()});
 
-    if ((this.selectedStatus || this.selectedStatus !== "Selecteer een status") && (!this.notitie || this.notitie === "")) {
+    if (this.statusSelected() && !this.hasNotitie()) {
       this.notificatieStore.post(this.selection.selectedId(), {"notitie": "Status verranderd naar: " + this.selectedStatus});
-    } else if ((this.selectedStatus || this.selectedStatus !== "Selecteer een status") && (this.notitie || this.notitie !== "")) {
+    } else if (this.statusSelected() && this.hasNotitie()) {
       this.notificatieStore.post(this.selection.selectedId(), {"notitie": "Status verranderd naar: " + this.selectedStatus + " --- " + this.notitie});
     }
 
     this.notitieAdded = true;
+  }
+
+  statusSelected(): boolean {
+    if (this.selectedStatus && this.selectedStatus !== "Selecteer een status") {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  hasNotitie(): boolean {
+    if (this.notitie && this.notitie !== "") {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
