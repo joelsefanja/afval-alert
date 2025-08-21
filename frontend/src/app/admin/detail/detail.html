@@ -1,5 +1,7 @@
 <p-button label="Sluiten" (click)="closeDetail()" />
 
+<p-button label="Sluiten" (click)="closeDetail()" />
+
 <div class="card">
     <p-tabs value="0">
         <p-tablist>
@@ -9,8 +11,8 @@
         </p-tablist>
         <p-tabpanels>
           <p-tabpanel value="0">
-            <h1>Kaart voor melding met id: {{ selection.selectedId() }}</h1>
-            <p-image src="https://media.istockphoto.com/id/845816364/nl/foto/de-stapel-van-vuilnis-in-de-prullenmand-dump-of-storten-verontreiniging-concept.jpg?s=612x612&w=0&k=20&c=_9pkYruHcbDs4sFnstJ1A_gPhnOKQdFe3adEn5D3d4g=" alt="Image" class="mapp" />
+            <h1>Foto voor melding met id: {{ selection.selectedId() }}</h1>
+            <p-image [src]="imageStore.image()" alt="Image" class="mapp" />
             <p>Afvaltype, status, datum</p>
             Opmerking van gebruiker bij melding
           </p-tabpanel>
@@ -23,7 +25,8 @@
           </p-tabpanel>
 
           <p-tabpanel value="2">
-            <app-tijdlijn-element [tijdlijnElementen]="TEST"></app-tijdlijn-element>
+
+          <app-tijdlijn-element [notificaties]="notificatieStore.notificaties()"></app-tijdlijn-element>
 
             <p>Update status</p>
             <div>
