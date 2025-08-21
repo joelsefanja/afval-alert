@@ -1,10 +1,10 @@
 package com.summerschool.afval_alert.controller;
 
-import ch.qos.logback.core.status.StatusUtil;
-import com.summerschool.afval_alert.model.entity.Notitie;
-import com.summerschool.afval_alert.model.entity.StatusUpdate;
+import com.summerschool.afval_alert.model.dto.NotitieDTO;
+import com.summerschool.afval_alert.model.dto.PostNotitieDTO;
+import com.summerschool.afval_alert.model.entity.Melding;
+import com.summerschool.afval_alert.service.MeldingService;
 import com.summerschool.afval_alert.service.NotitieService;
-import com.summerschool.afval_alert.service.StatusUpdateService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,26 +14,29 @@ import java.util.List;
 @RequestMapping("/api")
 public class NotitieController {
     private final NotitieService notitieService;
-    private final StatusUpdateService statusUpdateService;
+    private final MeldingService meldingService;
 
-    public NotitieController(NotitieService notitieService, StatusUpdateService statusUpdateService) {
+    public NotitieController(NotitieService notitieService,
+                             MeldingService meldingService) {
         this.notitieService = notitieService;
-        this.statusUpdateService = statusUpdateService;
+        this.meldingService = meldingService;
     }
 
-    @PostMapping("/addNotitie")
-    public ResponseEntity<Long> postNotitie(@RequestParam("statusUpdateId") Long statusUpdateId,
-                                            @RequestParam("notitie") String notitie) {
+    @PostMapping("/notitie/{id}")
+    public ResponseEntity<Melding> postNotitie(
+            @PathVariable Long id,
+            @RequestBody PostNotitieDTO postNotitieDTO) {
+        Melding melding = meldingService.findMeldingById(id);
+        notitieService.createNotitie(melding, postNotitieDTO.getNotitie());
 
-        StatusUpdate statusUpdate = statusUpdateService.addNotitieStatusUpdate(statusUpdateId, notitie);
+        meldingService.updateMelding(melding);
 
-        return ResponseEntity.ok().body(statusUpdate.getId());
+        return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/notities")
-    public ResponseEntity<List<Notitie>> getNotities(@RequestParam("statusUpdateId") Long statusUpdateId) {
-        List<Notitie> notities = statusUpdateService.getNotities(statusUpdateId);
-
-        return ResponseEntity.ok().body(notities);
+    @GetMapping("/notities/{id}")
+    public ResponseEntity<List<NotitieDTO>> getNotities(
+            @PathVariable Long id) {
+        return ResponseEntity.ok().body(notitieService.getNotities(id));
     }
 }

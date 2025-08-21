@@ -11,8 +11,8 @@ public class Melding {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private double latitude;
-    private double longitude;
+    private double lat;
+    private double lon;
 
     @Column(length = 500)
     private String comment;
@@ -21,7 +21,9 @@ public class Melding {
 
     private String name;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
     @JoinColumn(name = "image_id")
     private Image image;
 
@@ -30,77 +32,106 @@ public class Melding {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
+    @OneToMany(mappedBy = "melding", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Notitie> notities = new ArrayList<Notitie>();
+
+    @OneToOne(mappedBy = "melding", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Classification classification;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
     }
 
-    private String trashType;
-
-    @OneToMany(mappedBy = "melding", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<StatusUpdate> statusUpdate = new ArrayList<StatusUpdate>();
-
-    public void setMelding(Float latitude,
-                           Float longitude,
-                           String trashType) {
-
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.trashType = trashType;
+    public void setId(long id) {
+        this.id = id;
     }
-
-    public void addStatusUpdate(StatusUpdate statusUpdate) {
-        statusUpdate.setMelding(this);
-        this.statusUpdate.add(statusUpdate);
+    public void setLat(double lat) {
+        this.lat = lat;
     }
-
-    public void setId(long id) { this.id = id; }
-
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
+    public void setLon(double lon) {
+        this.lon = lon;
     }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
     public void setComment(String comment) {
         this.comment = comment;
     }
-
-    public Image getImage() {
-        return image;
+    public void setEmail(String email) {
+        this.email = email;
     }
-
+    public void setName(String name) {
+        this.name = name;
+    }
     public void setImage(Image image) {
         this.image = image;
     }
+    public void setFinalized(Boolean finalized) {
+        isFinalized = finalized;
+    }
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public void setNotities(List<Notitie> notities) {
+        this.notities = notities;
+    }
+    public void addNotitie(Notitie notitie) {
+        this.notities.add(notitie);
+    }
+
 
     public long getId() {
         return id;
     }
-
+    public double getLat() {
+        return lat;
+    }
+    public double getLon() {
+        return lon;
+    }
+    public String getComment() {
+        return comment;
+    }
+    public String getEmail() {
+        return email;
+    }
+    public String getName() {
+        return name;
+    }
+    public Image getImage() {
+        return image;
+    }
     public Boolean getFinalized() {
         return isFinalized;
     }
-
-    public void setFinalized(Boolean finalized) {
-        isFinalized = finalized;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+    public Status getStatus() {
+        return status;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
+    public List<Notitie> getNotities() {
+        return notities;
+    }
+
+    public Classification getClassification() {
+        return classification;
+    }
+
+    public void setClassification(Classification classification) {
+        this.classification = classification;
+    }
+
+    public enum Status {
+        NIEUW,
+        MELDINGVERWERKT,
+        WORDTOPGEHAALD,
+        OPGEHAALD;
     }
 }

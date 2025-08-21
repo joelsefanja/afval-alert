@@ -1,21 +1,19 @@
 package com.summerschool.afval_alert.service;
 
-import com.summerschool.afval_alert.model.entity.Status;
-import com.summerschool.afval_alert.repository.StatusRepository;
+import com.summerschool.afval_alert.model.entity.Melding;
 import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class StatusService {
-    private final StatusRepository statusRepository;
-
-    public StatusService(StatusRepository statusRepository) {
-        this.statusRepository = statusRepository;
-    }
-
-    public Status saveStatus(String state) {
-        Status status = new Status();
-        status.setStatus(state);
-
-        return statusRepository.save(status);
+    public List<String> getStatusen() {
+        List<String> statusen = Arrays.stream(Melding.Status.values())
+                .map(Enum::name)
+                .collect(Collectors.toList());
+      
+      return statusen;
     }
 }

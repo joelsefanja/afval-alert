@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "afval-alert",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}
