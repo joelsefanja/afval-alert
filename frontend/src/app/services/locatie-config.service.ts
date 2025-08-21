@@ -50,7 +50,7 @@ export class LocatieConfigService {
         this.config = config;
 
         // Fetch bounding box from Nominatim API
-        const nominatimUrl = `${config.nominatim.baseUrl}/search?q=${config.toegestaneGebieden[0].naam}&format=json&polygon-geojson=0`;
+        const nominatimUrl = `${config.nominatim.baseUrl}/search?q=${config.toegestaneGebieden[0].naam}&format=json&polygon-geojson=0&accept-language=nl`;
         this.http.get<any[]>(nominatimUrl).subscribe(
           response => {
             if (response && response.length > 0) {

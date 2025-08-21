@@ -12,6 +12,7 @@ import { KaartComponent } from '@components/3-locatie-selectie/components';
 import { LocatieService } from '@services/locatie/locatie.service';
 
 import { ImageModule } from 'primeng/image';
+import { TabsModule } from 'primeng/tabs';
   
 
 import { SelectModule } from 'primeng/select';
@@ -26,7 +27,7 @@ const tijdlijnElementen: TijdlijnElement[] = [
 @Component({
   selector: 'app-detail',
   standalone: true,
-  imports: [CommonModule, TijdlijnElementen, TextareaModule, FormsModule, SelectModule, ButtonModule, KaartComponent, ImageModule],
+  imports: [CommonModule, TijdlijnElementen, TextareaModule, FormsModule, SelectModule, ButtonModule, KaartComponent, ImageModule, TabsModule],
   templateUrl: './detail.html',
   styleUrl: './detail.scss'
 })
