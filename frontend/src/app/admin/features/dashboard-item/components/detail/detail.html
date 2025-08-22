@@ -8,7 +8,7 @@
   </app-detail-header>
 </div>
 
-<p-button label="Sluiten" (click)="closeDetail()" />
+<p-button label="Sluiten" (click)="closeDetail()" class="fixed right-0 mr-3"/>
 </div>
 
 <div class="card">
@@ -20,14 +20,14 @@
         </p-tablist>
         <div class="h-[54px]"></div>
         <p-tabpanels>
-          <p-tabpanel value="0" class="tw-tabpanel">
+          <p-tabpanel value="0">
             <div *ngIf="dashboardItemStore.selectedNotification() as item">
               <h1>Foto voor melding met id: {{ item.id }}</h1>
               <p-image [src]="imageStore.image()" alt="Image" class="mapp" height="400"></p-image>
             </div>
           </p-tabpanel>
 
-          <p-tabpanel value="1" class="tw-tabpanel">
+          <p-tabpanel value="1">
             <div class="sizepanel">
               <h1>Kaart voor melding met id: {{ selection.selectedId() }}</h1>
               <app-shared-kaart
@@ -38,7 +38,7 @@
             </div>
           </p-tabpanel>
           <div>
-          <p-tabpanel value="2" class="tw-tabpanel">
+          <p-tabpanel value="2">
           <app-tijdlijn-element [notificaties]="notificatieStore.notificaties()" style="max-height: 300px;"></app-tijdlijn-element>
             <div class="sizepanel">
               <p>Update status</p>
