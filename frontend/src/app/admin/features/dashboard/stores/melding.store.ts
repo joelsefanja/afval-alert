@@ -15,8 +15,15 @@ export class NotificationStore {
 );
 
   readonly wastetypeOptions = computed(() => {
-  const types = Array.from(new Set(this.visibleNotifications().map(n => n.wastetype)));
-  return types.map(t => ({ label: t, value: t }));
+  // Flatten all wastetypes into a single array
+  const allTypes = this.visibleNotifications()
+    .flatMap(n => Array.isArray(n.wastetype) ? n.wastetype : [n.wastetype]);
+
+  // Keep only unique types
+  const uniqueTypes = Array.from(new Set(allTypes));
+
+  // Map to label/value objects
+  return uniqueTypes.map(t => ({ label: t, value: t }));
 });
 
   readonly stateOptions = computed(() => {
