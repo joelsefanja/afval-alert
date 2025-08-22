@@ -9,10 +9,6 @@ export class NotitieService {
   constructor(private http: HttpClient) {}
 
   postNotitie(meldingId: number | null | undefined, body: Notitie) {
-    this.http.post('http://localhost:8080/api/notitie/' + meldingId, body)
-      .subscribe({
-        next: response => console.log("Notitie added:", response),
-        error: err => console.log('Error adding notitie:', err)
-      })
+    return this.http.post('http://localhost:8080/api/notitie/' + meldingId, body)
   }
 }

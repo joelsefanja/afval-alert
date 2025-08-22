@@ -19,6 +19,6 @@ export class NotificationStore {
   }
 
   post(id: number | null | undefined, notitie: Notitie) {
-    this.notitieService.postNotitie(id, notitie);
+    return this.notitieService.postNotitie(id, notitie);
   }
 }

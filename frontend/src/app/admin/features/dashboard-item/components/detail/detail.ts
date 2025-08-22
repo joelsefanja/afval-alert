@@ -48,7 +48,6 @@ export class DetailComponent {
   selectedAddress = '';
 
   lastSelected : number | null = null;
-  notitieAdded: boolean = false;
 
   notificatieStore = inject(NotificationStore);
   imageStore = inject(ImageStore);
@@ -62,8 +61,6 @@ export class DetailComponent {
           {status: 'Wordtopgehaald'},
           {status: 'Opgehaald'}
         ];
-
-        
     }
 
   constructor(public selection: IDService) {}
@@ -79,10 +76,6 @@ export class DetailComponent {
       this.setNotificaties();
       this.setImage();
       this.setItem();
-    } else if (this.notitieAdded) {
-      this.setNotificaties();
-
-      this.notitieAdded = false;
     }
   }
 
@@ -104,12 +97,18 @@ export class DetailComponent {
     this.updateStatusStore.update(this.selection.selectedId(), {"status": this.selectedStatus.toUpperCase()});
 
     if (this.statusSelected() && !this.hasNotitie()) {
-      this.notificatieStore.post(this.selection.selectedId(), {"notitie": "Status verranderd naar: " + this.selectedStatus});
+      this.notificatieStore.post(this.selection.selectedId(), {"notitie": "Status verranderd naar: " + this.selectedStatus})
+        .subscribe({
+          next: () => this.setNotificaties(),
+          error: err => console.error('Error adding notitie:', err)
+        });
     } else if (this.statusSelected() && this.hasNotitie()) {
-      this.notificatieStore.post(this.selection.selectedId(), {"notitie": "Status verranderd naar: " + this.selectedStatus + " --- " + this.notitie});
+      this.notificatieStore.post(this.selection.selectedId(), {"notitie": "Status verranderd naar: " + this.selectedStatus + " --- " + this.notitie})
+        .subscribe({
+          next: () => this.setNotificaties(),
+          error: err => console.error('Error adding notitie:', err)
+        });
     }
-
-    this.notitieAdded = true;
   }
 
   statusSelected(): boolean {
