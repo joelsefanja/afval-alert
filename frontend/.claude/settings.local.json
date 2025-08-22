@@ -21,7 +21,8 @@
     "deny": [],
     "ask": [],
     "additionalDirectories": [
-      "\\users\\joels\\dev\\afval-alert"
+      "\\users\\joels\\dev\\afval-alert",
+      "C:\\c\\Users\\joels\\Desktop"
     ]
   }
 }

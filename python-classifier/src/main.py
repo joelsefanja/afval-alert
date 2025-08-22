@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+load_dotenv()
+
 """AfvalAlert Main Service"""
 
 # Import the main app with all registered routes

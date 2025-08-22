@@ -1,133 +1,81 @@
-<!-- Live Camera View -->
-<div class="flex flex-col h-full bg-black text-white rounded-xl overflow-hidden">
-  
-  @if (!cameraGestart()) {
-    <!-- Camera start scherm -->
-    <div class="flex flex-col items-center justify-center h-full p-6">
-      <i class="pi pi-camera text-6xl mb-4 opacity-50"></i>
-      <p class="text-center mb-6 opacity-75">
-        Maak een foto van het afval met de live camera
-      </p>
-      
-      <div class="flex flex-col gap-3 w-full max-w-xs">
-        <p-button
-          icon="pi pi-video"
-          label="Start Camera"
-          (onClick)="startCamera()"
-          [loading]="isBezig()"
-          size="large"
-          styleClass="w-full"
-        ></p-button>
-        
-        <!-- Development skip button -->
-        <p-button
-          icon="pi pi-forward"
-          label="Skip (Development)"
-          (onClick)="skipFoto()"
-          severity="secondary"
-          size="large"
-          styleClass="w-full"
-        ></p-button>
-        
-        <p-button
-          icon="pi pi-images"
-          label="Kies uit galerij"
-          (onClick)="onKiesUitGalerij()"
-          severity="help"
-          size="large"
-          styleClass="w-full"
-        ></p-button>
-      </div>
-    </div>
-  } @else {
-    <!-- Live camera view -->
-    <div class="relative flex-1 flex items-center justify-center">
-      
-      @if (cameraFoutmelding()) {
-        <!-- Camera fout -->
-        <div class="text-center p-6">
-          <i class="pi pi-exclamation-triangle text-4xl mb-4 text-red-400"></i>
-          <p class="text-red-300 mb-4">{{ cameraFoutmelding() }}</p>
-          <p-button
-            icon="pi pi-refresh"
-            label="Probeer opnieuw"
-            (onClick)="startCamera()"
-            severity="danger"
-          ></p-button>
-        </div>
-      } @else {
-        <!-- Live video stream -->
-        <video 
-          #videoElement
-          autoplay
-          muted
-          playsinline
-          class="w-full h-full object-cover bg-gray-900"
-          [class.mirror]="!isMobileDevice()"
-          (loadedmetadata)="onVideoLoaded($event)"
-          (error)="onVideoError($event)"
-        ></video>
-        
-        <!-- Debug info overlay (development only) -->
-        <div class="absolute top-2 left-2 bg-black bg-opacity-75 text-white text-xs p-2 rounded">
-          <div>Device: {{ isMobileDevice() ? 'Mobile (Back Cam)' : 'Desktop (Webcam)' }}</div>
-          <div>Stream: {{ mediaStreamActive ? 'Active' : 'None' }}</div>
-          <div id="videoDebug">Video: Loading...</div>
-        </div>
-        
-        <!-- Camera overlay controls -->
-        <div class="absolute inset-0 pointer-events-none">
-          <!-- Focus reticle -->
-          <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-            <div class="w-16 h-16 border-2 border-white border-opacity-50 rounded-lg"></div>
-          </div>
-        </div>
-      }
-    </div>
-    
-    <!-- Camera controls -->
-    <div class="p-4 bg-black bg-opacity-50">
-      <div class="flex items-center justify-center gap-6">
-        
-        <!-- Stop camera button -->
-        <p-button
-          icon="pi pi-times"
-          (onClick)="stopCamera()"
-          severity="danger"
-          [rounded]="true"
-          size="large"
-        ></p-button>
-        
-        <!-- Capture button -->
-        <p-button
-          icon="pi pi-circle"
-          (onClick)="maakFoto()"
-          [loading]="isFotoMaken()"
-          size="large"
-          styleClass="capture-button"
-          [style]="{'width': '80px', 'height': '80px'}"
-        ></p-button>
-        
-        <!-- Flash/Info button placeholder -->
-        <p-button
-          icon="pi pi-info-circle"
-          (onClick)="showCameraInfo()"
-          severity="secondary"
-          [rounded]="true"
-          size="large"
-        ></p-button>
-        
-      </div>
-    </div>
-  }
-  
-</div>
-
-<!-- Verborgen file input voor galerij -->
-<input 
-  type="file" 
-  #galerijInput 
-  accept="image/*" 
-  (change)="onBestandGeselecteerd($event)"
-  class="hidden"
+<div
+  class="flex flex-col bg-black text-white rounded-xl overflow-hidden p-2 box-border"
 >
+  <!-- Video container -->
+  <div class="relative w-full max-w-full mx-auto" style="aspect-ratio: 16/9">
+    <!-- Camera fout overlay -->
+    @if (cameraFoutmelding()) {
+      <div
+        class="absolute inset-0 bg-black flex flex-col items-center justify-center text-center z-10 p-4"
+      >
+        <i
+          class="pi pi-exclamation-triangle text-2xl sm:text-3xl text-red-400 mb-2"
+        ></i>
+        <p class="text-red-300 mb-2">{{ cameraFoutmelding() }}</p>
+        <p-button
+          icon="pi pi-refresh"
+          label="Probeer opnieuw"
+          (onClick)="startCamera()"
+          severity="danger"
+        >
+        </p-button>
+      </div>
+    }
+
+    <!-- Video element -->
+    <video
+      #videoElement
+      autoplay
+      muted
+      playsinline
+      class="w-full h-full object-contain bg-gray-900"
+      (loadedmetadata)="onVideoLoaded($event)"
+      (error)="onVideoError($event)"
+    ></video>
+
+    <!-- Camera overlay reticle -->
+    @if (cameraGestart() && !cameraFoutmelding()) {
+      <div class="absolute inset-0 pointer-events-none">
+        <div
+          class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+        >
+          <div
+            class="w-12 h-12 sm:w-16 sm:h-16 border-2 border-white/50 rounded-lg"
+          ></div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Controls onderaan naast elkaar -->
+  <div class="flex justify-center gap-2 mt-2"></div>
+
+  <div class="flex justify-center gap-3 pad1">
+    <p-button
+      label="Galerij"
+      icon="pi pi-images"
+      (onClick)="onKiesUitGalerij()"
+      severity="primary"
+      [rounded]="true"
+      size="large"
+    ></p-button>
+    @if (cameraGestart()) {}
+    <p-button
+      label="Maak foto"
+      icon="pi pi-camera"
+      (onClick)="maakFoto()"
+      [disabled]="isFotoMaken()"
+      [loading]="isFotoMaken()"
+      size="large"
+    ></p-button>
+  </div>
+
+  <!-- Verborgen file input -->
+  <input
+    type="file"
+    #galerijInput
+    accept="image/*"
+    (change)="onBestandGeselecteerd($event)"
+    class="hidden"
+  />
+</div>

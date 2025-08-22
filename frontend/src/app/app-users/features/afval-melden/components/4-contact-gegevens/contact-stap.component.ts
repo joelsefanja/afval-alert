@@ -29,6 +29,13 @@ export class ContactStapComponent {
  
   private readonly naam = signal('');
   private readonly email = signal('');
+
+  readonly stapHeader = computed(() => {
+    const huidigeIndex = this.navigatie.huidigeStapIndex() + 1;
+    const totaalStappen = this.navigatie.totaalAantalStappen();
+    const stapNaam = this.navigatie.krijgStapNaam(this.navigatie.huidigeStapIndex());
+    return `Stap ${huidigeIndex}/${totaalStappen} - ${stapNaam}`;
+  });
   
   readonly kanVolgende = computed(() => {
     const emailWaarde = this.email();

@@ -11,8 +11,8 @@ import { CameraPreviewComponent } from './components/camera-preview/camera-previ
 import { FotoVoorvertoningComponent } from './components/foto-voorvertoning/foto-voorvertoning.component';
 import { NavigatieKnoppenComponent } from '../shared/navigatie-knoppen/navigatie-knoppen.component';
 import { FotoUploadService } from '../../services/foto-upload.service';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { AfvalMeldingStateService } from '../../services/melding/state/afval-melding-state.service';
+import { Button } from 'primeng/button';
 
 /**
  * Foto upload stap component
@@ -21,7 +21,6 @@ import { AfvalMeldingStateService } from '../../services/melding/state/afval-mel
 @Component({
   selector: 'app-foto-upload',
   templateUrl: './foto-upload.component.html',
-  // Geen styleUrls meer nodig omdat we PrimeNG componenten gebruiken
   imports: [
     ToastModule,
     ToolbarModule,
@@ -29,8 +28,7 @@ import { AfvalMeldingStateService } from '../../services/melding/state/afval-mel
     ProgressSpinnerModule,
     CameraPreviewComponent,
     FotoVoorvertoningComponent,
-    NavigatieKnoppenComponent,
-    HttpClientModule
+    Button
   ],
   standalone: true,
 })
@@ -48,12 +46,19 @@ export class FotoUploadComponent {
   private readonly fotoBlob = signal<Blob | null>(null);
   private readonly isUploaden = signal(false);
   private readonly uploadStatus = signal('Foto wordt verwerkt...');
-  private readonly meldingId = signal<number | null>(null);
+  readonly meldingId = signal<number | null>(null);
 
   // Computed signals
   readonly heeftFoto = computed(() => this.fotoUrl() !== '');
   readonly kanVolgende = computed(() => this.heeftFoto() && !this.isUploaden());
   readonly classificatieBezig = computed(() => this.media.aiBezig);
+
+  readonly stapHeader = computed(() => {
+    const huidigeIndex = this.navigatie.huidigeStapIndex() + 1;
+    const totaalStappen = this.navigatie.totaalAantalStappen();
+    const stapNaam = this.navigatie.krijgStapNaam(this.navigatie.huidigeStapIndex());
+    return `Stap ${huidigeIndex}/${totaalStappen} - ${stapNaam}`;
+  });
 
   constructor() {
     // Check of er al een melding ID is opgeslagen
@@ -63,16 +68,12 @@ export class FotoUploadComponent {
     }
   }
 
-  // Event handlers voor micro-components
-  
-  
-
-  onCameraFout(error: any): void {
-    console.error('Camera fout:', error);
+  onCameraFout(errorMessage: string): void {
+    console.error('Camera fout:', errorMessage);
     this.messageService.add({
       severity: 'error',
       summary: 'Camera fout',
-      detail: error.message || 'Er is een fout opgetreden bij het starten van de camera',
+      detail: errorMessage || 'Er is een fout opgetreden bij het starten van de camera',
       life: 5000
     });
   }
@@ -92,9 +93,9 @@ export class FotoUploadComponent {
       detail: 'Classificatie wordt op de achtergrond uitgevoerd',
       life: 3000
     });
-  }
-
-  
+ 
+   this.navigatie.volgende();
+ }
 
   async onFotoBevestigd(): Promise<void> {
     if (!this.heeftFoto()) return;
@@ -120,8 +121,7 @@ export class FotoUploadComponent {
           life: 3000
         });
 
-        // Ga naar volgende stap
-        this.navigatie.volgende();
+        // Don't auto-navigate, let user click next manually
       }
     } catch (error) {
       console.error('Upload fout:', error);
@@ -151,9 +151,7 @@ export class FotoUploadComponent {
     try {
       this.uploadStatus.set('Afval wordt geclassificeerd...');
       await this.media.herkenAfval();
-      console.log('Async classificatie voltooid');
     } catch (error) {
-      console.error('Classificatie fout:', error);
       // Geen foutmelding tonen, classificatie is optioneel
     }
   }
@@ -165,6 +163,12 @@ export class FotoUploadComponent {
 
   onVolgende(): void {
     this.onFotoBevestigd();
+  }
+  
+  onVolgendeNaUpload(): void {
+    if (this.meldingId()) {
+      this.navigatie.volgende();
+    }
   }
 
   onVolgendeZonderFoto(): void {

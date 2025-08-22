@@ -30,8 +30,20 @@ export class NavigatieKnoppenComponent {
   readonly volgende = output<void>();
   
   // Computed signals
-  readonly volgendeColumnClass = computed(() => {
-    return this.toonVorigeKnop() ? 'col-6' : 'col-12';
+  readonly volgendeButtonClass = computed(() => {
+    const baseClass = 'flex items-center justify-center gap-2 transition-all font-medium min-h-12 px-4 py-3 rounded-lg text-sm disabled:opacity-50';
+    const flexClass = this.toonVorigeKnop() ? 'flex-1' : 'w-full';
+    
+    const severityClasses = {
+      primary: 'bg-primary hover:bg-primary-600 disabled:bg-primary-300 text-white',
+      secondary: 'bg-surface-200 hover:bg-surface-300 disabled:bg-surface-100 text-surface-700',
+      success: 'bg-green-500 hover:bg-green-600 disabled:bg-green-300 text-white',
+      info: 'bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 text-white',
+      warn: 'bg-orange-500 hover:bg-orange-600 disabled:bg-orange-300 text-white',
+      danger: 'bg-red-500 hover:bg-red-600 disabled:bg-red-300 text-white'
+    };
+    
+    return `${baseClass} ${flexClass} ${severityClasses[this.volgendeSeverity()]}`;
   });
   
   onVorige(): void {

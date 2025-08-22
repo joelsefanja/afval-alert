@@ -21,29 +21,24 @@ export class KaartComponent implements AfterViewInit, OnDestroy {
   @Output() mapClosed = new EventEmitter<void>();
   @Output() addressSelected = new EventEmitter<string>();
 
+  private resizeObserver?: ResizeObserver;
+
   ngAfterViewInit() {
-    setTimeout(async () => {
-      if (!this.mapContainer) return;
+    if (!this.mapContainer) return;
 
-      const container = this.mapContainer.nativeElement;
-      let attempts = 0;
-      while ((container.clientWidth === 0 || container.clientHeight === 0) && attempts < 10) {
-        await new Promise(r => setTimeout(r, 50));
-        attempts++;
-      }
+    const container = this.mapContainer.nativeElement;
 
-      if (container.clientWidth === 0 || container.clientHeight === 0) {
-        container.style.minHeight = '400px';
-      }
-
-      await this.locatieService.initialiseerKaart(container);
+    this.locatieService.initialiseerKaart(container).then(() => {
       this.probeerHuidigeLocatie();
 
-      setTimeout(() => {
-        const kaartService = (this.locatieService as any).kaartService;
-        if (kaartService?.kaart3d) kaartService.kaart3d.updateMapSize();
-      }, 200);
-    }, 150);
+      const kaartService = (this.locatieService as any).kaartService;
+      if (kaartService && kaartService.kaart) {
+        this.resizeObserver = new ResizeObserver(() => {
+          kaartService.kaart.invalidateSize();
+        });
+        this.resizeObserver.observe(container);
+      }
+    });
 
     this.subscription = this.locatieService.adresGeselecteerd.subscribe(addr => this.addressSelected.emit(addr));
     this.locatieService.locatieGeselecteerd.subscribe(loc => {
@@ -61,11 +56,17 @@ export class KaartComponent implements AfterViewInit, OnDestroy {
           this.selectedLocation!.longitude,
           this.selectedLocation!.address
         );
-      }, 500);
+      }, 500); // Keep this timeout as it might be needed for the marker to be placed correctly
     }
   }
 
-  ngOnDestroy() { this.subscription?.unsubscribe(); this.locatieService.verwijderKaart(); }
+  ngOnDestroy() {
+    this.subscription?.unsubscribe();
+    this.locatieService.verwijderKaart();
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+    }
+  }
   onClose() { this.mapClosed.emit(); }
 
   private async probeerHuidigeLocatie(): Promise<void> {

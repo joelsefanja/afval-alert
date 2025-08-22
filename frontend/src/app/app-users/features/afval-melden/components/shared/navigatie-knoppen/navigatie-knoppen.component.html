@@ -1,29 +1,29 @@
-<div class="p-3 bg-white border-top-1 surface-border">
-  <div class="grid gap-2">
+<div class="p-3 bg-surface-0 border-t border-surface-200 sticky bottom-0">
+  <div class="flex gap-3 max-w-md mx-auto">
     @if (toonVorigeKnop()) {
-      <div class="col-6">
-        <p-button
-          [label]="vorigeLabel()"
-          icon="pi pi-chevron-left"
-          (onClick)="onVorige()"
-          [disabled]="vorigeUitgeschakeld()"
-          severity="secondary"
-          class="w-full"
-        ></p-button>
-      </div>
+      <button
+        (click)="onVorige()"
+        [disabled]="vorigeUitgeschakeld()"
+        class="flex-1 bg-surface-200 hover:bg-surface-300 disabled:bg-surface-100 disabled:opacity-50 text-surface-700 px-4 py-3 rounded-lg flex items-center justify-center gap-2 transition-all font-medium min-h-12"
+      >
+        <i class="pi pi-chevron-left text-sm"></i>
+        <span class="text-sm">{{ vorigeLabel() }}</span>
+      </button>
     }
     @if (toonVolgendeKnop()) {
-      <div [class]="volgendeColumnClass()">
-        <p-button
-          [label]="volgendeLabel()"
-          [icon]="volgendeIcon()"
-          [iconPos]="volgendeIconPositie()"
-          (onClick)="onVolgende()"
-          [disabled]="volgendeUitgeschakeld()"
-          [severity]="volgendeSeverity()"
-          class="w-full"
-        ></p-button>
-      </div>
+      <button
+        (click)="onVolgende()"
+        [disabled]="volgendeUitgeschakeld()"
+        [class]="volgendeButtonClass()"
+      >
+        @if (volgendeIconPositie() === 'left') {
+          <i [class]="volgendeIcon() + ' text-sm'"></i>
+          <span class="text-sm">{{ volgendeLabel() }}</span>
+        } @else {
+          <span class="text-sm">{{ volgendeLabel() }}</span>
+          <i [class]="volgendeIcon() + ' text-sm'"></i>
+        }
+      </button>
     }
   </div>
 </div>

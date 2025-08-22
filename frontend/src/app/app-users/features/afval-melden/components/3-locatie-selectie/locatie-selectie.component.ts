@@ -36,6 +36,13 @@ export class LocatieSelectieComponent {
   // Computed signals
   readonly huidigeLocatie = this.locatieStap.huidigeLocatie;
   readonly kanVolgende = computed(() => this.huidigeLocatie() !== null);
+
+  readonly stapHeader = computed(() => {
+    const huidigeIndex = this.navigatie.huidigeStapIndex() + 1;
+    const totaalStappen = this.navigatie.totaalAantalStappen();
+    const stapNaam = this.navigatie.krijgStapNaam(this.navigatie.huidigeStapIndex());
+    return `Stap ${huidigeIndex}/${totaalStappen} - ${stapNaam}`;
+  });
   readonly kaartLocatie = computed(() => {
     const locatie = this.huidigeLocatie();
     if (!locatie) return null;

@@ -1,27 +1,38 @@
 <div class="flex flex-col min-h-screen">
-  <p-toolbar class="sticky top-0 z-20">
-    <ng-template pTemplate="start">
-      <div class="mx-auto max-w-3xl w-full">
-        <h1 class="text-2xl font-bold text-center text-primary">
-          <i class="pi pi-trash mr-2"></i>
-          Meld zwerfafval
-        </h1>
-        <p-steps
-          [model]="navigatieService.menuItems()"
-          [activeIndex]="navigatieService.huidigeMenuIndex()"
-          [readonly]="true"
-          styleClass="w-full mt-2"
-          aria-label="Voortgang"
-        ></p-steps>
-      </div>
-    </ng-template>
-  </p-toolbar>
+  @if (navigatieService.huidigeMenuIndex() > 0) {
+    <p-toolbar class="sticky top-0 z-20 bg-white shadow-md">
+      <ng-template pTemplate="start">
+        <div class="w-full px-4 py-2">
+          <h1
+            class="text-lg sm:text-xl font-bold text-center text-primary mb-2 flex items-center justify-center gap-2"
+          >
+            <span class="text-2xl">🍃</span>
+            Meld zwerfafval
+          </h1>
+          
+        </div>
+      </ng-template>
+    </p-toolbar>
+  }
 
-  <main class="flex-grow w-full mx-auto p-3">
-    <p-card class="flex-grow">
-      @if (navigatieService.huidigeStap(); as stap) {
-        <ng-container [ngComponentOutlet]="stap.component"></ng-container>
-      }
-    </p-card>
+  <main
+    class="flex-grow w-full mx-auto"
+    [class.p-3]="navigatieService.huidigeMenuIndex() > 0"
+  >
+    @if (navigatieService.huidigeMenuIndex() === 0) {
+      <!-- Home page without card wrapper -->
+      <div class="min-h-screen flex items-center justify-center p-4">
+        @if (navigatieService.huidigeStap(); as stap) {
+          <ng-container [ngComponentOutlet]="stap.component"></ng-container>
+        }
+      </div>
+    } @else {
+      <!-- Other pages with card wrapper -->
+      <p-card class="flex-grow">
+        @if (navigatieService.huidigeStap(); as stap) {
+          <ng-container [ngComponentOutlet]="stap.component"></ng-container>
+        }
+      </p-card>
+    }
   </main>
 </div>

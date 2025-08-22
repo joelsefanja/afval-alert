@@ -1,6 +1,7 @@
 """Logging Decorator"""
 
 import functools
+import inspect
 import logging
 from typing import Any, Callable
 
@@ -10,10 +11,23 @@ ServiceCallable = Callable[..., Any]
 
 
 def logged(func: ServiceCallable) -> ServiceCallable:
-    """Log service calls met performance tracking"""
+    """Log service calls met performance tracking - ondersteunt async functies"""
 
     @functools.wraps(func)
-    def wrapper(*args, **kwargs):
+    async def async_wrapper(*args, **kwargs):
+        name = f"{func.__module__}.{func.__qualname__}"
+        logger.info(f"Gestart: {name}")
+
+        try:
+            result = await func(*args, **kwargs)
+            logger.info(f"Voltooid: {name}")
+            return result
+        except Exception as e:
+            logger.error(f"Fout: {name} - {e}")
+            raise
+
+    @functools.wraps(func)
+    def sync_wrapper(*args, **kwargs):
         name = f"{func.__module__}.{func.__qualname__}"
         logger.info(f"Gestart: {name}")
 
@@ -25,4 +39,7 @@ def logged(func: ServiceCallable) -> ServiceCallable:
             logger.error(f"Fout: {name} - {e}")
             raise
 
-    return wrapper
+    if inspect.iscoroutinefunction(func):
+        return async_wrapper
+    else:
+        return sync_wrapper

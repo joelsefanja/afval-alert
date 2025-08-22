@@ -19,19 +19,7 @@ export interface Stap {
       <div class="max-w-7xl mx-auto">
         <div class="flex items-center justify-between">
           <h1 class="text-xl font-semibold text-surface-900 dark:text-surface-100">{{ titel() }}</h1>
-          <div class="flex items-center gap-3">
-            @if (isOnline()) {
-              <div class="flex items-center gap-2">
-                <div class="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span class="text-sm text-surface-600 dark:text-surface-400">Online</span>
-              </div>
-            } @else {
-              <div class="flex items-center gap-2">
-                <div class="w-2 h-2 bg-red-500 rounded-full"></div>
-                <span class="text-sm text-surface-600 dark:text-surface-400">Offline</span>
-              </div>
-            }
-          </div>
+        
         </div>
         @if (stappen() && stappen()!.length > 0) {
           <div class="mt-4">

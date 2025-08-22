@@ -8,7 +8,7 @@
     }
   ],
   "nominatim": {
-    "baseUrl": "https://nominatim.openstreetmap.org",
+    "baseUrl": "/nominatim",
     "reverseZoom": 18,
     "searchZoom": 16,
     "addressdetails": 1,

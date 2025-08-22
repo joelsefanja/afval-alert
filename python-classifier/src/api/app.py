@@ -1,6 +1,7 @@
 """FastAPI Application Instance"""
 
 from fastapi import FastAPI
+from ..services.service_factory import ServiceFactory
 
 app = FastAPI(
     title="AfvalAlert - Nederlandse Afval Classificatie",
@@ -18,3 +19,14 @@ app = FastAPI(
         "url": "https://opensource.org/licenses/MIT",
     },
 )
+
+@app.on_event("startup")
+async def startup_event():
+    """Controleer bij opstarten of de Gemini service klaar is."""
+    print("Checking Gemini service readiness...")
+    service_factory = ServiceFactory()
+    gemini_service = service_factory.create_gemini_service()
+    if gemini_service.is_ready():
+        print("Gemini service is ready.")
+    else:
+        print("Gemini service is not ready. Check configuration.")

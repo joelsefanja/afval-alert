@@ -24,6 +24,7 @@ export class FotoVoorvertoningComponent {
   
   onVerwijderen(): void {
     this.fotoVerwijderd.emit();
+    
   }
   
   onBevestigen(): void {

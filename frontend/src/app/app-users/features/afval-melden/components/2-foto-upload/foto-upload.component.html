@@ -1,70 +1,65 @@
 <!-- Mobile-first Foto Upload -->
-<div class="flex flex-col h-screen">
+<div class="flex flex-col h-screen bg-gray-50">
   <!-- Header -->
-  <p-toolbar class="mb-2">
-    <ng-template pTemplate="start">
-      <div class="text-center w-full">
-        <h2 class="text-xl md:text-2xl font-bold mb-1">
-          <i class="pi pi-camera mr-2"></i>
-          Maak een foto
-        </h2>
-        <p class="text-sm text-color-secondary">
-          Leg het afval vast voor automatische herkenning
-        </p>
-      </div>
-    </ng-template>
-  </p-toolbar>
-  
-  <!-- Main Content -->
-  <div class="flex-1 p-4">
-    @if (heeftFoto()) {
-      <!-- Foto Voorvertoning -->
-      <app-foto-voorvertoning
-        [fotoUrl]="krijgFotoUrl()"
-        [isBevestigen]="isBezig()"
-        [uploadStatus]="krijgUploadStatus()"
-        (fotoVerwijderd)="onFotoVerwijderd()"
-        (fotoBevestigd)="onFotoBevestigd()"
-      ></app-foto-voorvertoning>
-    } @else {
-      <!-- Camera Preview -->
-      <div class="h-[70vh] w-full">
-        <app-camera-preview
-          (fotoGeselecteerd)="onFotoGeselecteerd($event)"
-          (cameraFout)="onCameraFout($event)"
-        ></app-camera-preview>
-      </div>
-    }
+  <div class="p-4 text-center">
+    <h2 class="text-xl font-semibold text-gray-800">{{ stapHeader() }}</h2>
+    <p class="text-sm text-gray-600">Maak een duidelijke foto van het afval.</p>
   </div>
-  
+
+  <!-- Main Content -->
+  <div class="flex-1 overflow-y-auto">
+    <app-foto-voorvertoning
+      [fotoUrl]="krijgFotoUrl()"
+      [isBevestigen]="isBezig()"
+      [uploadStatus]="krijgUploadStatus()"
+      (fotoVerwijderd)="onFotoVerwijderd()"
+      (fotoBevestigd)="onFotoBevestigd()"
+      [hidden]="!heeftFoto()"
+    ></app-foto-voorvertoning>
+    <app-camera-preview
+      (fotoGeselecteerd)="onFotoGeselecteerd($event)"
+      (cameraFout)="onCameraFout($event)"
+      [hidden]="heeftFoto()"
+    ></app-camera-preview>
+  </div>
+
   <!-- Status & Progress -->
   @if (classificatieBezig()) {
-    <div class="p-4 border-top-1 border-300">
-      <p-card class="max-w-md mx-auto text-center">
-        <p-progressSpinner class="mb-2" [style]="{'width': '50px', 'height': '50px'}"></p-progressSpinner>
-        <p class="text-sm text-color-secondary">
-          Afval wordt op de achtergrond geclassificeerd...
-        </p>
-      </p-card>
+    <div class="p-4 border-t bg-white">
+      <div class="flex items-center justify-center gap-3">
+        <p-progressSpinner styleClass="w-6 h-6"></p-progressSpinner>
+        <p class="text-sm text-gray-700">Bezig met analyseren...</p>
+      </div>
     </div>
   }
-  
-  <!-- Navigation -->
-  @if (heeftFoto()) {
-    <app-navigatie-knoppen
-      [volgendeLabel]="'Verwerken'"
-      [volgendeIcon]="'pi pi-cloud-upload'"
-      [volgendeUitgeschakeld]="!kanVolgende()"
-      (vorige)="onVorige()"
-      (volgende)="onVolgende()"
-    ></app-navigatie-knoppen>
-  } @else {
-    <app-navigatie-knoppen
-      [volgendeLabel]="'Ga verder zonder foto'"
-      (vorige)="onVorige()"
-      (volgende)="onVolgendeZonderFoto()"
-    ></app-navigatie-knoppen>
-  }
+
+  <!-- Footer met actieknoppen -->
+  <div class="p-4 bg-white shadow-top">
+    @if (heeftFoto()) {
+      <div class="flex gap-3">
+        <p-button
+          label="Andere foto"
+          icon="pi pi-refresh"
+          (onClick)="onFotoVerwijderd()"
+          styleClass="p-button-secondary p-button-outlined flex-1"
+        ></p-button>
+        <p-button
+          [label]="isBezig() ? 'Bezig...' : 'Volgende'"
+          icon="pi pi-arrow-right"
+          [disabled]="isBezig()"
+          (onClick)="onVolgende()"
+          styleClass="p-button-primary flex-1"
+        ></p-button>
+      </div>
+    } @else {
+      <p-button
+        label="Volgende"
+        icon="pi pi-arrow-right"
+        (onClick)="onVolgendeZonderFoto()"
+        styleClass="p-button-primary w-full"
+      ></p-button>
+    }
+  </div>
 </div>
 
 <!-- Toast Messages -->

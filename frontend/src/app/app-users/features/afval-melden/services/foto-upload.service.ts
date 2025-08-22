@@ -39,21 +39,23 @@ export class FotoUploadService {
    * @param fotoBlob De foto als Blob
    * @returns Observable met het melding ID
    */
-  uploadFoto(fotoBlob: Blob): Observable<FotoUploadResponse> {
-    const formData = new FormData();
-    formData.append('file', fotoBlob, 'foto.jpg');
-    
-    return this.http.post<{ id: number }>(`${this.baseUrl}/api/image`, formData)
-      .pipe(
-        map(response => {
-          // Sla het melding ID op in de BehaviorSubject en sessionStorage
-          this.meldingIdSubject.next(response.id);
-          sessionStorage.setItem('meldingId', response.id.toString());
-          return { id: response.id };
-        }),
-        catchError(this.handleError)
-      );
-  }
+uploadFoto(fotoBlob: Blob): Observable<FotoUploadResponse> {
+  const formData = new FormData();
+
+  // Converteer Blob naar File, zodat het backend als echt bestand herkent
+  const fotoFile = new File([fotoBlob], 'foto.jpg', { type: fotoBlob.type });
+  formData.append('file', fotoFile);
+
+  return this.http.post<{ id: number }>(`${this.baseUrl}/api/image`, formData)
+    .pipe(
+      map(response => {
+        this.meldingIdSubject.next(response.id);
+        sessionStorage.setItem('meldingId', response.id.toString());
+        return { id: response.id };
+      }),
+      catchError(this.handleError)
+    );
+}
 
   /**
    * Verstuur de volledige melding naar de backend
@@ -91,19 +93,25 @@ export class FotoUploadService {
     sessionStorage.setItem('meldingId', id.toString());
   }
 
-  private handleError(error: HttpErrorResponse) {
+  private handleError(error: HttpErrorResponse | any) {
     let errorMessage = 'Er is een onbekende fout opgetreden';
     
-    if (error.error instanceof ErrorEvent) {
-      // Client-side error
-      errorMessage = `Error: ${error.error.message}`;
-    } else {
-      // Server-side error
-      errorMessage = `Error Code: ${error.status}
-Message: ${error.message}`;
+    if (error instanceof HttpErrorResponse) {
+      if (error.error instanceof ErrorEvent) {
+        // Client-side error
+        errorMessage = `Error: ${error.error.message || 'Onbekende client fout'}`;
+      } else {
+        // Server-side error
+        const statusCode = error.status?.toString() || 'Onbekend';
+        const message = error.message || 'Onbekende server fout';
+        errorMessage = `Error Code: ${statusCode}\nMessage: ${message}`;
+      }
+    } else if (error instanceof Error) {
+      errorMessage = `Error: ${error.message}`;
+    } else if (typeof error === 'string') {
+      errorMessage = error;
     }
     
-    console.error(errorMessage);
     return throwError(() => errorMessage);
   }
 }

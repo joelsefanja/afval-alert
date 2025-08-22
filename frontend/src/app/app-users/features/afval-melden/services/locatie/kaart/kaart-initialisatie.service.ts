@@ -24,7 +24,7 @@ export class KaartInitialisatieService {
       throw new Error('Kaart element is vereist');
     }
 
-    // Create map with tilted view for 3D effect
+    // Maak de kaart aan
     const kaart = leaflet.map(kaartElement, {
       zoomControl: false, // We'll add custom controls
       attributionControl: false,

@@ -53,7 +53,7 @@
                 {
                   "type": "initial",
                   "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumError": "2MB"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -106,7 +106,8 @@
           "defaultConfiguration": "development",
           "options": {
             "port": 4200,
-            "open": true
+            "open": true,
+            "proxyConfig": "proxy.conf.json"
           }
         },
         "extract-i18n": {

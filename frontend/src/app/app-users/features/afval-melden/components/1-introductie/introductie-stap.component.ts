@@ -15,7 +15,6 @@ import { TagModule } from 'primeng/tag';
   selector: 'app-introductie-stap',
   standalone: true,
   imports: [
-    NavigatieKnoppenComponent,
     CardModule,
     ButtonModule,
     AvatarModule,

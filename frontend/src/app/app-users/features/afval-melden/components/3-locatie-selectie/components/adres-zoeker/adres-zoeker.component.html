@@ -1,44 +1,31 @@
-<p-card>
-  <ng-template pTemplate="header">
-    <div class="p-2 bg-primary-500 text-white text-center text-sm">
-      <i class="pi pi-search mr-1"></i> Zoek locatie
-    </div>
-  </ng-template>
-  <div class="p-2">
-    @if (foutmelding()) {
-      <p-message severity="error">{{ foutmelding() }}</p-message>
-    }
-    
-    <div class="mb-2">
-      <span class="p-input-icon-left w-full">
-        <i class="pi pi-search"></i>
-        <input
-          pInputText
-          [value]="zoekTekst()"
-          (input)="onZoekTekstWijziging($any($event.target).value)"
-          placeholder="Bijv: Grote Markt 1"
-          class="w-full"
-          (keyup.enter)="onZoeken()"
-        />
-      </span>
-    </div>
-    
-    <p-button
-      icon="pi pi-search"
-      (onClick)="onZoeken()"
-      [loading]="isZoekenBezig()"
-      [disabled]="!kanZoeken()"
-      label="Zoeken"
-      class="w-full mb-2"
-    ></p-button>
-    
-    <p-button
-      [icon]="huidigeLocatieIcon()"
-      (onClick)="onHuidigeLocatie()"
-      [loading]="isHuidigeLocatieBezig()"
-      severity="secondary"
-      [label]="huidigeLocatieLabel()"
-      class="w-full"
-    ></p-button>
+<div class="p-2">
+  @if (foutmelding()) {
+    <p-message severity="error">{{ foutmelding() }}</p-message>
+  }
+
+  <div class="mb-2">
+    <span class="p-input-icon-left p-input-icon-right w-full">
+      <i class="pi pi-search"></i>
+      <input
+        pInputText
+        [value]="zoekTekst()"
+        (input)="onZoekTekstWijziging($any($event.target).value)"
+        placeholder="Bijv: Grote Markt 1"
+        class="w-full"
+        (keyup.enter)="onZoeken()"
+      />
+      @if (kanZoeken()) {
+        <i class="pi pi-arrow-right cursor-pointer" (click)="onZoeken()"></i>
+      }
+    </span>
   </div>
-</p-card>
+
+  <p-button
+    [icon]="huidigeLocatieIcon()"
+    (onClick)="onHuidigeLocatie()"
+    [loading]="isHuidigeLocatieBezig()"
+    severity="secondary"
+    [label]="huidigeLocatieLabel()"
+    class="w-full"
+  ></p-button>
+</div>

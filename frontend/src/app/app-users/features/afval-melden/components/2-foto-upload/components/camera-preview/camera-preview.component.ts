@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, output, signal, inject, OnDestroy } from '@angular/core';
+import { Component, ElementRef, ViewChild, output, signal, inject, OnDestroy, OnInit } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { CameraService } from '../../../../services/camera.service';
 
@@ -29,7 +29,7 @@ import { CameraService } from '../../../../services/camera.service';
     }
   `]
 })
-export class CameraPreviewComponent implements OnDestroy {
+export class CameraPreviewComponent implements OnInit, OnDestroy {
   @ViewChild('videoElement') videoElement?: ElementRef<HTMLVideoElement>;
   @ViewChild('galerijInput') galerijInput?: ElementRef<HTMLInputElement>;
 
@@ -48,6 +48,10 @@ export class CameraPreviewComponent implements OnDestroy {
 
   private mediaStream?: MediaStream;
 
+  ngOnInit(): void {
+    this.startCamera();
+  }
+
   // Getters for template access
   get mediaStreamActive() {
     return !!this.mediaStream;
@@ -63,7 +67,6 @@ export class CameraPreviewComponent implements OnDestroy {
   async startCamera(): Promise<void> {
     this.isBezig.set(true);
     this.cameraFoutmelding.set('');
-    console.log('🎥 Starting camera...');
 
     try {
       // Stop eventuele bestaande stream
@@ -83,16 +86,13 @@ export class CameraPreviewComponent implements OnDestroy {
         audio: false
       };
 
-      console.log('📹 Requesting media with constraints:', constraints);
       this.mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
-      console.log('✅ MediaStream obtained:', this.mediaStream);
       
       // Wacht tot video element beschikbaar is
       await this.waitForVideoElement();
       
       if (this.videoElement && this.mediaStream) {
         const video = this.videoElement.nativeElement;
-        console.log('🎬 Setting video srcObject...');
         
         video.srcObject = this.mediaStream;
         video.muted = true;
@@ -107,7 +107,6 @@ export class CameraPreviewComponent implements OnDestroy {
           
           video.addEventListener('loadedmetadata', () => {
             clearTimeout(timeout);
-            console.log('📺 Video metadata loaded, dimensions:', video.videoWidth, 'x', video.videoHeight);
             resolve(void 0);
           }, { once: true });
           
@@ -119,13 +118,11 @@ export class CameraPreviewComponent implements OnDestroy {
         
         // Start video playback
         await video.play();
-        console.log('▶️ Video is playing');
         
         this.cameraGestart.set(true);
       }
 
     } catch (error: any) {
-      console.error('❌ Camera start fout:', error);
       this.cameraFoutmelding.set(error.message || 'Camera kon niet worden gestart');
       this.cameraFout.emit(error);
     } finally {
@@ -170,12 +167,7 @@ export class CameraPreviewComponent implements OnDestroy {
    * Toon camera informatie
    */
   showCameraInfo(): void {
-    const isMobile = this.isMobileDevice();
-    const cameraType = isMobile ? 'achtercamera' : 'webcam';
-    const message = `Gebruikt ${cameraType} voor optimale foto kwaliteit`;
-    
-    console.log('📷 Camera info:', message);
-    // Hier zou je een toast message kunnen tonen
+    // Camera info can be shown in UI if needed
   }
 
   /**
@@ -199,26 +191,40 @@ export class CameraPreviewComponent implements OnDestroy {
         });
       }
 
-      // Maak foto via camera service
-      await this.cameraService.maakFoto(video);
+      // Maak foto direct zonder camera service (die checkt op eigen stream)
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
       
-      // Converteer naar File object
-      const fotoBlob = this.cameraService.krijgFotoVoorUpload();
-      if (fotoBlob) {
-        const fotoFile = new File([fotoBlob], 'camera-foto.jpg', {
-          type: 'image/jpeg',
-          lastModified: Date.now()
-        });
-        
-        // Stop camera na foto maken
-        await this.stopCamera();
-        
-        // Emit foto
-        this.fotoGeselecteerd.emit(fotoFile);
+      if (ctx) {
+        // Teken video zonder mirroring
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       }
+      
+      // Converteer canvas naar blob
+      const fotoBlob = await new Promise<Blob>((resolve, reject) => {
+        canvas.toBlob((blob) => {
+          if (blob) {
+            resolve(blob);
+          } else {
+            reject(new Error('Foto maken mislukt'));
+          }
+        }, 'image/jpeg', 0.9);
+      });
+      
+      const fotoFile = new File([fotoBlob], 'camera-foto.jpg', {
+        type: 'image/jpeg',
+        lastModified: Date.now()
+      });
+      
+      // Stop camera na foto maken
+      await this.stopCamera();
+      
+      // Emit foto
+      this.fotoGeselecteerd.emit(fotoFile);
 
     } catch (error: any) {
-      console.error('Foto maken fout:', error);
       this.cameraFout.emit(error);
     } finally {
       this.isFotoMaken.set(false);
@@ -290,7 +296,6 @@ export class CameraPreviewComponent implements OnDestroy {
    */
   onVideoLoaded(event: Event): void {
     const video = event.target as HTMLVideoElement;
-    console.log('📺 Video loaded:', video.videoWidth, 'x', video.videoHeight);
     
     // Update debug info
     const debugEl = document.getElementById('videoDebug');
@@ -303,7 +308,6 @@ export class CameraPreviewComponent implements OnDestroy {
    * Debug: Video error event handler
    */
   onVideoError(event: Event): void {
-    console.error('📺 Video error:', event);
     const debugEl = document.getElementById('videoDebug');
     if (debugEl) {
       debugEl.textContent = 'Video: ERROR';

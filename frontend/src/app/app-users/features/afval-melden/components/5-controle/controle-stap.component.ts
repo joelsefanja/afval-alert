@@ -41,7 +41,15 @@ export class ControleStapComponent {
   private readonly fotoUploadService = inject(FotoUploadService);
 
   // State
+  // State
   private readonly isVerzenden = signal(false);
+
+  readonly stapHeader = computed(() => {
+    const huidigeIndex = this.navigatie.huidigeStapIndex() + 1;
+    const totaalStappen = this.navigatie.totaalAantalStappen();
+    const stapNaam = this.navigatie.krijgStapNaam(this.navigatie.huidigeStapIndex());
+    return `Stap ${huidigeIndex}/${totaalStappen} - ${stapNaam}`;
+  });
 
   // Computed data
   readonly contactGegevens = computed(() => this.conceptService.concept().contact);

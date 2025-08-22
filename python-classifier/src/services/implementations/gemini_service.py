@@ -66,4 +66,9 @@ class GeminiService:
 
     def is_ready(self) -> bool:
         """Quick check zonder API connectie te maken"""
+        if not self.app_config.gemini_api_key:
+            RED = "\033[91m"
+            RESET = "\033[0m"
+            print(f"{RED}ERROR: GEMINI_API_KEY is niet ingesteld in uw .env bestand.{RESET}")
+        
         return bool(self.app_config.gemini_api_key) and len(self.config.afval_types) > 0
