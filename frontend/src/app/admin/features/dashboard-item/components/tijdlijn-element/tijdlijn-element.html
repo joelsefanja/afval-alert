@@ -1,15 +1,10 @@
 <div class="timeline-box">
-    <p-timeline [value]="notificaties()">
+    <p-timeline [value]="notificaties()" style="overflow-y:scroll; max-height: 35vh;">
          <ng-template #opposite let-event>
             <small class="text-surface-500 dark:text-surface-400">{{ event.createdAt | date: 'dd-MM-yyyy HH:mm'}}</small>
         </ng-template>
         <ng-template #content let-event>
             {{event.content}}
-          <!-- @for (note of event.notes; track note) {
-          <div class="note">
-            <p style="font-size:14px; ">- {{ note }}</p>
-          </div>
-           } -->
         </ng-template>
     </p-timeline>
 </div>
