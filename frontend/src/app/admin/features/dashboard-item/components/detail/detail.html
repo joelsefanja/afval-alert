@@ -1,6 +1,6 @@
-<p-button label="Sluiten" (click)="closeDetail()" />
+<div class="flex item-center justify-between h-[127px]">
 
-<div *ngIf="dashboardItemStore.selectedNotification() as item">
+<div *ngIf="dashboardItemStore.selectedNotification() as item" class="flex flex-col">
   <app-detail-header
   [status]="getReadableStatus(item.status)"
   [createdAt]="item.createdAt"
@@ -8,22 +8,26 @@
   </app-detail-header>
 </div>
 
+<p-button label="Sluiten" (click)="closeDetail()" />
+</div>
+
 <div class="card">
     <p-tabs value="0" (valueChange)="onTabChange($event)">
-        <p-tablist>
+        <p-tablist class="fixed h-[54px]">
             <p-tab value="0">Foto</p-tab>
             <p-tab value="1" (valueChange)="onTabChange($event)">Kaart</p-tab>
             <p-tab value="2">Tijdlijn</p-tab>
         </p-tablist>
+        <div class="h-[54px]"></div>
         <p-tabpanels>
-          <p-tabpanel value="0">
+          <p-tabpanel value="0" class="tw-tabpanel">
             <div *ngIf="dashboardItemStore.selectedNotification() as item">
               <h1>Foto voor melding met id: {{ item.id }}</h1>
               <p-image [src]="imageStore.image()" alt="Image" class="mapp" height="400"></p-image>
             </div>
           </p-tabpanel>
 
-          <p-tabpanel value="1">
+          <p-tabpanel value="1" class="tw-tabpanel">
             <div class="sizepanel">
               <h1>Kaart voor melding met id: {{ selection.selectedId() }}</h1>
               <app-shared-kaart
@@ -33,10 +37,9 @@
               </app-shared-kaart>
             </div>
           </p-tabpanel>
-
-          <p-tabpanel value="2">
-
-          <app-tijdlijn-element [notificaties]="notificatieStore.notificaties()"></app-tijdlijn-element>
+          <div>
+          <p-tabpanel value="2" class="tw-tabpanel">
+          <app-tijdlijn-element [notificaties]="notificatieStore.notificaties()" style="max-height: 300px;"></app-tijdlijn-element>
             <div class="sizepanel">
               <p>Update status</p>
               <div>
@@ -49,4 +52,5 @@
               </div>
             </div>
           </p-tabpanel>
+          </div>
          </p-tabpanels>
