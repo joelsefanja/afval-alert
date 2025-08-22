@@ -6,23 +6,17 @@ import { TextareaModule } from 'primeng/textarea';
 import { FormsModule } from '@angular/forms';
 import { State } from '@app/admin/features/dashboard/interfaces/state.interface';
 import { ButtonModule } from 'primeng/button';
-import { KaartService } from '@services/locatie/kaart.service';
-import { KaartComponent } from '@components/3-locatie-selectie/components';
-import { LocatieService } from '@services/locatie/locatie.service';
 
 import { NotificationStore } from '../../stores/notificatie.store';
 import { ImageStore } from '../../stores/image.store';
 import { UpdateStatusStore } from '../../stores/update-status.store';
-import { DashboardItemService } from '../../services/dashboard-item/dashboard-item.service.ts';
 
 import { ImageModule } from 'primeng/image';
 import { TabsModule } from 'primeng/tabs';
 import { DetailHeaderComponent } from '../detail-header/detail-header/detail-header';
 
 import { SelectModule } from 'primeng/select';
-import { state } from '@angular/animations';
 import { DashboardItemStore } from '../../stores/dashboard-item.store';
-import { DashboardService } from '@app/admin/features/dashboard/services/dashboard.service/dashboard.service';
 import { SharedKaartComponent } from '@app/shared/components/kaart/shared-kaart.component';
 import { getReadableStatus } from '../../../dashboard/utilities/melding-mappings';
 

@@ -2,7 +2,7 @@
 
 <div *ngIf="dashboardItemStore.selectedNotification() as item" class="flex flex-col">
   <app-detail-header
-  [status]="item.status"
+  [status]="getReadableStatus(item.status)"
   [createdAt]="item.createdAt"
   [comment]="item.comment">
   </app-detail-header>
