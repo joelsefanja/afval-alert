@@ -12,10 +12,10 @@
 </div>
 
 <div class="card">
-    <p-tabs value="0">
+    <p-tabs value="0" (valueChange)="onTabChange($event)">
         <p-tablist class="fixed h-[54px]">
             <p-tab value="0">Foto</p-tab>
-            <p-tab value="1">Kaart</p-tab>
+            <p-tab value="1" (valueChange)="onTabChange($event)">Kaart</p-tab>
             <p-tab value="2">Tijdlijn</p-tab>
         </p-tablist>
         <div class="h-[54px]"></div>
@@ -30,7 +30,11 @@
           <p-tabpanel value="1" class="tw-tabpanel">
             <div class="sizepanel">
               <h1>Kaart voor melding met id: {{ selection.selectedId() }}</h1>
-              <app-kaart></app-kaart>
+              <app-shared-kaart
+                  class="h-full w-full"
+                  [locaties]="dashboardItemStore.selectedNotification() ? [dashboardItemStore.selectedNotification()] : []"
+                  [geselecteerdeLocatie]="dashboardItemStore.selectedNotification()">
+              </app-shared-kaart>
             </div>
           </p-tabpanel>
           <div>

@@ -5,7 +5,7 @@ import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 
 interface AfvalMelding {
-  id: string;
+  id: number;
   latitude: number;
   longitude: number;
   status: 'nieuw' | 'bezig' | 'opgelost';

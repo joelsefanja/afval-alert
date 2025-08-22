@@ -22,19 +22,18 @@ import { DetailHeaderComponent } from '../detail-header/detail-header/detail-hea
 import { SelectModule } from 'primeng/select';
 import { state } from '@angular/animations';
 import { DashboardItemStore } from '../../stores/dashboard-item.store';
+import { DashboardService } from '@app/admin/features/dashboard/services/dashboard.service/dashboard.service';
+import { SharedKaartComponent } from '@app/shared/components/kaart/shared-kaart.component';
+import { getReadableStatus } from '../../../dashboard/utilities/melding-mappings';
 
 @Component({
   selector: 'app-detail',
   standalone: true,
-  imports: [CommonModule, TijdlijnElementen, TextareaModule, FormsModule, SelectModule, ButtonModule, KaartComponent, ImageModule, TabsModule, DetailHeaderComponent],
+  imports: [CommonModule, TijdlijnElementen, TextareaModule, FormsModule, SelectModule, ButtonModule, ImageModule, TabsModule, DetailHeaderComponent, SharedKaartComponent],
   templateUrl: './detail.html',
   styleUrl: './detail.scss'
 })
 export class DetailComponent {
-  private kaartService = inject(KaartService);
-  private locatieService = inject(LocatieService);
-
-  @ViewChild(KaartComponent) kaartComponent!: KaartComponent;
   value: string = ''; // Initialize with a default value
   states!: State[];
 
@@ -126,4 +125,17 @@ export class DetailComponent {
       return false;
     }
   }
+  @ViewChild(SharedKaartComponent) sharedKaartComponent!: SharedKaartComponent;
+
+  onTabChange(event: any) {
+    setTimeout(() => {
+      const map = this.sharedKaartComponent.getMap();
+      if (map) {
+        map.invalidateSize();
+      }
+    }, 0);
+  }
+
+
+  getReadableStatus = getReadableStatus;
 }
