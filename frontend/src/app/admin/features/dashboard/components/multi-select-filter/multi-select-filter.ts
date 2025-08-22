@@ -1,6 +1,7 @@
-import { Component, Input, WritableSignal, signal } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { FormsModule } from '@angular/forms';
 
 interface SelectOption {
   label: string;
@@ -10,17 +11,17 @@ interface SelectOption {
 @Component({
   selector: 'app-multi-select-filter',
   standalone: true,
-  imports: [CommonModule, MultiSelectModule],
+  imports: [CommonModule, MultiSelectModule, FormsModule],
   templateUrl: './multi-select-filter.html',
-  styleUrls: ['./multi-select-filter.scss'],
 })
 export class MultiSelectFilter {
   @Input() options: SelectOption[] = [];
-  @Input() selected!: WritableSignal<any[]>;
-  @Input() placeholder: string = '';
+  @Input() selected: any[] = [];
+   @Input() placeholder: string = '';
+  @Output() selectedChange = new EventEmitter<any[]>();
 
-  /** Update signal when selection changes */
   onChange(event: any) {
-    this.selected.set(event.value);
+    this.selected = event.value;
+    this.selectedChange.emit(this.selected);
   }
 }

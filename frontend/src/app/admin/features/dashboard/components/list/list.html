@@ -33,17 +33,17 @@
         <th>
           <app-multi-select-filter
             [options]="store.wastetypeOptions()"
-            [(ngModel)]="selectedTypes"
+            [(selected)]="selectedTypes"
+            (selectedChange)="onTypeFilterChange()"
             placeholder="Filter type"
-            ngDefaultControl
           ></app-multi-select-filter>
         </th>
         <th>
           <app-multi-select-filter
             [options]="store.stateOptions()"
-            [(ngModel)]="selectedStates"
+            [(selected)]="selectedStates"
+            (selectedChange)="onTypeFilterChange()"
             placeholder="Filter status"
-            ngDefaultControl
           ></app-multi-select-filter>
         </th>
         <th style="min-width:7%">

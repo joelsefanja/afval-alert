@@ -1,10 +1,10 @@
 <p-multiSelect
   [options]="options"
-  (onChange)="selected.set($any($event))"
+  [(ngModel)]="selected"
+  (onChange)="onChange($event)"
   optionLabel="label"
   optionValue="value"
   [placeholder]="placeholder"
   appendTo="body"
   class="p-column-filter"
->
-</p-multiSelect>
+></p-multiSelect>
