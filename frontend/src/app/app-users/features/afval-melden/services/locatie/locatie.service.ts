@@ -62,10 +62,11 @@ export class LocatieService {
     };
   }
 
-  async reverseGeocode(breedtegraad: number, lengtegraad: number): Promise<string> {
-    return this.geocodingService.reverseGeocode(breedtegraad, lengtegraad);
+  async reverseGeocode(lat: number, lon: number): Promise<any> {
+  const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
+  return response.json(); // full JSON including `address`
   }
-
+  
   async zoekAdres(query: string): Promise<Locatie[]> {
     const results = await this.geocodingService.zoekAdres(query);
     return results.map((result: { adres: string; lat: number; lng: number }) => ({

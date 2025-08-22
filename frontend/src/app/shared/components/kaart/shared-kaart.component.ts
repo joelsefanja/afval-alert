@@ -162,7 +162,7 @@ export class SharedKaartComponent implements AfterViewInit, OnDestroy {
     const marker = leaflet.marker([locatie.latitude, locatie.longitude], { 
       icon: customIcon 
     });
-    
+  
     // Click handler voor marker selectie
     if (this.klikbaar()) {
       marker.on('click', () => {
@@ -172,6 +172,11 @@ export class SharedKaartComponent implements AfterViewInit, OnDestroy {
     
     return marker;
   }
+
+  public getMap(): leaflet.Map | null {
+    return this.kaart;
+  }
+  
   
   private getMarkerIcon(locatie: KaartLocatie, isGeselecteerd: boolean): string {
     // Gebruik standaard Leaflet marker kleuren via CSS styling

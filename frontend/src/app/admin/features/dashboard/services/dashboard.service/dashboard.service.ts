@@ -43,9 +43,21 @@ export class DashboardService {
     const updated = await Promise.all(
       items.map(async item => {
         try {
-          const address = await this.locatieService.reverseGeocode(item.lat, item.lon);
-          return { ...item, location: address };
-        } catch {
+        // Reverse geocode
+        const response = await this.locatieService.reverseGeocode(item.lat, item.lon);
+        
+        // Use structured address if available
+        const addr = response.address || {};
+        const road_house_number = addr.road + ' ' + addr.house_number || '';
+        const city = addr.city || addr.town || addr.village || '';
+        const state = addr.state || '';
+        
+        // Build the formatted location string
+        const locationParts = [road_house_number, city, state].filter(part => part); // remove empty parts
+        const location = locationParts.join(', ');
+
+        return { ...item, location };
+      } catch {
           return item; // fallback to coordinates if geocoding fails
         }
       })
